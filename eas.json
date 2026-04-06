@@ -1,0 +1,20 @@
+{
+  "build": {
+    "testing": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ENV": "testing"
+      }
+    },
+    "production": {
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ENV": "production"
+      }
+    }
+  }
+}
