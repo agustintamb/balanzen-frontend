@@ -10,7 +10,8 @@ const appConfig = ({ config }) => {
     version: "1.0.0",
     extra: {
       appEnv,
-      apiLocalUrl: process.env.API_LOCAL_URL,
+      apiLocalDeviceUrl: process.env.API_LOCAL_DEVICE_URL ?? "",
+      apiLocalPort: process.env.API_LOCAL_PORT ?? "3001",
     },
   };
 };
