@@ -1,5 +1,3 @@
-import envConfig from "@/config/env";
-import { useHealth } from "@/hooks/useHealth";
 import {
   ActivityIndicator,
   ScrollView,
@@ -8,6 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import envConfig from "@/config/env";
+import { useHealth } from "@/hooks/useHealth";
 
 export default function HomeScreen() {
   const { data, isError, error, refetch, isFetching } = useHealth();
