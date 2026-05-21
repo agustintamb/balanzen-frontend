@@ -1,5 +1,5 @@
 import apiClient from "@/api/client";
-import { HealthResponse } from "@/api/types";
+import { HealthResponse } from "@/api/health/health.types";
 
 export const healthService = {
   check: (): Promise<HealthResponse> => apiClient.get("/health"),
