@@ -1,0 +1,15 @@
+{
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "^react$",
+    "^react-native$",
+    "^react-native-(.*)$",
+    "^expo-router(.*)$",
+    "^expo(.*)$",
+    "^@expo(.*)$",
+    "<THIRD_PARTY_MODULES>",
+    "^@/(.*)$",
+    "^[./]"
+  ],
+  "importOrderTypeScriptVersion": "5.9.2"
+}

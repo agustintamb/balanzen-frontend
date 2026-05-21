@@ -1,5 +1,5 @@
-import envConfig from "@/config/env";
 import axios from "axios";
+import envConfig from "@/config/env";
 
 const apiClient = axios.create({
   baseURL: envConfig.API_URL,

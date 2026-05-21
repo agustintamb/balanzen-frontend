@@ -12,6 +12,7 @@ module.exports = function getBabelConfig(api) {
           },
         },
       ],
+      "nativewind/babel",
     ],
   };
 };
