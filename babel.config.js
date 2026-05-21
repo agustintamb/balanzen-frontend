@@ -1,7 +1,9 @@
 module.exports = function getBabelConfig(api) {
   api.cache(true);
   return {
-    presets: ["babel-preset-expo"],
+    presets: [
+      ["babel-preset-expo", { jsxImportSource: "nativewind" }],
+    ],
     plugins: [
       [
         "module-resolver",
@@ -12,7 +14,6 @@ module.exports = function getBabelConfig(api) {
           },
         },
       ],
-      "nativewind/babel",
     ],
   };
 };

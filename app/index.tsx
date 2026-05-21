@@ -1,58 +1,69 @@
 import {
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import envConfig from "@/config/env";
-import { useHealth } from "@/hooks/useHealth";
+import { cn } from "@/utils/cn";
+import { useHomeScreen } from "./useHomeScreen";
 
 export default function HomeScreen() {
-  const { data, isError, error, refetch, isFetching } = useHealth();
+  const { data, isError, error, refetch, isFetching } = useHomeScreen();
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Balanzen</Text>
-      <Text style={styles.subtitle}>Health Check</Text>
+    <ScrollView contentContainerClassName="flex-grow bg-slate-900 items-center justify-center p-6 gap-4">
+      <Text className="text-4xl font-sans-bold text-slate-50 -tracking-wide">
+        Balanzen
+      </Text>
+      <Text className="text-sm text-slate-400 mb-2">Health Check</Text>
 
-      <View style={styles.infoBox}>
-        <Text style={styles.infoLabel}>Ambiente</Text>
-        <Text style={styles.infoValue}>{envConfig.ENV_NAME}</Text>
-        <Text style={styles.infoLabel}>API URL</Text>
-        <Text style={styles.infoValue}>{envConfig.API_URL}</Text>
+      <View className="w-full bg-slate-800 rounded-xl p-4 gap-1">
+        <Text className="text-xs text-slate-500 uppercase tracking-widest mt-2">
+          Ambiente
+        </Text>
+        <Text className="text-sm text-slate-300">{envConfig.ENV_NAME}</Text>
+        <Text className="text-xs text-slate-500 uppercase tracking-widest mt-2">
+          API URL
+        </Text>
+        <Text className="text-sm text-slate-300">{envConfig.API_URL}</Text>
       </View>
 
       <TouchableOpacity
-        style={[styles.button, isFetching && styles.buttonDisabled]}
+        className={cn(
+          "w-full bg-indigo-500 py-4 rounded-xl items-center",
+          isFetching && "opacity-60",
+        )}
         disabled={isFetching}
-        onPress={() => {
-          refetch();
-        }}
+        onPress={() => refetch()}
       >
         {isFetching ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Ping al backend</Text>
+          <Text className="text-white text-base font-sans-semibold">
+            Ping al backend
+          </Text>
         )}
       </TouchableOpacity>
 
-      {/* Reemplazás el bloque de error, loading y success por esto */}
-
-      <View style={styles.resultContainer}>
+      <View className="w-full min-h-[220px] justify-center">
         {isFetching && (
-          <View style={styles.loadingBox}>
+          <View className="items-center gap-3">
             <ActivityIndicator size="large" color="#6366f1" />
-            <Text style={styles.loadingText}>Conectando...</Text>
+            <Text className="text-sm text-slate-400">Conectando...</Text>
           </View>
         )}
 
         {!isFetching && isError && (
-          <View style={styles.errorBox}>
-            <Text style={styles.errorTitle}>❌ Error de conexión</Text>
-            <Text style={styles.errorText}>Mensaje: {error.message}</Text>
-            <Text style={styles.errorHint}>
+          <View className="w-full bg-red-950 rounded-xl p-4 border border-red-900 gap-2">
+            <Text className="text-sm font-sans-bold text-red-300">
+              ❌ Error de conexión
+            </Text>
+            <Text className="text-sm text-red-300">
+              Mensaje: {error.message}
+            </Text>
+            <Text className="text-xs text-red-400 mt-1 leading-5">
               {
                 "Verificá que:\n• El backend esté corriendo\n• Estés en la misma red WiFi"
               }
@@ -61,183 +72,56 @@ export default function HomeScreen() {
         )}
 
         {!isFetching && !isError && data && (
-          <View style={styles.successBox}>
-            <Text style={styles.successTitle}>✅ Conectado</Text>
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Mensaje</Text>
-              <Text style={styles.rowValue}>{data.message}</Text>
+          <View className="w-full bg-green-950 rounded-xl p-4 border border-green-900 gap-1">
+            <Text className="text-sm font-sans-bold text-green-300 mb-2">
+              ✅ Conectado
+            </Text>
+            <View className="flex-row justify-between py-1 border-b border-green-900">
+              <Text className="text-xs font-sans-semibold text-green-400 flex-1">
+                Mensaje
+              </Text>
+              <Text className="text-xs text-green-200 flex-[2] text-right">
+                {data.message}
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Ambiente</Text>
-              <Text style={styles.rowValue}>{data.environment}</Text>
+            <View className="flex-row justify-between py-1 border-b border-green-900">
+              <Text className="text-xs font-sans-semibold text-green-400 flex-1">
+                Ambiente
+              </Text>
+              <Text className="text-xs text-green-200 flex-[2] text-right">
+                {data.environment}
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Base de datos</Text>
+            <View className="flex-row justify-between py-1 border-b border-green-900">
+              <Text className="text-xs font-sans-semibold text-green-400 flex-1">
+                Base de datos
+              </Text>
               <Text
-                style={[
-                  styles.rowValue,
+                className={cn(
+                  "text-xs flex-[2] text-right font-sans-bold",
                   data.database?.status === "connected"
-                    ? styles.dbConnected
-                    : styles.dbDisconnected,
-                ]}
+                    ? "text-green-400"
+                    : "text-red-400",
+                )}
               >
                 {data.database?.status} ({data.database?.name})
               </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.rowLabel}>Uptime</Text>
-              <Text style={styles.rowValue}>{data.uptime}</Text>
+            <View className="flex-row justify-between py-1 border-b border-green-900">
+              <Text className="text-xs font-sans-semibold text-green-400 flex-1">
+                Uptime
+              </Text>
+              <Text className="text-xs text-green-200 flex-[2] text-right">
+                {data.uptime}
+              </Text>
             </View>
           </View>
         )}
 
         {!isFetching && !isError && !data && (
-          <View style={styles.placeholderBox} />
+          <View className="w-full min-h-[200px]" />
         )}
       </View>
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    backgroundColor: "#0f172a",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    gap: 16,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: "800",
-    color: "#f8fafc",
-    letterSpacing: -1,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#94a3b8",
-    marginBottom: 8,
-  },
-  infoBox: {
-    width: "100%",
-    backgroundColor: "#1e293b",
-    borderRadius: 12,
-    padding: 16,
-    gap: 4,
-  },
-  infoLabel: {
-    fontSize: 11,
-    color: "#64748b",
-    textTransform: "uppercase",
-    letterSpacing: 1,
-    marginTop: 8,
-  },
-  infoValue: {
-    fontSize: 13,
-    color: "#cbd5e1",
-    fontFamily: "monospace",
-  },
-  button: {
-    width: "100%",
-    backgroundColor: "#6366f1",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonDisabled: { opacity: 0.6 },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  errorBox: {
-    width: "100%",
-    backgroundColor: "#450a0a",
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#7f1d1d",
-    gap: 8,
-  },
-  errorTitle: {
-    color: "#fca5a5",
-    fontWeight: "700",
-    fontSize: 15,
-  },
-  errorText: {
-    color: "#fca5a5",
-    fontSize: 13,
-    fontFamily: "monospace",
-  },
-  errorHint: {
-    color: "#f87171",
-    fontSize: 12,
-    marginTop: 4,
-    lineHeight: 20,
-  },
-  loadingBox: {
-    alignItems: "center",
-    gap: 12,
-  },
-  loadingText: {
-    color: "#94a3b8",
-    fontSize: 14,
-  },
-  successBox: {
-    width: "100%",
-    backgroundColor: "#052e16",
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#14532d",
-    gap: 4,
-  },
-  successTitle: {
-    color: "#86efac",
-    fontWeight: "700",
-    fontSize: 15,
-    marginBottom: 8,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#14532d",
-  },
-  rowLabel: {
-    color: "#4ade80",
-    fontSize: 12,
-    fontWeight: "600",
-    flex: 1,
-  },
-  rowValue: {
-    color: "#bbf7d0",
-    fontSize: 12,
-    fontFamily: "monospace",
-    flex: 2,
-    textAlign: "right",
-  },
-  resultContainer: {
-    width: "100%",
-    minHeight: 220,
-    justifyContent: "center",
-  },
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-  },
-  placeholderText: {
-    color: "#475569",
-    fontSize: 13,
-  },
-  placeholderBox: {
-    width: "100%",
-    minHeight: 200,
-  },
-  dbConnected: { color: "#4ade80", fontWeight: "700" },
-  dbDisconnected: { color: "#f87171", fontWeight: "700" },
-});
