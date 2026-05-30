@@ -1,14 +1,16 @@
 import "@/global.css";
 import { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
+import { useFonts } from "expo-font";
 import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
   Inter_700Bold,
-  useFonts,
 } from "@expo-google-fonts/inter";
 import SplashOverlay from "@/components/SplashOverlay";
+import Toast from "@/components/ui/Toast";
+import AuthProvider from "@/providers/AuthProvider";
 import QueryProvider from "@/providers/QueryProvider";
 
 SplashScreen.preventAutoHideAsync();
@@ -19,6 +21,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
+    TanMeringue: require("@/assets/fonts/TAN-Meringue-Font/TAN MERINGUE.ttf"),
   });
 
   useEffect(() => {
@@ -29,8 +32,11 @@ export default function RootLayout() {
 
   return (
     <QueryProvider>
-      <Stack screenOptions={{ headerShown: false }} />
-      <SplashOverlay />
+      <AuthProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+        <SplashOverlay />
+        <Toast />
+      </AuthProvider>
     </QueryProvider>
   );
 }

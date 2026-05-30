@@ -1,4 +1,3 @@
-import { AddressInput } from "@/api/addresses/addresses.types";
 import { UserRole } from "@/api/users/users.types";
 
 export interface RegisterConsumerBody {
@@ -23,7 +22,6 @@ export interface RegisterCommerceBody {
   dni: string;
   business_name: string;
   cuit: string;
-  address: AddressInput;
 }
 
 export type RegisterBody = RegisterConsumerBody | RegisterCommerceBody;
