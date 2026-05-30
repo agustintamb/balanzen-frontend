@@ -3,25 +3,30 @@ import { render } from '@testing-library/react-native'
 import CheckIcon from '../check'
 
 // Mock react-native-svg before importing CheckIcon
-jest.mock('react-native-svg', () => {
-  const React = require('react')
-  const { View: RNView } = require('react-native')
+// { virtual: true } allows mocking a module not installed as a dependency
+jest.mock(
+  'react-native-svg',
+  () => {
+    const React = require('react')
+    const { View: RNView } = require('react-native')
 
-  const Svg = ({ children, testID, ...props }: any) => (
-    <RNView testID={testID || 'svg'} {...props}>
-      {children}
-    </RNView>
-  )
+    const Svg = ({ children, testID, ...props }: any) => (
+      <RNView testID={testID || 'svg'} {...props}>
+        {children}
+      </RNView>
+    )
 
-  const Path = (props: any) => <RNView testID="path" {...props} />
+    const Path = (props: any) => <RNView testID="path" {...props} />
 
-  return {
-    __esModule: true,
-    default: Svg,
-    Svg,
-    Path,
-  }
-})
+    return {
+      __esModule: true,
+      default: Svg,
+      Svg,
+      Path,
+    }
+  },
+  { virtual: true },
+)
 
 describe('CheckIcon', () => {
   beforeEach(() => {
