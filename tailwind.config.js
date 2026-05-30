@@ -11,8 +11,14 @@ module.exports = {
           medium: "#32650D",
           light: "#EAF3DE",
         },
-        surface: "#F1EFE8",
-        error: "#E84234",
+        surface: {
+          DEFAULT: "#F1EFE8",
+          dark: "#E3E0D8",
+        },
+        error: {
+          DEFAULT: "#E84234",
+          light: "#FDECEA",
+        },
         warning: {
           DEFAULT: "#BA7517",
           light: "#FAEEDA",
@@ -23,6 +29,7 @@ module.exports = {
         "sans-medium": ["Inter_500Medium"],
         "sans-semibold": ["Inter_600SemiBold"],
         "sans-bold": ["Inter_700Bold"],
+        display: ["TanMeringue"],
       },
     },
   },
