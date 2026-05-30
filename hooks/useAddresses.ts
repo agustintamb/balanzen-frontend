@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { addressesService } from "@/api/addresses/addresses.service";
 import {
   Address,
@@ -12,7 +11,9 @@ export const useAddressSearch = (q: string) =>
     queryKey: ["addresses", "search", q],
     queryFn: async () => {
       const res = await addressesService.search(q);
-      return res.results;
+      return res.results.filter(
+        (r) => r.street.trim() && r.number.trim() && r.city.trim(),
+      );
     },
     enabled: q.length >= 3,
     staleTime: 1000 * 60 * 5,
