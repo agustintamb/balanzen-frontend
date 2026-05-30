@@ -1,19 +1,35 @@
-import "dotenv/config";
+/**
+ * app.config.js extiende app.json con valores dinámicos del entorno.
+ * Expo carga .env.local automáticamente antes de evaluar este archivo.
+ *
+ * El objeto `config` recibe el contenido de app.json como base.
+ */
+module.exports = ({ config }) => {
+  const googleMapsApiKey =
+    process.env.GOOGLE_MAPS_API_KEY ??
+    config.android?.config?.googleMaps?.apiKey ??
+    "";
 
-const appConfig = ({ config }) => {
-  const appEnv = process.env.APP_ENV || "local";
+  // Reemplaza el plugin estático "react-native-maps" por la versión
+  // con la API key de Android leída desde el entorno.
+  const plugins = (config.plugins ?? []).map((plugin) => {
+    if (plugin === "react-native-maps") {
+      return [
+        "react-native-maps",
+        { androidGoogleMapsApiKey: googleMapsApiKey },
+      ];
+    }
+    return plugin;
+  });
 
   return {
-    ...config, // toma lo de app.json
-    name: "Balanzen",
-    slug: "balanzen",
-    version: "1.0.0",
-    extra: {
-      appEnv,
-      apiLocalDeviceUrl: process.env.API_LOCAL_DEVICE_URL ?? "",
-      apiLocalPort: process.env.API_LOCAL_PORT ?? "3001",
+    ...config,
+    android: {
+      ...config.android,
+      config: {
+        googleMaps: { apiKey: googleMapsApiKey },
+      },
     },
+    plugins,
   };
 };
-
-export default appConfig;
