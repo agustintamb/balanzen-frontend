@@ -10,7 +10,7 @@ import { CUIT_REGEX } from "@/utils/validation";
 import type { CommerceFormValues } from "../CommerceForm";
 
 // superRefine garantiza que el error se propague correctamente en Zod v4
-const schema = z
+export const commerceRegistrationSchema = z
   .object({
     businessName: z.string().min(2, "Ingresá el nombre del comercio"),
     cuit: z.string().min(1, "Ingresá el CUIT"),
@@ -44,7 +44,7 @@ export const useRegisterCommerceSection = () => {
     handleSubmit,
     formState: { isValid },
   } = useForm<CommerceFormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(commerceRegistrationSchema),
     mode: "onChange",
     defaultValues: { businessName: "", cuit: "", acceptTerms: false },
   });

@@ -32,7 +32,7 @@ const createWrapper = () => {
     defaultOptions: {
       // useHealth sets retry: 1 in the hook; retryDelay: 0 makes retries fire
       // immediately so waitFor() resolves before its default 1 s timeout
-      queries: { retryDelay: 0 },
+      queries: { retryDelay: 0, gcTime: 0 },
     },
   });
   const wrapper = ({ children }: { children: React.ReactNode }) =>

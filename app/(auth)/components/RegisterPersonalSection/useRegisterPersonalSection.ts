@@ -10,7 +10,7 @@ import { persistSession } from "@/utils/auth";
 import { DIGITS_REGEX, EMAIL_REGEX, NAME_REGEX } from "@/utils/validation";
 import type { PersonalFormValues } from "../PersonalForm";
 
-const schema = z
+export const personalRegistrationSchema = z
   .object({
     firstName: z
       .string()
@@ -63,7 +63,7 @@ export const useRegisterPersonalSection = (
     trigger,
     formState: { isValid },
   } = useForm<PersonalFormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(personalRegistrationSchema),
     mode: "onChange",
     defaultValues: {
       firstName: personalData?.firstName ?? "",

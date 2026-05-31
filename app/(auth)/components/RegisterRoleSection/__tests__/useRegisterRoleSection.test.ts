@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react-native'
 
 import type { UserRole } from '@/api/users/users.types'
 
-import { useRegisterRoleSection } from '../useRegisterRoleSection'
+import RoleDefault, { useRegisterRoleSection } from '../useRegisterRoleSection'
 
 afterEach(() => {
   jest.clearAllMocks()
@@ -128,6 +128,12 @@ describe('useRegisterRoleSection', () => {
 
       expect(instanceA.current.selectedRole).toBe('CONSUMIDOR')
       expect(instanceB.current.selectedRole).toBeNull()
+    })
+  })
+
+  describe('default export', () => {
+    it('should return null (Expo Router compatibility shim)', () => {
+      expect(RoleDefault()).toBeNull()
     })
   })
 })

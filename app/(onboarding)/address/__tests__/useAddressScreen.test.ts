@@ -13,6 +13,10 @@ import { useAuthStore } from "@/stores/auth.store";
 import { buildAddressFromCoords } from "../address.utils";
 import type { Address, AddressInput } from "@/api/addresses/addresses.types";
 
+// Fake timers prevent the debounce setTimeout (350 ms) and withTimeout (7 s)
+// from becoming open handles that keep the Jest worker alive after tests finish.
+jest.useFakeTimers()
+
 // ─── Module mocks ──────────────────────────────────────────────────────────────
 
 jest.mock("@/hooks/useAddresses", () => ({
@@ -155,6 +159,7 @@ describe("useAddressScreen", () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    jest.clearAllTimers();
   });
 
   // ─── Initial state ──────────────────────────────────────────────────────────
@@ -684,16 +689,20 @@ describe("useAddressScreen", () => {
 
       const { result } = renderHook(() => useAddressScreen());
 
-      // First call
-      act(() => {
+      // First call — await one microtask tick so the permissions resolution
+      // (and the subsequent setPermissionDenied call) happens inside act().
+      // getLastKnownPositionAsync never resolves, so isGettingLocation stays true.
+      await act(async () => {
         void result.current.handleUseCurrentLocation();
+        await Promise.resolve();
       });
 
       expect(result.current.isGettingLocation).toBe(true);
 
       // Second call while first is pending — should be a no-op
-      act(() => {
+      await act(async () => {
         void result.current.handleUseCurrentLocation();
+        await Promise.resolve();
       });
 
       expect(mockRequestForegroundPermissions).toHaveBeenCalledTimes(1);

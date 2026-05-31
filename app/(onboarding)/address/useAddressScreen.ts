@@ -28,13 +28,13 @@ const DEFAULT_REGION: Region = {
 
 const LOCATION_TIMEOUT_MS = 7000;
 
-const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> =>
-  Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error("Tiempo de espera agotado")), ms),
-    ),
-  ]);
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+  let id: ReturnType<typeof setTimeout>
+  const timeout = new Promise<T>((_, reject) => {
+    id = setTimeout(() => reject(new Error("Tiempo de espera agotado")), ms)
+  })
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(id))
+}
 
 export const useAddressScreen = () => {
   const [mode, setMode] = useState<AddressMode>("list");

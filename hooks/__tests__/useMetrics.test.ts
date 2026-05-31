@@ -27,7 +27,7 @@ const buildMetricsSummary = (overrides?: Partial<MetricsSummary>): MetricsSummar
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: { retry: false, gcTime: 0 },
     },
   });
   const wrapper = ({ children }: { children: React.ReactNode }) =>
