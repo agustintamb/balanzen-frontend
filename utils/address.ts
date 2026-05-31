@@ -1,10 +1,6 @@
 import * as Location from "expo-location";
 import type { AddressInput } from "@/api/addresses/addresses.types";
 
-/**
- * Transforma coordenadas en un objeto AddressInput compatible con el backend,
- * usando la geocodificación inversa nativa del dispositivo.
- */
 export const buildAddressFromCoords = async (
   lat: number,
   lng: number,
@@ -36,9 +32,3 @@ export const buildAddressFromCoords = async (
     lng,
   };
 };
-
-// Expo Router requires a default export in app/ — this file is a util, not a screen
-
-export default function _() {
-  return null;
-}

@@ -62,5 +62,4 @@ const styles = StyleSheet.create({
   },
 });
 
-// Expo Router requires a default export in app/ — this is a utility component, not a screen
 export default SafeMapView;

@@ -1,12 +1,12 @@
 import React from "react";
 import { Text } from "react-native";
-import { render, waitFor } from "@testing-library/react-native";
 import * as SecureStore from "expo-secure-store";
+import { render, waitFor } from "@testing-library/react-native";
 import { setAuthToken } from "@/api/client";
 import { usersService } from "@/api/users/users.service";
+import type { User } from "@/api/users/users.types";
 import { useAuthStore } from "@/stores/auth.store";
 import AuthProvider from "../AuthProvider";
-import type { User } from "@/api/users/users.types";
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -182,6 +182,7 @@ describe("AuthProvider", () => {
           first_name: "Carlos",
           last_name: "López",
           has_address: false,
+          has_selected_address: false,
           photo_url: "https://cdn.example.com/photo.jpg",
         });
       });

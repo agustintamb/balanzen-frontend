@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import { buildAddressFromCoords } from "../address.utils";
+import { buildAddressFromCoords } from "../address";
 
 jest.mock("expo-location", () => ({
   reverseGeocodeAsync: jest.fn(),
