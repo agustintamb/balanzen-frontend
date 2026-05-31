@@ -1,6 +1,6 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import type { AddressInput } from "@/api/addresses/addresses.types";
@@ -53,7 +53,7 @@ const AddressMap = ({
     {/* Botón de retroceso superpuesto */}
     <SafeAreaView edges={["top"]} style={styles.topOverlay}>
       <TouchableOpacity onPress={onBack} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={20} color="#27500A" />
+        <Feather name="arrow-left" size={20} color="#27500A" />
       </TouchableOpacity>
     </SafeAreaView>
 
@@ -75,7 +75,7 @@ const AddressMap = ({
           {pendingAddress && (
             <View className="bg-white rounded-2xl px-4 py-3 flex-row items-start gap-2">
               <View style={{ marginTop: 2 }}>
-                <Icon name="location-outline" size={18} />
+                <Icon name="map-pin" size={18} />
               </View>
               <Text
                 className="flex-1 font-sans text-sm text-primary-dark leading-5"

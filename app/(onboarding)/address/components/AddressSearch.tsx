@@ -47,7 +47,7 @@ const AddressSearch = ({
       >
         {onBack && (
           <TouchableOpacity onPress={onBack} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="arrow-back-outline" size={24} color="primary-dark" />
+            <Icon name="arrow-left" size={24} color="primary-dark" />
           </TouchableOpacity>
         )}
         <Text
@@ -71,7 +71,7 @@ const AddressSearch = ({
             onChangeText={onSearchChange}
             placeholder="Dirección o punto de referencia"
             returnKeyType="search"
-            leftIcon={<Icon name="search-outline" size={18} color="muted" />}
+            leftIcon={<Icon name="search" size={18} color="muted" />}
           />
 
           {showDropdown && (
@@ -116,7 +116,7 @@ const AddressSearch = ({
                     }}
                   >
                     <View style={{ marginTop: 2 }}>
-                      <Icon name="location-outline" size={18} color="muted" />
+                      <Icon name="map-pin" size={18} color="muted" />
                     </View>
                     <Text
                       className="flex-1 font-sans text-base text-primary-dark leading-5"
@@ -137,7 +137,7 @@ const AddressSearch = ({
           activeOpacity={0.7}
           style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
         >
-          <Icon name="navigate-outline" variant="soft" size={20} containerSize={40} />
+          <Icon name="navigation" variant="soft" size={20} containerSize={40} />
           {isGettingLocation ? (
             <ActivityIndicator color="#639922" />
           ) : (

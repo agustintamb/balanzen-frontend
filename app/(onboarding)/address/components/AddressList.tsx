@@ -39,7 +39,7 @@ const AddressItem = ({
     >
       {/* Ícono alineado al inicio del texto */}
       <View style={{ paddingTop: 2 }}>
-        <Icon name="location-outline" size={20} />
+        <Icon name="map-pin" size={20} />
       </View>
 
       {/* Texto sin recorte */}
@@ -54,7 +54,7 @@ const AddressItem = ({
 
       {/* Checkmark — siempre ocupa el mismo espacio para evitar reflow al seleccionar */}
       <View style={{ paddingTop: 2, opacity: isSelected ? 1 : 0 }}>
-        <Icon name="checkmark-circle" size={22} />
+        <Icon name="check-circle" size={22} />
       </View>
     </TouchableOpacity>
   );
