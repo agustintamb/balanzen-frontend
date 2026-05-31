@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { setAuthToken } from "@/api/client";
@@ -11,6 +12,7 @@ const getInitials = (firstName: string, lastName: string): string =>
 
 export const useProfileScreen = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const clear = useAuthStore((s) => s.clear);
 
   const { data: user } = useCurrentUser();
@@ -59,6 +61,7 @@ export const useProfileScreen = () => {
     await SecureStore.deleteItemAsync("refresh_token");
     setAuthToken(null);
     clear();
+    queryClient.clear();
     router.replace("/(auth)" as never);
   };
 
