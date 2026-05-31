@@ -11,6 +11,7 @@ const ConsumerProfile = () => {
     email,
     initials,
     photoUrl,
+    photoFullUrl,
     addressShort,
     unreadCount,
     handleEditProfile,
@@ -30,6 +31,7 @@ const ConsumerProfile = () => {
           email={email}
           initials={initials}
           photoUrl={photoUrl}
+          photoFullUrl={photoFullUrl}
           addressShort={addressShort}
           testID="consumer-profile-header"
         />

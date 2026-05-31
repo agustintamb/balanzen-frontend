@@ -4,7 +4,7 @@ import { setAuthToken } from "@/api/client";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useCurrentUser } from "@/hooks/useUsers";
 import { useAuthStore } from "@/stores/auth.store";
-import { buildProfilePhotoUrl } from "@/utils/cloudinary";
+import { buildDetailImageUrl, buildProfilePhotoUrl } from "@/utils/cloudinary";
 
 const getInitials = (firstName: string, lastName: string): string =>
   `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -26,13 +26,16 @@ export const useProfileScreen = () => {
   const photoUrl = user?.photo_url
     ? buildProfilePhotoUrl(user.photo_url)
     : null;
+  const photoFullUrl = user?.photo_url
+    ? buildDetailImageUrl(user.photo_url)
+    : null;
   const addressShort = user?.selected_address
     ? `${user.selected_address.street} ${user.selected_address.number}, ${user.selected_address.city}`
     : undefined;
   const unreadCount = notifications?.unread_count ?? 0;
 
   const handleEditProfile = () => {
-    console.error("Navigate to edit profile — not implemented");
+    router.push("/edit-profile");
   };
 
   const handleAddresses = () => {
@@ -64,6 +67,7 @@ export const useProfileScreen = () => {
     email: user?.email ?? "",
     initials,
     photoUrl,
+    photoFullUrl,
     addressShort,
     unreadCount,
     handleEditProfile,
