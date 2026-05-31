@@ -58,12 +58,11 @@ const ProfileHeader = ({
             {email}
           </Text>
           {addressShort !== undefined && addressShort.length > 0 && (
-            <View className="flex-row items-center gap-1 mt-1.5">
-              <Icon name="map-pin" size={12} color="neutral" />
-              <Text
-                className="font-sans text-sm text-gray-500"
-                numberOfLines={1}
-              >
+            <View className="flex-row items-start gap-1 mt-1.5">
+              <View style={{ marginTop: 2 }}>
+                <Icon name="map-pin" size={12} color="neutral" />
+              </View>
+              <Text className="font-sans text-sm text-gray-500 flex-1">
                 {addressShort}
               </Text>
             </View>

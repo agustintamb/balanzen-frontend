@@ -1,7 +1,9 @@
+import { BackHandler } from "react-native";
 import { router } from "expo-router";
 import * as Location from "expo-location";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import type { Address, AddressInput } from "@/api/addresses/addresses.types";
+import { useAddressScreen } from "@/components/AddressScreen/useAddressScreen";
 import {
   useAddresses,
   useAddressSearch,
@@ -10,8 +12,7 @@ import {
   useSelectAddress,
 } from "@/hooks/useAddresses";
 import { useAuthStore } from "@/stores/auth.store";
-import { buildAddressFromCoords } from "../address.utils";
-import { useAddressScreen } from "../useAddressScreen";
+import { buildAddressFromCoords } from "@/utils/address";
 
 // Fake timers prevent the debounce setTimeout (350 ms) and withTimeout (7 s)
 // from becoming open handles that keep the Jest worker alive after tests finish.
@@ -35,14 +36,22 @@ jest.mock("expo-location", () => ({
 }));
 
 jest.mock("expo-router", () => ({
-  router: { replace: jest.fn() },
+  router: {
+    replace: jest.fn(),
+    back: jest.fn(),
+    canGoBack: jest.fn().mockReturnValue(false),
+  },
+}));
+
+jest.mock("@/stores/ui.store", () => ({
+  useToast: jest.fn().mockReturnValue({ showSuccess: jest.fn() }),
 }));
 
 jest.mock("@/stores/auth.store", () => ({
   useAuthStore: jest.fn(),
 }));
 
-jest.mock("../address.utils", () => ({
+jest.mock("@/utils/address", () => ({
   buildAddressFromCoords: jest.fn(),
 }));
 
@@ -191,6 +200,7 @@ const setupDefaultMocks = () => {
       has_address: false,
     },
     setHasAddress: jest.fn(),
+    setHasSelectedAddress: jest.fn(),
   } as unknown as ReturnType<typeof useAuthStore>);
 };
 
@@ -335,7 +345,9 @@ describe("useAddressScreen", () => {
     });
 
     it("should switch mode to 'list' on createAddress success", () => {
-      const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
+      const mutateMock = jest.fn((_, opts) =>
+        opts?.onSuccess?.(buildAddress({ id: "new-addr" })),
+      );
       mockUseCreateAddress.mockReturnValue(
         buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
           typeof useCreateAddress
@@ -588,6 +600,7 @@ describe("useAddressScreen", () => {
           has_address: false,
         },
         setHasAddress: setHasAddressMock,
+        setHasSelectedAddress: jest.fn(),
       } as unknown as ReturnType<typeof useAuthStore>);
 
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
@@ -626,6 +639,7 @@ describe("useAddressScreen", () => {
           has_address: false,
         },
         setHasAddress: jest.fn(),
+        setHasSelectedAddress: jest.fn(),
       } as unknown as ReturnType<typeof useAuthStore>);
 
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
@@ -815,12 +829,190 @@ describe("useAddressScreen", () => {
     });
   });
 
+  // ─── handleContinue — canGoBack branch ─────────────────────────────────────
+
+  describe("handleContinue — router.canGoBack() === true", () => {
+    it("should call showSuccess and router.back when canGoBack is true", async () => {
+      const mockCanGoBack = router.canGoBack as jest.MockedFunction<
+        typeof router.canGoBack
+      >;
+      mockCanGoBack.mockReturnValueOnce(true);
+
+      const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
+      mockUseSelectAddress.mockReturnValue(
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useSelectAddress
+        >,
+      );
+      mockUseAddresses.mockReturnValue({
+        data: [buildAddress({ id: "addr-1", is_selected: true })],
+        isLoading: false,
+      } as unknown as ReturnType<typeof useAddresses>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      await waitFor(() =>
+        expect(result.current.localSelectedId).toBe("addr-1"),
+      );
+
+      act(() => {
+        result.current.handleContinue();
+      });
+
+      expect(router.back).toHaveBeenCalledTimes(1);
+      expect(router.replace).not.toHaveBeenCalled();
+    });
+  });
+
+  // ─── BackHandler callback ───────────────────────────────────────────────────
+
+  describe("BackHandler", () => {
+    let capturedCallback: (() => boolean | null | undefined) | null = null;
+
+    beforeEach(() => {
+      jest
+        .spyOn(BackHandler, "addEventListener")
+        .mockImplementation(
+          (
+            _event: "hardwareBackPress",
+            cb: () => boolean | null | undefined,
+          ) => {
+            capturedCallback = cb;
+            return { remove: jest.fn() };
+          },
+        );
+    });
+
+    afterEach(() => {
+      capturedCallback = null;
+      jest.restoreAllMocks();
+    });
+
+    it("should switch mode to 'add' and return true when back is pressed in map mode", async () => {
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.handleSelectSearchResult(buildAddressInput());
+      });
+      expect(result.current.mode).toBe("map");
+
+      act(() => {
+        capturedCallback?.();
+      });
+
+      expect(result.current.mode).toBe("add");
+    });
+
+    it("should switch mode to 'list' and return true when back is pressed in add mode with existing addresses", async () => {
+      mockUseAddresses.mockReturnValue({
+        data: [buildAddress({ id: "addr-1", is_selected: true })],
+        isLoading: false,
+      } as unknown as ReturnType<typeof useAddresses>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      await waitFor(() => expect(result.current.mode).toBe("list"));
+
+      act(() => {
+        result.current.setMode("add");
+      });
+
+      act(() => {
+        capturedCallback?.();
+      });
+
+      expect(result.current.mode).toBe("list");
+    });
+
+    it("should return true (block navigation) when back is pressed in add mode with no addresses", () => {
+      const { result } = renderHook(() => useAddressScreen());
+
+      expect(result.current.mode).toBe("add");
+
+      const blocked = capturedCallback?.();
+
+      expect(blocked).toBe(true);
+      expect(result.current.mode).toBe("add");
+    });
+
+    it("should return false (allow navigation) when back is pressed in list mode with addresses", async () => {
+      mockUseAddresses.mockReturnValue({
+        data: [buildAddress({ id: "addr-1", is_selected: true })],
+        isLoading: false,
+      } as unknown as ReturnType<typeof useAddresses>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      await waitFor(() => expect(result.current.mode).toBe("list"));
+
+      const blocked = capturedCallback?.();
+
+      expect(blocked).toBe(false);
+    });
+
+    it("should return true (block navigation) when back is pressed in list mode with no addresses", () => {
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.setMode("list");
+      });
+
+      const blocked = capturedCallback?.();
+
+      expect(blocked).toBe(true);
+    });
+  });
+
+  // ─── Search debounce ────────────────────────────────────────────────────────
+
+  describe("search debounce", () => {
+    it("should not pass query to useAddressSearch until 350ms have elapsed", () => {
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.setSearchQuery("corr");
+      });
+
+      // Before debounce fires, debouncedQuery is still ""
+      expect(mockUseAddressSearch).toHaveBeenLastCalledWith("");
+
+      act(() => {
+        jest.advanceTimersByTime(350);
+      });
+
+      // After debounce fires, search hook receives the actual query
+      expect(mockUseAddressSearch).toHaveBeenLastCalledWith("corr");
+    });
+
+    it("should reset the debounce timer on each keystroke", () => {
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.setSearchQuery("co");
+        jest.advanceTimersByTime(200);
+        result.current.setSearchQuery("cor");
+        jest.advanceTimersByTime(200);
+      });
+
+      // 200ms after last keystroke — debounce hasn't fired yet
+      expect(mockUseAddressSearch).toHaveBeenLastCalledWith("");
+
+      act(() => {
+        jest.advanceTimersByTime(350);
+      });
+
+      expect(mockUseAddressSearch).toHaveBeenLastCalledWith("cor");
+    });
+  });
+
   // ─── canContinue ────────────────────────────────────────────────────────────
 
   describe("canContinue", () => {
     it("should be true when an address is selected and addresses list is non-empty", async () => {
+      // is_selected: false → savedSelectedId = null; single address auto-selects locally
+      // → localSelectedId = "addr-1" ≠ null → canContinue = true
       mockUseAddresses.mockReturnValue({
-        data: [buildAddress({ id: "addr-1", is_selected: true })],
+        data: [buildAddress({ id: "addr-1", is_selected: false })],
         isLoading: false,
       } as unknown as ReturnType<typeof useAddresses>);
 

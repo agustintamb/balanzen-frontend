@@ -12,8 +12,8 @@ import {
 } from "@/hooks/useAddresses";
 import { useAuthStore } from "@/stores/auth.store";
 import { useToast } from "@/stores/ui.store";
-import { buildAddressFromCoords } from "./address.utils";
-import type { Region } from "./components/AddressMap";
+import { buildAddressFromCoords } from "@/utils/address";
+import type { Region } from "./AddressMap";
 
 // list  → "Mis Direcciones" (listado)
 // add   → "Ingresá tu dirección" (buscador + GPS)
@@ -281,7 +281,10 @@ export const useAddressScreen = () => {
     addresses: sortedAddresses,
     isLoadingAddresses,
     localSelectedId,
-    canContinue: !!localSelectedId && localSelectedId !== savedSelectedId,
+    canContinue:
+      sortedAddresses.length > 0 &&
+      !!localSelectedId &&
+      localSelectedId !== savedSelectedId,
     // Eliminación
     deletingAddressId,
     isDeleting,
@@ -303,8 +306,3 @@ export const useAddressScreen = () => {
     isSelecting,
   };
 };
-
-// Expo Router requires a default export in app/ — this file is a hook, not a screen
-export default function _() {
-  return null;
-}

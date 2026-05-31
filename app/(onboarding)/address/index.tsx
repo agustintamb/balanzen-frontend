@@ -9,13 +9,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import AddressList from "@/components/AddressScreen/AddressList";
+import AddressMap from "@/components/AddressScreen/AddressMap";
+import AddressSearch from "@/components/AddressScreen/AddressSearch";
+import { useAddressScreen } from "@/components/AddressScreen/useAddressScreen";
 import ActionSheet from "@/components/ui/ActionSheet";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
-import AddressList from "./components/AddressList";
-import AddressMap from "./components/AddressMap";
-import AddressSearch from "./components/AddressSearch";
-import { useAddressScreen } from "./useAddressScreen";
 
 const AddressScreen = () => {
   const router = useRouter();
