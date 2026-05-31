@@ -1,10 +1,3 @@
-// @types/react-test-renderer is not installed; declare the subset we use.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-declare module "react-test-renderer" {
-  function act(callback: () => void | Promise<void>): void;
-  function create(element: React.ReactElement): unknown;
-}
-
 import React from "react";
 import { act, create } from "react-test-renderer";
 import { useUIStore, useToast, ToastType } from "@/stores/ui.store";

@@ -576,7 +576,7 @@ describe("useAddressScreen", () => {
   describe("handleUseCurrentLocation", () => {
     it("should set permissionDenied and not navigate when permission is denied", async () => {
       mockRequestForegroundPermissions.mockResolvedValueOnce({
-        status: "denied",
+        status: "denied" as Location.PermissionStatus,
         canAskAgain: true,
         expires: "never",
         granted: false,
@@ -593,7 +593,7 @@ describe("useAddressScreen", () => {
 
     it("should set locationError when permission is permanently denied (canAskAgain=false)", async () => {
       mockRequestForegroundPermissions.mockResolvedValueOnce({
-        status: "denied",
+        status: "denied" as Location.PermissionStatus,
         canAskAgain: false,
         expires: "never",
         granted: false,
@@ -609,7 +609,7 @@ describe("useAddressScreen", () => {
 
     it("should use last known position when available and switch to map mode", async () => {
       mockRequestForegroundPermissions.mockResolvedValueOnce({
-        status: "granted",
+        status: "granted" as Location.PermissionStatus,
         canAskAgain: true,
         expires: "never",
         granted: true,
@@ -634,7 +634,7 @@ describe("useAddressScreen", () => {
 
     it("should fall back to getCurrentPositionAsync when last known is null", async () => {
       mockRequestForegroundPermissions.mockResolvedValueOnce({
-        status: "granted",
+        status: "granted" as Location.PermissionStatus,
         canAskAgain: true,
         expires: "never",
         granted: true,
@@ -658,7 +658,7 @@ describe("useAddressScreen", () => {
 
     it("should set locationError when location fetch throws", async () => {
       mockRequestForegroundPermissions.mockResolvedValueOnce({
-        status: "granted",
+        status: "granted" as Location.PermissionStatus,
         canAskAgain: true,
         expires: "never",
         granted: true,
@@ -679,7 +679,7 @@ describe("useAddressScreen", () => {
 
     it("should not trigger a second location request while already fetching", async () => {
       mockRequestForegroundPermissions.mockResolvedValue({
-        status: "granted",
+        status: "granted" as Location.PermissionStatus,
         canAskAgain: true,
         expires: "never",
         granted: true,

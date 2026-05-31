@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useLogin } from "@/hooks/useAuth";
@@ -11,7 +11,9 @@ const schema = z.object({
   email: z
     .string()
     .min(1, "Ingresá tu correo")
-    .refine((v) => EMAIL_REGEX.test(v), { message: "Correo electrónico inválido" }),
+    .refine((v) => EMAIL_REGEX.test(v), {
+      message: "Correo electrónico inválido",
+    }),
   password: z.string().min(1, "Ingresá tu contraseña"),
 });
 
@@ -68,5 +70,5 @@ export const useLoginSection = () => {
 };
 
 // Expo Router requires a default export in app/ — this file is a hook, not a screen
-// eslint-disable-next-line import/no-default-export
-export default function _() { return null; }
+const _ = () => null;
+export default _;

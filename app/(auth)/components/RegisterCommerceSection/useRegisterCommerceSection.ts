@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRegister } from "@/hooks/useAuth";
@@ -91,5 +91,5 @@ export const useRegisterCommerceSection = () => {
 };
 
 // Expo Router requires a default export in app/ — this file is a hook, not a screen
-// eslint-disable-next-line import/no-default-export
-export default function _() { return null; }
+const _ = () => null;
+export default _;

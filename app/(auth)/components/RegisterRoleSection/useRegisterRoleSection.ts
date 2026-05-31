@@ -7,5 +7,5 @@ export const useRegisterRoleSection = () => {
 };
 
 // Expo Router requires a default export in app/ — this file is a hook, not a screen
-// eslint-disable-next-line import/no-default-export
-export default function _() { return null; }
+const _ = () => null;
+export default _;
