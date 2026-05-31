@@ -27,10 +27,6 @@ jest.mock('expo-router', () => ({
   },
 }))
 
-jest.mock('@/utils/validation', () => ({
-  EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-}))
-
 const mockedUseLogin = useLogin as jest.MockedFunction<typeof useLogin>
 const mockedUseAuthStore = useAuthStore as jest.MockedFunction<typeof useAuthStore>
 const mockedPersistSession = persistSession as jest.MockedFunction<typeof persistSession>

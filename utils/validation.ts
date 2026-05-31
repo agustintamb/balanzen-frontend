@@ -1,5 +1,5 @@
-/** Email: formato estándar user@domain.tld */
-export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Email: formato estándar user@domain.tld (subdominios incluidos) */
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 
 /** Nombre / apellido: solo letras, espacios, guiones y apóstrofes */
 export const NAME_REGEX = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/;
