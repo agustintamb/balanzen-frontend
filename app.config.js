@@ -4,11 +4,8 @@
  *
  * El objeto `config` recibe el contenido de app.json como base.
  */
-module.exports = ({ config }) => {
-  const googleMapsApiKey =
-    process.env.GOOGLE_MAPS_API_KEY ??
-    config.android?.config?.googleMaps?.apiKey ??
-    "";
+const defineConfig = ({ config }) => {
+  const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY ?? "";
 
   // Reemplaza el plugin estático "react-native-maps" por la versión
   // con la API key de Android leída desde el entorno.
@@ -33,3 +30,5 @@ module.exports = ({ config }) => {
     plugins,
   };
 };
+
+module.exports = defineConfig;
