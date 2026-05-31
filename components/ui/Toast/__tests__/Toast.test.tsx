@@ -17,7 +17,7 @@ jest.mock('react-native-safe-area-context', () => ({
 jest.mock('@expo/vector-icons', () => {
   const { View } = require('react-native')
   return {
-    Ionicons: ({ name, testID, ...props }: { name: string; testID?: string; [key: string]: unknown }) => (
+    Feather: ({ name, testID, ...props }: { name: string; testID?: string; [key: string]: unknown }) => (
       <View testID={testID ?? `icon-${name}`} {...props} />
     ),
   }
@@ -102,7 +102,7 @@ describe('Toast', () => {
     // The rendered tree is:
     //   Animated.View (wrapper)
     //     TouchableOpacity (container — has backgroundColor)
-    //       Ionicons (type icon)
+    //       Feather (type icon)
     //       Text (message)          ← message.parent = TouchableOpacity
     //       TouchableOpacity (close btn)
     //
@@ -299,10 +299,10 @@ describe('Toast', () => {
 
     it('should render the correct icon for each toast type', () => {
       const types: Array<{ type: 'success' | 'error' | 'warning' | 'info'; iconName: string }> = [
-        { type: 'success', iconName: 'icon-checkmark-circle-outline' },
-        { type: 'error', iconName: 'icon-alert-circle-outline' },
-        { type: 'warning', iconName: 'icon-warning-outline' },
-        { type: 'info', iconName: 'icon-information-circle-outline' },
+        { type: 'success', iconName: 'icon-check-circle' },
+        { type: 'error', iconName: 'icon-alert-circle' },
+        { type: 'warning', iconName: 'icon-alert-triangle' },
+        { type: 'info', iconName: 'icon-info' },
       ]
 
       types.forEach(({ type, iconName }) => {

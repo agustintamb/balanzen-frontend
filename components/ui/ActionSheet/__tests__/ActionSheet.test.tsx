@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
 import ActionSheet, {
   ActionSheetProps,
 } from "@/components/ui/ActionSheet/index";
@@ -146,10 +146,10 @@ describe("ActionSheet", () => {
   describe("icon", () => {
     it("should render the icon when iconName is provided", () => {
       const { getByTestId } = render(
-        <ActionSheet {...buildProps({ iconName: "trash-outline" })} />,
+        <ActionSheet {...buildProps({ iconName: "trash-2" })} />,
       );
 
-      expect(getByTestId("icon-trash-outline")).toBeTruthy();
+      expect(getByTestId("icon-trash-2")).toBeTruthy();
     });
 
     it("should not render an icon when iconName is not provided", () => {
@@ -271,7 +271,10 @@ describe("ActionSheet", () => {
       // The cancel TouchableOpacity receives disabled={loading} from the source
       const { TouchableOpacity } = require("react-native");
       const { UNSAFE_getAllByType } = render(
-        <ActionSheet {...buildProps({ loading: true, cancelLabel: "Volver" })} />,
+        <ActionSheet
+          {...buildProps({ loading: true, cancelLabel: "Volver" })}
+          {...buildProps({ loading: true, cancelLabel: "Volver" })}
+        />,
       );
       const touchables = UNSAFE_getAllByType(TouchableOpacity);
       // First TouchableOpacity in the buttons row is the cancel button

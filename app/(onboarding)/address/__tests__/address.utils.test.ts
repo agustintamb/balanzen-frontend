@@ -5,11 +5,14 @@ jest.mock("expo-location", () => ({
   reverseGeocodeAsync: jest.fn(),
 }));
 
-const mockReverseGeocodeAsync = Location.reverseGeocodeAsync as jest.MockedFunction<
-  typeof Location.reverseGeocodeAsync
->;
+const mockReverseGeocodeAsync =
+  Location.reverseGeocodeAsync as jest.MockedFunction<
+    typeof Location.reverseGeocodeAsync
+  >;
 
-const buildPlace = (overrides: Partial<Location.LocationGeocodedAddress> = {}): Location.LocationGeocodedAddress => ({
+const buildPlace = (
+  overrides: Partial<Location.LocationGeocodedAddress> = {},
+): Location.LocationGeocodedAddress => ({
   street: "Av. Corrientes",
   streetNumber: "1234",
   city: "Buenos Aires",

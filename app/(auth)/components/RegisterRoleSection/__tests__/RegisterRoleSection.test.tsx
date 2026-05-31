@@ -35,7 +35,7 @@ jest.mock('@/utils/cn', () => ({
 }))
 
 jest.mock('@expo/vector-icons', () => ({
-  Ionicons: () => null,
+  Feather: () => null,
 }))
 
 const mockUseRegisterRoleSection = useRegisterRoleSection as jest.MockedFunction<

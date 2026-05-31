@@ -24,7 +24,7 @@ jest.mock('@/utils/cn', () => ({
 
 const buildRoleOption = (overrides: Partial<RoleOption> = {}): RoleOption => ({
   id: 'CONSUMIDOR',
-  iconName: 'person-outline',
+  iconName: 'user',
   title: 'Soy consumidor',
   description: 'Explorá alimentos frescos a precios increíbles.',
   benefits: ['Ofertas cercanas', 'Hasta 70% off', 'Sin desperdicio'],
@@ -71,7 +71,7 @@ describe('RoleCard', () => {
 
     it('should render the role icon', () => {
       // Arrange
-      const role = buildRoleOption({ iconName: 'person-outline' })
+      const role = buildRoleOption({ iconName: 'user' })
 
       // Act
       const { getByTestId } = render(
@@ -79,7 +79,7 @@ describe('RoleCard', () => {
       )
 
       // Assert
-      expect(getByTestId('icon-person-outline')).toBeTruthy()
+      expect(getByTestId('icon-user')).toBeTruthy()
     })
 
     it('should render all benefit chips', () => {
@@ -103,7 +103,7 @@ describe('RoleCard', () => {
         id: 'COMERCIO',
         title: 'Soy comercio',
         description: 'Publicá excedentes y reducí las pérdidas del negocio.',
-        iconName: 'storefront-outline',
+        iconName: 'shopping-bag',
         benefits: ['Menos pérdidas', 'Más clientes', 'Impacto positivo'],
       })
 
@@ -181,7 +181,7 @@ describe('RoleCard', () => {
       )
 
       // Assert — checkmark-circle icon is always rendered (opacity controlled via style)
-      expect(getByTestId('icon-checkmark-circle')).toBeTruthy()
+      expect(getByTestId('icon-check-circle')).toBeTruthy()
     })
 
     it('should have opacity 1 on checkmark when selected is true', () => {
