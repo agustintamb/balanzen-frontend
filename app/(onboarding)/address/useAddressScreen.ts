@@ -11,6 +11,7 @@ import {
   useSelectAddress,
 } from "@/hooks/useAddresses";
 import { useAuthStore } from "@/stores/auth.store";
+import { useToast } from "@/stores/ui.store";
 import { buildAddressFromCoords } from "./address.utils";
 import type { Region } from "./components/AddressMap";
 
@@ -59,7 +60,8 @@ export const useAddressScreen = () => {
     null,
   );
 
-  const { setHasAddress, user } = useAuthStore();
+  const { setHasAddress, setHasSelectedAddress, user } = useAuthStore();
+  const { showSuccess } = useToast();
   const { data: addresses = [], isLoading: isLoadingAddresses } =
     useAddresses();
   const { mutate: createAddress, isPending: isSaving } = useCreateAddress();
@@ -75,11 +77,16 @@ export const useAddressScreen = () => {
     }
   }, [isLoadingAddresses]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Pre-seleccionar la dirección activa del backend al cargar
+  // Pre-seleccionar la dirección activa del backend al cargar.
+  // Si no hay ninguna activa pero solo existe una, seleccionarla automáticamente.
   useEffect(() => {
     if (localSelectedId === null) {
       const active = addresses.find((a) => a.is_selected);
-      if (active) setLocalSelectedId(active.id);
+      if (active) {
+        setLocalSelectedId(active.id);
+      } else if (addresses.length === 1) {
+        setLocalSelectedId(addresses[0].id);
+      }
     }
   }, [addresses, localSelectedId]);
 
@@ -197,8 +204,9 @@ export const useAddressScreen = () => {
   const handleConfirmAddress = () => {
     if (!pendingAddress) return;
     createAddress(pendingAddress, {
-      onSuccess: () => {
+      onSuccess: (newAddress) => {
         setPendingAddress(null);
+        setLocalSelectedId(newAddress.id);
         setMode("list");
       },
     });
@@ -242,7 +250,9 @@ export const useAddressScreen = () => {
     selectAddress(localSelectedId, {
       onSuccess: () => {
         setHasAddress(true);
+        setHasSelectedAddress(true);
         if (router.canGoBack()) {
+          showSuccess("Dirección guardada");
           router.back();
         } else {
           router.replace(
@@ -258,6 +268,7 @@ export const useAddressScreen = () => {
   return {
     mode,
     setMode,
+    canGoBack: user?.has_selected_address === true,
     // Buscador
     searchQuery,
     setSearchQuery,

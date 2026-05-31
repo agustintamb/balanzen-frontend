@@ -22,6 +22,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             first_name: user.first_name,
             last_name: user.last_name,
             has_address: user.has_address,
+            has_selected_address: user.selected_address !== null,
             photo_url: user.photo_url,
           });
         }
@@ -35,6 +36,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     };
     loadAuth();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <>{children}</>;

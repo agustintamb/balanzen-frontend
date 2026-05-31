@@ -6,7 +6,7 @@ const Index = () => {
 
   if (!isInitialized) return null;
   if (!user) return <Redirect href={"/(auth)" as any} />;
-  if (!user.has_address)
+  if (!user.has_address || !user.has_selected_address)
     return <Redirect href={"/(onboarding)/address" as any} />;
   return (
     <Redirect

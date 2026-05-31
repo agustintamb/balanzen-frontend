@@ -3,21 +3,26 @@ import {
   Platform,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import ActionSheet from "@/components/ui/ActionSheet";
 import Button from "@/components/ui/Button";
+import Icon from "@/components/ui/Icon";
 import AddressList from "./components/AddressList";
 import AddressMap from "./components/AddressMap";
 import AddressSearch from "./components/AddressSearch";
 import { useAddressScreen } from "./useAddressScreen";
 
 const AddressScreen = () => {
+  const router = useRouter();
   const {
     mode,
     setMode,
+    canGoBack,
     // Buscador
     searchQuery,
     setSearchQuery,
@@ -117,22 +122,34 @@ const AddressScreen = () => {
             style={{
               flexDirection: "row",
               alignItems: "center",
-              paddingHorizontal: 20,
+              paddingHorizontal: 8,
               paddingTop: 20,
               paddingBottom: 8,
-              gap: 12,
             }}
           >
+            {canGoBack ? (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{ padding: 8 }}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <Icon name="chevron-left" size={24} color="primary-dark" />
+              </TouchableOpacity>
+            ) : (
+              <View style={{ width: 40 }} />
+            )}
             <Text
               style={{
-                fontFamily: "Inter_700Bold",
-                fontSize: 22,
+                fontFamily: "Inter_600SemiBold",
+                fontSize: 18,
                 color: "#27500A",
                 flex: 1,
+                textAlign: "center",
               }}
             >
               Mis Direcciones
             </Text>
+            <View style={{ width: 40 }} />
           </View>
 
           <ScrollView
