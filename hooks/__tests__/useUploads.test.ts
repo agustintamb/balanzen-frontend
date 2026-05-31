@@ -18,7 +18,7 @@ const mockUploadsService = uploadsService as jest.Mocked<typeof uploadsService>;
 const createWrapper = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
-      queries: { retry: false },
+      queries: { retry: false, gcTime: 0 },
       mutations: { retry: false },
     },
   });

@@ -8,7 +8,19 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useRegistrationStore } from '@/stores/registration.store'
 import { persistSession } from '@/utils/auth'
 
-import { useRegisterCommerceSection } from '../useRegisterCommerceSection'
+import CommerceSectionDefault, {
+  commerceRegistrationSchema,
+  useRegisterCommerceSection,
+} from '../useRegisterCommerceSection'
+
+// useForm is mocked so specific tests can override handleSubmit to bypass
+// react-hook-form validation and exercise the onSubmit callback body directly.
+jest.mock('react-hook-form', () => {
+  const actual = jest.requireActual('react-hook-form')
+  return { ...actual, useForm: jest.fn().mockImplementation(actual.useForm) }
+})
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const mockedUseForm = (require('react-hook-form') as { useForm: jest.MockedFunction<typeof import('react-hook-form').useForm> }).useForm
 
 jest.mock('expo-router', () => ({
   router: { replace: jest.fn() },
@@ -65,7 +77,7 @@ const buildMockMutate = (overrides: Partial<{ mutate: jest.Mock; isPending: bool
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+    defaultOptions: { queries: { retry: false, gcTime: 0 }, mutations: { retry: false } },
   })
   return ({ children }: { children: React.ReactNode }) =>
     React.createElement(QueryClientProvider, { client: queryClient }, children)
@@ -376,6 +388,143 @@ describe('useRegisterCommerceSection', () => {
       })
 
       expect(result.current.isValid).toBe(false)
+    })
+  })
+
+  describe('commerceRegistrationSchema validation', () => {
+    it('should add a cuit error when format is invalid', () => {
+      const result = commerceRegistrationSchema.safeParse({
+        businessName: 'Test Shop',
+        cuit: 'invalid-format',
+        acceptTerms: true,
+      })
+      expect(result.success).toBe(false)
+      const issue = result.error?.issues.find(
+        i => i.path.includes('cuit') && i.message === 'Formato inválido (XX-XXXXXXXX-X)',
+      )
+      expect(issue).toBeDefined()
+    })
+
+    it('should pass when cuit is empty (min-length validation handles the rest)', () => {
+      const result = commerceRegistrationSchema.safeParse({
+        businessName: 'Test Shop',
+        cuit: '',
+        acceptTerms: true,
+      })
+      expect(result.success).toBe(false)
+      // empty cuit triggers min(1), not the format check
+      const formatIssue = result.error?.issues.find(
+        i => i.message === 'Formato inválido (XX-XXXXXXXX-X)',
+      )
+      expect(formatIssue).toBeUndefined()
+    })
+  })
+
+  describe('onSubmit — callback body (mocked handleSubmit)', () => {
+    const VALID_FORM_DATA = { businessName: 'Panadería', cuit: '20-12345678-9', acceptTerms: true }
+
+    afterEach(() => {
+      mockedUseForm.mockRestore()
+    })
+
+    it('should not call mutate when personalData is null even if form is valid', async () => {
+      const { mockMutate } = setupMocks(null)
+
+      mockedUseForm.mockImplementationOnce(() => ({
+        control: {} as ReturnType<typeof mockedUseForm>['control'],
+        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => () => fn(VALID_FORM_DATA),
+        formState: { isValid: true } as ReturnType<typeof mockedUseForm>['formState'],
+      }))
+
+      const { result } = renderHook(() => useRegisterCommerceSection(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        await result.current.onSubmit()
+      })
+
+      expect(mockMutate.mutate).not.toHaveBeenCalled()
+    })
+
+    it('should call mutate with combined personalData + form data when both are present', async () => {
+      const { mockMutate } = setupMocks()
+
+      mockedUseForm.mockImplementationOnce(() => ({
+        control: {} as ReturnType<typeof mockedUseForm>['control'],
+        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => () => fn(VALID_FORM_DATA),
+        formState: { isValid: true } as ReturnType<typeof mockedUseForm>['formState'],
+      }))
+
+      const { result } = renderHook(() => useRegisterCommerceSection(), {
+        wrapper: createWrapper(),
+      })
+
+      await act(async () => {
+        await result.current.onSubmit()
+      })
+
+      expect(mockMutate.mutate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          role: 'COMERCIO',
+          first_name: PERSONAL_DATA.firstName,
+          last_name: PERSONAL_DATA.lastName,
+          email: PERSONAL_DATA.email,
+          business_name: VALID_FORM_DATA.businessName,
+          cuit: VALID_FORM_DATA.cuit,
+        }),
+        expect.objectContaining({ onSuccess: expect.any(Function) }),
+      )
+    })
+
+    it('should call persistSession + clear + navigate on onSuccess', async () => {
+      const { mockMutate, mockSetUser, mockSetAccessToken, mockClear } = setupMocks()
+      mockedPersistSession.mockResolvedValue(undefined)
+
+      let capturedOnSuccess: ((r: RegisterResponse) => Promise<void>) | undefined
+      mockMutate.mutate.mockImplementation(
+        (_: unknown, opts?: { onSuccess?: (r: RegisterResponse) => Promise<void> }) => {
+          capturedOnSuccess = opts?.onSuccess
+        },
+      )
+
+      mockedUseForm.mockImplementationOnce(() => ({
+        control: {} as ReturnType<typeof mockedUseForm>['control'],
+        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => () => fn(VALID_FORM_DATA),
+        formState: { isValid: true } as ReturnType<typeof mockedUseForm>['formState'],
+      }))
+
+      const { result } = renderHook(() => useRegisterCommerceSection(), {
+        wrapper: createWrapper(),
+      })
+
+      // Call onSubmit — mocked handleSubmit calls fn(VALID_FORM_DATA) which calls mutate
+      await act(async () => {
+        await result.current.onSubmit()
+      })
+
+      expect(capturedOnSuccess).toBeDefined()
+
+      await act(async () => {
+        await capturedOnSuccess!(COMMERCE_REGISTER_RESPONSE)
+      })
+
+      await waitFor(() => {
+        expect(mockedPersistSession).toHaveBeenCalledWith(
+          COMMERCE_REGISTER_RESPONSE,
+          expect.objectContaining({ id: COMMERCE_REGISTER_RESPONSE.id, has_address: false }),
+          mockSetAccessToken,
+          mockSetUser,
+        )
+        expect(mockClear).toHaveBeenCalledTimes(1)
+        expect(router.replace).toHaveBeenCalledWith('/(onboarding)/address')
+      })
+    })
+  })
+
+  describe('default export', () => {
+    it('should return null (Expo Router compatibility shim)', () => {
+      expect(CommerceSectionDefault()).toBeNull()
     })
   })
 })

@@ -46,3 +46,6 @@ app-example
 
 CLAUDE.md
 docs/
+
+# test coverage reports (generated output — regenerate with npm run test:coverage)
+coverage/

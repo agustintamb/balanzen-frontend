@@ -9,7 +9,7 @@ import {
   QueryClientProvider,
 } from "@tanstack/react-query";
 import { useUIStore } from "@/stores/ui.store";
-import QueryProvider from "../QueryProvider";
+import QueryProvider, { handleMutationError } from "../QueryProvider";
 
 // ─── Mocks ───────────────────────────────────────────────────────────────────
 
@@ -27,24 +27,11 @@ const mockUseUIStore = useUIStore as jest.Mocked<typeof useUIStore>;
 
 const ChildComponent = () => <Text testID="child">child content</Text>;
 
-/**
- * Creates an isolated QueryClient with a MutationCache that mirrors the same
- * onError logic used in QueryProvider, so we can test it without importing the
- * module-level singleton directly.
- */
 const buildTestQueryClient = () =>
   new QueryClient({
-    mutationCache: new MutationCache({
-      onError: (error) => {
-        const message =
-          error instanceof Error
-            ? error.message
-            : "Ocurrió un error inesperado";
-        useUIStore.getState().showToast(message, "error");
-      },
-    }),
+    mutationCache: new MutationCache({ onError: handleMutationError }),
     defaultOptions: {
-      queries: { retry: false },
+      queries: { retry: false, gcTime: 0 },
       mutations: { retry: false },
     },
   });
