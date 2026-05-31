@@ -1,6 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import React from "react";
+
+import createWrapper from "@/__test-utils__/createWrapper";
 
 import { chatsService } from "@/api/chats/chats.service";
 import {
@@ -58,18 +58,6 @@ const buildMessageListResponse = (
   ...overrides,
 });
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const Wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return Wrapper;
-};
-
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -82,7 +70,7 @@ describe("useChats", () => {
       mockChatsService.list.mockResolvedValueOnce(response);
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -95,7 +83,7 @@ describe("useChats", () => {
       mockChatsService.list.mockResolvedValueOnce({ chats: [] });
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -107,7 +95,7 @@ describe("useChats", () => {
       mockChatsService.list.mockResolvedValueOnce({ chats: [] });
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -119,7 +107,7 @@ describe("useChats", () => {
       mockChatsService.list.mockRejectedValueOnce(new Error("Network Error"));
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -132,7 +120,7 @@ describe("useChats", () => {
       mockChatsService.list.mockResolvedValueOnce({ chats: [chat] });
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -154,7 +142,7 @@ describe("useChats", () => {
       mockChatsService.list.mockResolvedValueOnce({ chats: [chat] });
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -167,7 +155,7 @@ describe("useChats", () => {
       mockChatsService.list.mockResolvedValueOnce({ chats: [chat] });
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -184,7 +172,7 @@ describe("useChats", () => {
       );
 
       const { result } = renderHook(() => useChats(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.isPending).toBe(true);
@@ -200,7 +188,7 @@ describe("useChats", () => {
       mockChatsService.getMessages.mockResolvedValueOnce(response);
 
       const { result } = renderHook(() => useChatMessages("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -214,7 +202,7 @@ describe("useChats", () => {
       mockChatsService.getMessages.mockResolvedValueOnce(buildMessageListResponse());
 
       const { result } = renderHook(() => useChatMessages("order-1", params), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -224,7 +212,7 @@ describe("useChats", () => {
 
     it("should not fetch when orderId is an empty string", async () => {
       const { result } = renderHook(() => useChatMessages(""), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.fetchStatus).toBe("idle");
@@ -235,7 +223,7 @@ describe("useChats", () => {
       mockChatsService.getMessages.mockRejectedValueOnce(new Error("Forbidden"));
 
       const { result } = renderHook(() => useChatMessages("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -251,7 +239,7 @@ describe("useChats", () => {
       mockChatsService.getMessages.mockResolvedValueOnce(emptyResponse);
 
       const { result } = renderHook(() => useChatMessages("order-empty"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -271,7 +259,7 @@ describe("useChats", () => {
       mockChatsService.getMessages.mockResolvedValueOnce(response);
 
       const { result } = renderHook(() => useChatMessages("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -284,7 +272,7 @@ describe("useChats", () => {
       mockChatsService.getMessages.mockResolvedValueOnce(buildMessageListResponse());
 
       const { result } = renderHook(() => useChatMessages("order-uuid-9999"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -299,7 +287,7 @@ describe("useChats", () => {
       );
 
       const { result } = renderHook(() => useChatMessages("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -314,7 +302,7 @@ describe("useChats", () => {
       mockChatsService.sendMessage.mockResolvedValueOnce(sent);
 
       const { result } = renderHook(() => useSendMessage("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("Confirmado");
@@ -330,7 +318,7 @@ describe("useChats", () => {
       mockChatsService.sendMessage.mockResolvedValueOnce(sent);
 
       const { result } = renderHook(() => useSendMessage("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       const message = await result.current.mutateAsync("Perfecto");
@@ -342,7 +330,7 @@ describe("useChats", () => {
       mockChatsService.sendMessage.mockRejectedValueOnce(new Error("Service Unavailable"));
 
       const { result } = renderHook(() => useSendMessage("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("Hola");
@@ -354,7 +342,7 @@ describe("useChats", () => {
 
     it("should be in idle state before the mutation is called", () => {
       const { result } = renderHook(() => useSendMessage("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.status).toBe("idle");
@@ -365,7 +353,7 @@ describe("useChats", () => {
       mockChatsService.sendMessage.mockResolvedValueOnce(buildMessage());
 
       const { result } = renderHook(() => useSendMessage("order-xyz"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("¿A qué hora puedo pasar?");
@@ -384,7 +372,7 @@ describe("useChats", () => {
         .mockResolvedValueOnce(buildMessage({ id: "msg-b", content: "Mensaje 2" }));
 
       const { result } = renderHook(() => useSendMessage("order-static"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await result.current.mutateAsync("Mensaje 1");
@@ -406,7 +394,7 @@ describe("useChats", () => {
       mockChatsService.sendMessage.mockResolvedValueOnce(buildMessage({ content: "" }));
 
       const { result } = renderHook(() => useSendMessage("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("");

@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import {
   useCreatePublication,
   useDeletePublication,
@@ -69,18 +68,6 @@ const buildPublicationListResponse = (
   pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
   ...overrides,
 });
-
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return { wrapper, queryClient };
-};
 
 afterEach(() => {
   jest.clearAllMocks();

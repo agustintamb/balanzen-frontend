@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import { notificationsService } from "@/api/notifications/notifications.service";
 import type {
   Notification,
@@ -62,18 +61,6 @@ const buildListResponse = (
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const Wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return { Wrapper, queryClient };
-};
-
 // ── tests ─────────────────────────────────────────────────────────────────────
 
 describe("useNotifications", () => {
@@ -83,12 +70,12 @@ describe("useNotifications", () => {
 
   describe("useNotifications", () => {
     it("should return notifications list on successful fetch", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const response = buildListResponse();
       mockedNotificationsService.list.mockResolvedValueOnce(response);
 
       const { result } = renderHook(() => useNotifications(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -98,10 +85,10 @@ describe("useNotifications", () => {
     });
 
     it("should call notificationsService.list with undefined params when none are passed", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.list.mockResolvedValueOnce(buildListResponse());
 
-      renderHook(() => useNotifications(), { wrapper: Wrapper });
+      renderHook(() => useNotifications(), { wrapper });
 
       await waitFor(() =>
         expect(mockedNotificationsService.list).toHaveBeenCalledWith(undefined)
@@ -109,11 +96,11 @@ describe("useNotifications", () => {
     });
 
     it("should call notificationsService.list with pagination params when provided", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const params: NotificationFilters = { page: 2, limit: 5 };
       mockedNotificationsService.list.mockResolvedValueOnce(buildListResponse());
 
-      renderHook(() => useNotifications(params), { wrapper: Wrapper });
+      renderHook(() => useNotifications(params), { wrapper });
 
       await waitFor(() =>
         expect(mockedNotificationsService.list).toHaveBeenCalledWith(params)
@@ -121,7 +108,7 @@ describe("useNotifications", () => {
     });
 
     it("should call notificationsService.list with read filter set to false", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const params: NotificationFilters = { read: false };
       const unreadResponse = buildListResponse({
         notifications: [buildNotification({ read: false })],
@@ -131,7 +118,7 @@ describe("useNotifications", () => {
       mockedNotificationsService.list.mockResolvedValueOnce(unreadResponse);
 
       const { result } = renderHook(() => useNotifications(params), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -141,11 +128,11 @@ describe("useNotifications", () => {
     });
 
     it("should use queryKey ['notifications', params]", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       const params: NotificationFilters = { read: true };
       mockedNotificationsService.list.mockResolvedValueOnce(buildListResponse());
 
-      renderHook(() => useNotifications(params), { wrapper: Wrapper });
+      renderHook(() => useNotifications(params), { wrapper });
 
       await waitFor(() =>
         expect(
@@ -155,12 +142,12 @@ describe("useNotifications", () => {
     });
 
     it("should set isError to true and expose the error when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const error = new Error("Network Error");
       mockedNotificationsService.list.mockRejectedValueOnce(error);
 
       const { result } = renderHook(() => useNotifications(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -169,7 +156,7 @@ describe("useNotifications", () => {
     });
 
     it("should return empty notifications list and zero unread_count when there are no notifications", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.list.mockResolvedValueOnce(
         buildListResponse({
           notifications: [],
@@ -179,7 +166,7 @@ describe("useNotifications", () => {
       );
 
       const { result } = renderHook(() => useNotifications(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -189,13 +176,13 @@ describe("useNotifications", () => {
     });
 
     it("should start in loading state before data resolves", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.list.mockImplementation(
         () => new Promise(() => undefined)
       );
 
       const { result } = renderHook(() => useNotifications(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       expect(result.current.isLoading).toBe(true);
@@ -203,13 +190,13 @@ describe("useNotifications", () => {
     });
 
     it("should return the correct unread_count from the response", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.list.mockResolvedValueOnce(
         buildListResponse({ unread_count: 7 })
       );
 
       const { result } = renderHook(() => useNotifications(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -218,14 +205,14 @@ describe("useNotifications", () => {
     });
 
     it("should return pagination metadata with the response", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const pagination: Pagination = { page: 3, limit: 5, total: 50, total_pages: 10 };
       mockedNotificationsService.list.mockResolvedValueOnce(
         buildListResponse({ pagination })
       );
 
       const { result } = renderHook(() => useNotifications(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -236,11 +223,11 @@ describe("useNotifications", () => {
 
   describe("useMarkNotificationRead", () => {
     it("should call notificationsService.markRead with the notification id on mutate", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markRead.mockResolvedValueOnce(undefined);
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate("notif-uuid-001");
 
@@ -252,11 +239,11 @@ describe("useNotifications", () => {
     });
 
     it("should call notificationsService.markRead exactly once per mutate call", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markRead.mockResolvedValueOnce(undefined);
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate("notif-uuid-001");
 
@@ -266,12 +253,12 @@ describe("useNotifications", () => {
     });
 
     it("should invalidate ['notifications'] queries on successful markRead", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedNotificationsService.markRead.mockResolvedValueOnce(undefined);
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate("notif-uuid-001");
 
@@ -281,13 +268,13 @@ describe("useNotifications", () => {
     });
 
     it("should set isError to true when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markRead.mockRejectedValueOnce(
         new Error("Not Found")
       );
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate("invalid-id");
 
@@ -297,14 +284,14 @@ describe("useNotifications", () => {
     });
 
     it("should not invalidate queries when the mutation fails", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedNotificationsService.markRead.mockRejectedValueOnce(
         new Error("Unauthorized")
       );
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate("notif-uuid-001");
 
@@ -314,21 +301,21 @@ describe("useNotifications", () => {
     });
 
     it("should be in idle state before mutate is called", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       expect(result.current.isIdle).toBe(true);
     });
 
     it("should pass the correct id for a different notification", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markRead.mockResolvedValueOnce(undefined);
 
       const { result } = renderHook(() => useMarkNotificationRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate("notif-uuid-099");
 
@@ -342,11 +329,11 @@ describe("useNotifications", () => {
 
   describe("useMarkAllNotificationsRead", () => {
     it("should call notificationsService.markAllRead on mutate", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markAllRead.mockResolvedValueOnce(undefined);
 
       const { result } = renderHook(() => useMarkAllNotificationsRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate();
 
@@ -356,11 +343,11 @@ describe("useNotifications", () => {
     });
 
     it("should call notificationsService.markAllRead with no arguments", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markAllRead.mockResolvedValueOnce(undefined);
 
       const { result } = renderHook(() => useMarkAllNotificationsRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate();
 
@@ -370,12 +357,12 @@ describe("useNotifications", () => {
     });
 
     it("should invalidate ['notifications'] queries on successful markAllRead", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedNotificationsService.markAllRead.mockResolvedValueOnce(undefined);
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
       const { result } = renderHook(() => useMarkAllNotificationsRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate();
 
@@ -385,13 +372,13 @@ describe("useNotifications", () => {
     });
 
     it("should set isError to true when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedNotificationsService.markAllRead.mockRejectedValueOnce(
         new Error("Unauthorized")
       );
 
       const { result } = renderHook(() => useMarkAllNotificationsRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate();
 
@@ -401,14 +388,14 @@ describe("useNotifications", () => {
     });
 
     it("should not invalidate queries when markAllRead fails", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedNotificationsService.markAllRead.mockRejectedValueOnce(
         new Error("Server Error")
       );
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
       const { result } = renderHook(() => useMarkAllNotificationsRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
       result.current.mutate();
 
@@ -418,10 +405,10 @@ describe("useNotifications", () => {
     });
 
     it("should be in idle state before mutate is called", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
 
       const { result } = renderHook(() => useMarkAllNotificationsRead(), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       expect(result.current.isIdle).toBe(true);

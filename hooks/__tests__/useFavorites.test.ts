@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import { favoritesService } from "@/api/favorites/favorites.service";
 import type {
   Favorite,
@@ -67,18 +66,6 @@ const buildListResponse = (
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const Wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return { Wrapper, queryClient };
-};
-
 // ── tests ─────────────────────────────────────────────────────────────────────
 
 describe("useFavorites", () => {
@@ -88,11 +75,11 @@ describe("useFavorites", () => {
 
   describe("useFavorites", () => {
     it("should return favorites list on successful fetch", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const response = buildListResponse();
       mockedFavoritesService.list.mockResolvedValueOnce(response);
 
-      const { result } = renderHook(() => useFavorites(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useFavorites(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -101,10 +88,10 @@ describe("useFavorites", () => {
     });
 
     it("should call favoritesService.list with undefined params when no params are passed", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.list.mockResolvedValueOnce(buildListResponse());
 
-      renderHook(() => useFavorites(), { wrapper: Wrapper });
+      renderHook(() => useFavorites(), { wrapper });
 
       await waitFor(() =>
         expect(mockedFavoritesService.list).toHaveBeenCalledWith(undefined)
@@ -112,11 +99,11 @@ describe("useFavorites", () => {
     });
 
     it("should call favoritesService.list with pagination params when provided", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const params: FavoritesParams = { page: 2, limit: 10 };
       mockedFavoritesService.list.mockResolvedValueOnce(buildListResponse());
 
-      renderHook(() => useFavorites(params), { wrapper: Wrapper });
+      renderHook(() => useFavorites(params), { wrapper });
 
       await waitFor(() =>
         expect(mockedFavoritesService.list).toHaveBeenCalledWith(params)
@@ -124,11 +111,11 @@ describe("useFavorites", () => {
     });
 
     it("should use queryKey ['favorites', params]", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       const params: FavoritesParams = { page: 1, limit: 20 };
       mockedFavoritesService.list.mockResolvedValueOnce(buildListResponse());
 
-      renderHook(() => useFavorites(params), { wrapper: Wrapper });
+      renderHook(() => useFavorites(params), { wrapper });
 
       await waitFor(() =>
         expect(queryClient.getQueryState(["favorites", params])).toBeDefined()
@@ -136,11 +123,11 @@ describe("useFavorites", () => {
     });
 
     it("should set isError to true and expose the error when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const error = new Error("Network Error");
       mockedFavoritesService.list.mockRejectedValueOnce(error);
 
-      const { result } = renderHook(() => useFavorites(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useFavorites(), { wrapper });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
 
@@ -148,12 +135,12 @@ describe("useFavorites", () => {
     });
 
     it("should return empty favorites array when the user has no favorites", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.list.mockResolvedValueOnce(
         buildListResponse({ favorites: [], pagination: { ...mockPagination, total: 0 } })
       );
 
-      const { result } = renderHook(() => useFavorites(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useFavorites(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -161,25 +148,25 @@ describe("useFavorites", () => {
     });
 
     it("should start in loading state before data resolves", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.list.mockImplementation(
         () => new Promise(() => undefined)
       );
 
-      const { result } = renderHook(() => useFavorites(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useFavorites(), { wrapper });
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.data).toBeUndefined();
     });
 
     it("should return pagination metadata with the response", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const pagination: Pagination = { page: 2, limit: 5, total: 15, total_pages: 3 };
       mockedFavoritesService.list.mockResolvedValueOnce(
         buildListResponse({ pagination })
       );
 
-      const { result } = renderHook(() => useFavorites(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useFavorites(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -189,10 +176,10 @@ describe("useFavorites", () => {
 
   describe("useAddFavorite", () => {
     it("should call favoritesService.add with the publicationId on mutate", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.add.mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -201,10 +188,10 @@ describe("useFavorites", () => {
     });
 
     it("should call favoritesService.add exactly once per mutate call", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.add.mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
       result.current.mutate("pub-uuid-002");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -213,11 +200,11 @@ describe("useFavorites", () => {
     });
 
     it("should invalidate ['favorites'] queries on successful add", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedFavoritesService.add.mockResolvedValueOnce(undefined);
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -226,10 +213,10 @@ describe("useFavorites", () => {
     });
 
     it("should set isError to true when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.add.mockRejectedValueOnce(new Error("Conflict"));
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -238,11 +225,11 @@ describe("useFavorites", () => {
     });
 
     it("should not invalidate queries when the mutation fails", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedFavoritesService.add.mockRejectedValueOnce(new Error("Not Found"));
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
       result.current.mutate("nonexistent-pub");
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -251,18 +238,18 @@ describe("useFavorites", () => {
     });
 
     it("should be in idle state before mutate is called", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
 
       expect(result.current.isIdle).toBe(true);
     });
 
     it("should pass the correct publicationId in the URL for a different id", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.add.mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useAddFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useAddFavorite(), { wrapper });
       result.current.mutate("pub-uuid-999");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -273,10 +260,10 @@ describe("useFavorites", () => {
 
   describe("useRemoveFavorite", () => {
     it("should call favoritesService.remove with the publicationId on mutate", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.remove.mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -285,10 +272,10 @@ describe("useFavorites", () => {
     });
 
     it("should call favoritesService.remove exactly once per mutate call", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.remove.mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -297,11 +284,11 @@ describe("useFavorites", () => {
     });
 
     it("should invalidate ['favorites'] queries on successful remove", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedFavoritesService.remove.mockResolvedValueOnce(undefined);
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -310,10 +297,10 @@ describe("useFavorites", () => {
     });
 
     it("should set isError to true when the service rejects with 404", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.remove.mockRejectedValueOnce(new Error("Not Found"));
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("nonexistent-pub");
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -322,11 +309,11 @@ describe("useFavorites", () => {
     });
 
     it("should not invalidate queries when the remove mutation fails", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedFavoritesService.remove.mockRejectedValueOnce(new Error("Unauthorized"));
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("pub-uuid-001");
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -335,18 +322,18 @@ describe("useFavorites", () => {
     });
 
     it("should be in idle state before mutate is called", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
 
       expect(result.current.isIdle).toBe(true);
     });
 
     it("should pass the correct publicationId for a different id", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedFavoritesService.remove.mockResolvedValueOnce(undefined);
 
-      const { result } = renderHook(() => useRemoveFavorite(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("pub-uuid-777");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
