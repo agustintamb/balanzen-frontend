@@ -8,6 +8,7 @@ export interface AuthUser {
   first_name: string;
   last_name: string;
   has_address: boolean;
+  has_selected_address: boolean;
   photo_url?: string | null;
 }
 
@@ -18,6 +19,7 @@ interface AuthState {
   setUser: (user: AuthUser | null) => void;
   setAccessToken: (token: string | null) => void;
   setHasAddress: (hasAddress: boolean) => void;
+  setHasSelectedAddress: (val: boolean) => void;
   setInitialized: () => void;
   clear: () => void;
 }
@@ -31,6 +33,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   setHasAddress: (hasAddress) =>
     set((state) => ({
       user: state.user ? { ...state.user, has_address: hasAddress } : null,
+    })),
+  setHasSelectedAddress: (val) =>
+    set((state) => ({
+      user: state.user ? { ...state.user, has_selected_address: val } : null,
     })),
   setInitialized: () => set({ isInitialized: true }),
   clear: () => set({ user: null, accessToken: null }),
