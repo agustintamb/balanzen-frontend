@@ -1,7 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React from 'react'
 
+import createWrapper from '@/__test-utils__/createWrapper'
 import { authService } from '@/api/auth/auth.service'
 import {
   ChangePasswordBody,
@@ -29,17 +28,6 @@ jest.mock('@/api/auth/auth.service', () => ({
 }))
 
 const mockedAuthService = authService as jest.Mocked<typeof authService>
-
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  })
-  return ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children)
-}
 
 const CONSUMER_REGISTER_BODY: RegisterBody = {
   role: 'CONSUMIDOR',
@@ -110,7 +98,7 @@ describe('useRegister', () => {
       mockedAuthService.register.mockResolvedValueOnce(REGISTER_RESPONSE)
 
       const { result } = renderHook(() => useRegister(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CONSUMER_REGISTER_BODY)
@@ -132,7 +120,7 @@ describe('useRegister', () => {
       mockedAuthService.register.mockResolvedValueOnce(commerceResponse)
 
       const { result } = renderHook(() => useRegister(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(COMMERCE_REGISTER_BODY)
@@ -148,7 +136,7 @@ describe('useRegister', () => {
       const onSuccess = jest.fn()
 
       const { result } = renderHook(() => useRegister(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CONSUMER_REGISTER_BODY, { onSuccess })
@@ -171,7 +159,7 @@ describe('useRegister', () => {
       mockedAuthService.register.mockRejectedValueOnce(error)
 
       const { result } = renderHook(() => useRegister(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CONSUMER_REGISTER_BODY)
@@ -188,7 +176,7 @@ describe('useRegister', () => {
       const onError = jest.fn()
 
       const { result } = renderHook(() => useRegister(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CONSUMER_REGISTER_BODY, { onError })
@@ -202,7 +190,7 @@ describe('useRegister', () => {
 
   it('should start in idle state before mutate is called', () => {
     const { result } = renderHook(() => useRegister(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     })
 
     expect(result.current.isPending).toBe(false)
@@ -218,7 +206,7 @@ describe('useLogin', () => {
       mockedAuthService.login.mockResolvedValueOnce(LOGIN_RESPONSE)
 
       const { result } = renderHook(() => useLogin(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(LOGIN_BODY)
@@ -238,7 +226,7 @@ describe('useLogin', () => {
       mockedAuthService.login.mockResolvedValueOnce(commerceLoginResponse)
 
       const { result } = renderHook(() => useLogin(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(LOGIN_BODY)
@@ -254,7 +242,7 @@ describe('useLogin', () => {
       const onSuccess = jest.fn()
 
       const { result } = renderHook(() => useLogin(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(LOGIN_BODY, { onSuccess })
@@ -271,7 +259,7 @@ describe('useLogin', () => {
       mockedAuthService.login.mockRejectedValueOnce(error)
 
       const { result } = renderHook(() => useLogin(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(LOGIN_BODY)
@@ -284,7 +272,7 @@ describe('useLogin', () => {
 
   it('should start in idle state', () => {
     const { result } = renderHook(() => useLogin(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     })
 
     expect(result.current.isPending).toBe(false)
@@ -299,7 +287,7 @@ describe('useLogout', () => {
       mockedAuthService.logout.mockResolvedValueOnce(undefined)
 
       const { result } = renderHook(() => useLogout(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate()
@@ -314,7 +302,7 @@ describe('useLogout', () => {
       const onSuccess = jest.fn()
 
       const { result } = renderHook(() => useLogout(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(undefined, { onSuccess })
@@ -331,7 +319,7 @@ describe('useLogout', () => {
       mockedAuthService.logout.mockRejectedValueOnce(error)
 
       const { result } = renderHook(() => useLogout(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate()
@@ -344,7 +332,7 @@ describe('useLogout', () => {
 
   it('should start in idle state', () => {
     const { result } = renderHook(() => useLogout(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     })
 
     expect(result.current.isPending).toBe(false)
@@ -359,7 +347,7 @@ describe('useRefreshToken', () => {
       mockedAuthService.refresh.mockResolvedValueOnce(refreshResponse)
 
       const { result } = renderHook(() => useRefreshToken(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate()
@@ -376,7 +364,7 @@ describe('useRefreshToken', () => {
       const onSuccess = jest.fn()
 
       const { result } = renderHook(() => useRefreshToken(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(undefined, { onSuccess })
@@ -393,7 +381,7 @@ describe('useRefreshToken', () => {
       mockedAuthService.refresh.mockRejectedValueOnce(error)
 
       const { result } = renderHook(() => useRefreshToken(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate()
@@ -406,7 +394,7 @@ describe('useRefreshToken', () => {
 
   it('should start in idle state', () => {
     const { result } = renderHook(() => useRefreshToken(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     })
 
     expect(result.current.isPending).toBe(false)
@@ -422,7 +410,7 @@ describe('useChangePassword', () => {
       mockedAuthService.changePassword.mockResolvedValueOnce(successResponse)
 
       const { result } = renderHook(() => useChangePassword(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CHANGE_PASSWORD_BODY)
@@ -440,7 +428,7 @@ describe('useChangePassword', () => {
       const onSuccess = jest.fn()
 
       const { result } = renderHook(() => useChangePassword(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CHANGE_PASSWORD_BODY, { onSuccess })
@@ -462,7 +450,7 @@ describe('useChangePassword', () => {
       mockedAuthService.changePassword.mockRejectedValueOnce(error)
 
       const { result } = renderHook(() => useChangePassword(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CHANGE_PASSWORD_BODY)
@@ -478,7 +466,7 @@ describe('useChangePassword', () => {
       const onError = jest.fn()
 
       const { result } = renderHook(() => useChangePassword(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       result.current.mutate(CHANGE_PASSWORD_BODY, { onError })
@@ -491,7 +479,7 @@ describe('useChangePassword', () => {
 
   it('should start in idle state', () => {
     const { result } = renderHook(() => useChangePassword(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     })
 
     expect(result.current.isPending).toBe(false)

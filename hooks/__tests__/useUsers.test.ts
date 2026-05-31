@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import type { AddressSummary } from "@/api/addresses/addresses.types";
 import type {
   PublicUser,
@@ -96,18 +95,6 @@ const buildPublicCommerce = (
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const Wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return { Wrapper, queryClient };
-};
-
 // ── tests ─────────────────────────────────────────────────────────────────────
 
 describe("useUsers", () => {
@@ -117,11 +104,11 @@ describe("useUsers", () => {
 
   describe("useCurrentUser", () => {
     it("should return the current user on successful fetch", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const user = buildUser();
       mockedUsersService.getMe.mockResolvedValueOnce(user);
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -129,10 +116,10 @@ describe("useUsers", () => {
     });
 
     it("should call usersService.getMe exactly once on mount", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getMe.mockResolvedValueOnce(buildUser());
 
-      renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() =>
         expect(mockedUsersService.getMe).toHaveBeenCalledTimes(1)
@@ -140,10 +127,10 @@ describe("useUsers", () => {
     });
 
     it("should use queryKey ['users', 'me']", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedUsersService.getMe.mockResolvedValueOnce(buildUser());
 
-      renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() =>
         expect(queryClient.getQueryState(["users", "me"])).toBeDefined()
@@ -151,11 +138,11 @@ describe("useUsers", () => {
     });
 
     it("should return a COMERCIO user with commerce-specific fields", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const commerceUser = buildCommerceUser();
       mockedUsersService.getMe.mockResolvedValueOnce(commerceUser);
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -165,11 +152,11 @@ describe("useUsers", () => {
     });
 
     it("should return a CONSUMIDOR user without commerce-specific fields", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const consumerUser = buildUser();
       mockedUsersService.getMe.mockResolvedValueOnce(consumerUser);
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -178,10 +165,10 @@ describe("useUsers", () => {
     });
 
     it("should set isError to true when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getMe.mockRejectedValueOnce(new Error("Unauthorized"));
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
 
@@ -189,24 +176,24 @@ describe("useUsers", () => {
     });
 
     it("should start in loading state before data resolves", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getMe.mockImplementation(
         () => new Promise(() => undefined)
       );
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.data).toBeUndefined();
     });
 
     it("should return user with null photo_url when user has no photo", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getMe.mockResolvedValueOnce(
         buildUser({ photo_url: null })
       );
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -214,12 +201,12 @@ describe("useUsers", () => {
     });
 
     it("should return user with has_address false when no address is set", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getMe.mockResolvedValueOnce(
         buildUser({ has_address: false, selected_address: null })
       );
 
-      const { result } = renderHook(() => useCurrentUser(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useCurrentUser(), { wrapper });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
@@ -230,13 +217,13 @@ describe("useUsers", () => {
 
   describe("usePublicProfile", () => {
     it("should return the public profile of a consumer on successful fetch", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const profile: PublicUser = buildPublicConsumer();
       mockedUsersService.getPublicProfile.mockResolvedValueOnce(profile);
 
       const { result } = renderHook(
         () => usePublicProfile("user-uuid-001"),
-        { wrapper: Wrapper }
+        { wrapper }
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -245,13 +232,13 @@ describe("useUsers", () => {
     });
 
     it("should return the public profile of a commerce with address info", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const profile: PublicUser = buildPublicCommerce();
       mockedUsersService.getPublicProfile.mockResolvedValueOnce(profile);
 
       const { result } = renderHook(
         () => usePublicProfile("user-uuid-002"),
-        { wrapper: Wrapper }
+        { wrapper }
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -264,12 +251,12 @@ describe("useUsers", () => {
     });
 
     it("should call usersService.getPublicProfile with the correct id", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getPublicProfile.mockResolvedValueOnce(
         buildPublicConsumer()
       );
 
-      renderHook(() => usePublicProfile("user-uuid-001"), { wrapper: Wrapper });
+      renderHook(() => usePublicProfile("user-uuid-001"), { wrapper });
 
       await waitFor(() =>
         expect(mockedUsersService.getPublicProfile).toHaveBeenCalledWith(
@@ -279,12 +266,12 @@ describe("useUsers", () => {
     });
 
     it("should use queryKey ['users', id, 'public']", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedUsersService.getPublicProfile.mockResolvedValueOnce(
         buildPublicConsumer()
       );
 
-      renderHook(() => usePublicProfile("user-uuid-001"), { wrapper: Wrapper });
+      renderHook(() => usePublicProfile("user-uuid-001"), { wrapper });
 
       await waitFor(() =>
         expect(
@@ -294,10 +281,10 @@ describe("useUsers", () => {
     });
 
     it("should not fetch when id is an empty string", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
 
       const { result } = renderHook(() => usePublicProfile(""), {
-        wrapper: Wrapper,
+        wrapper,
       });
 
       expect(mockedUsersService.getPublicProfile).not.toHaveBeenCalled();
@@ -305,14 +292,14 @@ describe("useUsers", () => {
     });
 
     it("should set isError to true when the service rejects with 404", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getPublicProfile.mockRejectedValueOnce(
         new Error("Not Found")
       );
 
       const { result } = renderHook(
         () => usePublicProfile("nonexistent-id"),
-        { wrapper: Wrapper }
+        { wrapper }
       );
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -321,12 +308,12 @@ describe("useUsers", () => {
     });
 
     it("should pass a different id correctly when querying another user", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.getPublicProfile.mockResolvedValueOnce(
         buildPublicCommerce({ id: "user-uuid-999" })
       );
 
-      renderHook(() => usePublicProfile("user-uuid-999"), { wrapper: Wrapper });
+      renderHook(() => usePublicProfile("user-uuid-999"), { wrapper });
 
       await waitFor(() =>
         expect(mockedUsersService.getPublicProfile).toHaveBeenCalledWith(
@@ -338,12 +325,12 @@ describe("useUsers", () => {
 
   describe("useUpdateProfile", () => {
     it("should call usersService.updateMe with the profile body on mutate", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const updatedUser = buildUser({ first_name: "Carlos" });
       const body: UpdateProfileBody = { first_name: "Carlos" };
       mockedUsersService.updateMe.mockResolvedValueOnce(updatedUser);
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate(body);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -352,10 +339,10 @@ describe("useUsers", () => {
     });
 
     it("should call usersService.updateMe exactly once per mutate call", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.updateMe.mockResolvedValueOnce(buildUser());
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate({ last_name: "Rodríguez" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -364,12 +351,12 @@ describe("useUsers", () => {
     });
 
     it("should update queryData for ['users', 'me'] on success", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       const updatedUser = buildUser({ first_name: "Carlos", last_name: "López" });
       mockedUsersService.updateMe.mockResolvedValueOnce(updatedUser);
       const setQueryDataSpy = jest.spyOn(queryClient, "setQueryData");
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate({ first_name: "Carlos", last_name: "López" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -378,11 +365,11 @@ describe("useUsers", () => {
     });
 
     it("should return the updated user in the mutation result", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const updatedUser = buildUser({ phone: "+5491199887766" });
       mockedUsersService.updateMe.mockResolvedValueOnce(updatedUser);
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate({ phone: "+5491199887766" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -391,12 +378,12 @@ describe("useUsers", () => {
     });
 
     it("should set isError to true when the service rejects", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       mockedUsersService.updateMe.mockRejectedValueOnce(
         new Error("Validation Error")
       );
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate({ email: "invalid-email" });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -405,11 +392,11 @@ describe("useUsers", () => {
     });
 
     it("should not call setQueryData when the mutation fails", async () => {
-      const { Wrapper, queryClient } = createWrapper();
+      const { wrapper, queryClient } = createWrapper();
       mockedUsersService.updateMe.mockRejectedValueOnce(new Error("Server Error"));
       const setQueryDataSpy = jest.spyOn(queryClient, "setQueryData");
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate({ first_name: "Test" });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -418,15 +405,15 @@ describe("useUsers", () => {
     });
 
     it("should be in idle state before mutate is called", () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
 
       expect(result.current.isIdle).toBe(true);
     });
 
     it("should update commerce-specific fields for a COMERCIO user", async () => {
-      const { Wrapper } = createWrapper();
+      const { wrapper } = createWrapper();
       const updatedCommerce = buildCommerceUser({
         business_name: "Nueva Panadería",
         description: "Especialistas en pan artesanal",
@@ -437,7 +424,7 @@ describe("useUsers", () => {
       };
       mockedUsersService.updateMe.mockResolvedValueOnce(updatedCommerce);
 
-      const { result } = renderHook(() => useUpdateProfile(), { wrapper: Wrapper });
+      const { result } = renderHook(() => useUpdateProfile(), { wrapper });
       result.current.mutate(body);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));

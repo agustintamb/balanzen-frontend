@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react-native'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import React from 'react'
+
+import createWrapper from '@/__test-utils__/createWrapper'
 import { addressesService } from '@/api/addresses/addresses.service'
 import type { Address, AddressInput, AddressSearchResult } from '@/api/addresses/addresses.types'
 import {
@@ -59,18 +59,6 @@ const buildAddressInput = (overrides: Partial<AddressInput> = {}): AddressInput 
 const buildSearchResult = (overrides: Partial<AddressSearchResult> = {}): AddressSearchResult =>
   buildAddressInput(overrides)
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  })
-  const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children)
-  return wrapper
-}
-
 afterEach(() => {
   jest.clearAllMocks()
 })
@@ -78,19 +66,19 @@ afterEach(() => {
 describe('useAddressSearch', () => {
   describe('when query is shorter than 3 characters', () => {
     it('should not call search when q is an empty string', () => {
-      renderHook(() => useAddressSearch(''), { wrapper: createWrapper() })
+      renderHook(() => useAddressSearch(''), { wrapper: createWrapper().wrapper })
 
       expect(mockService.search).not.toHaveBeenCalled()
     })
 
     it('should not call search when q has 1 character', () => {
-      renderHook(() => useAddressSearch('A'), { wrapper: createWrapper() })
+      renderHook(() => useAddressSearch('A'), { wrapper: createWrapper().wrapper })
 
       expect(mockService.search).not.toHaveBeenCalled()
     })
 
     it('should not call search when q has 2 characters', () => {
-      renderHook(() => useAddressSearch('Av'), { wrapper: createWrapper() })
+      renderHook(() => useAddressSearch('Av'), { wrapper: createWrapper().wrapper })
 
       expect(mockService.search).not.toHaveBeenCalled()
     })
@@ -102,7 +90,7 @@ describe('useAddressSearch', () => {
         results: [buildSearchResult()],
       })
 
-      renderHook(() => useAddressSearch('Cor'), { wrapper: createWrapper() })
+      renderHook(() => useAddressSearch('Cor'), { wrapper: createWrapper().wrapper })
 
       await waitFor(() => {
         expect(mockService.search).toHaveBeenCalledWith('Cor')
@@ -114,7 +102,7 @@ describe('useAddressSearch', () => {
         results: [buildSearchResult()],
       })
 
-      renderHook(() => useAddressSearch('Corrientes 1234'), { wrapper: createWrapper() })
+      renderHook(() => useAddressSearch('Corrientes 1234'), { wrapper: createWrapper().wrapper })
 
       await waitFor(() => {
         expect(mockService.search).toHaveBeenCalledWith('Corrientes 1234')
@@ -133,7 +121,7 @@ describe('useAddressSearch', () => {
       })
 
       const { result } = renderHook(() => useAddressSearch('Corrientes'), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       await waitFor(() => {
@@ -152,7 +140,7 @@ describe('useAddressSearch', () => {
       mockService.search.mockResolvedValueOnce({ results: validResults })
 
       const { result } = renderHook(() => useAddressSearch('Buenos'), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       await waitFor(() => {
@@ -171,7 +159,7 @@ describe('useAddressSearch', () => {
       })
 
       const { result } = renderHook(() => useAddressSearch('incompleta'), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       await waitFor(() => {
@@ -185,7 +173,7 @@ describe('useAddressSearch', () => {
       mockService.search.mockRejectedValueOnce(new Error('Network error'))
 
       const { result } = renderHook(() => useAddressSearch('Corrientes'), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       })
 
       await waitFor(() => {
@@ -201,7 +189,7 @@ describe('useAddresses', () => {
   it('should call list on mount', async () => {
     mockService.list.mockResolvedValueOnce({ addresses: [] })
 
-    renderHook(() => useAddresses(), { wrapper: createWrapper() })
+    renderHook(() => useAddresses(), { wrapper: createWrapper().wrapper })
 
     await waitFor(() => {
       expect(mockService.list).toHaveBeenCalledTimes(1)
@@ -212,7 +200,7 @@ describe('useAddresses', () => {
     const addresses = [buildAddress({ id: 'addr-1' }), buildAddress({ id: 'addr-2' })]
     mockService.list.mockResolvedValueOnce({ addresses })
 
-    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper().wrapper })
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
@@ -224,7 +212,7 @@ describe('useAddresses', () => {
   it('should return an empty array when the user has no addresses', async () => {
     mockService.list.mockResolvedValueOnce({ addresses: [] })
 
-    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper().wrapper })
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
@@ -240,7 +228,7 @@ describe('useAddresses', () => {
     ]
     mockService.list.mockResolvedValueOnce({ addresses })
 
-    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper().wrapper })
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true)
@@ -252,7 +240,7 @@ describe('useAddresses', () => {
   it('should set isError to true when list rejects', async () => {
     mockService.list.mockRejectedValueOnce(new Error('Unauthorized'))
 
-    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useAddresses(), { wrapper: createWrapper().wrapper })
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true)
@@ -264,7 +252,7 @@ describe('useAddresses', () => {
 
 describe('useCreateAddress', () => {
   it('should be idle before mutate is called', () => {
-    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper().wrapper })
 
     expect(result.current.isPending).toBe(false)
     expect(result.current.isIdle).toBe(true)
@@ -275,7 +263,7 @@ describe('useCreateAddress', () => {
     const createdAddress = buildAddress()
     mockService.create.mockResolvedValueOnce(createdAddress)
 
-    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate(input)
 
@@ -291,7 +279,7 @@ describe('useCreateAddress', () => {
     const createdAddress = buildAddress({ id: 'new-addr-uuid' })
     mockService.create.mockResolvedValueOnce(createdAddress)
 
-    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate(buildAddressInput())
 
@@ -305,7 +293,7 @@ describe('useCreateAddress', () => {
   it('should set isError to true when create rejects', async () => {
     mockService.create.mockRejectedValueOnce(new Error('Validation failed'))
 
-    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate(buildAddressInput())
 
@@ -324,7 +312,7 @@ describe('useCreateAddress', () => {
       }),
     )
 
-    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate(buildAddressInput())
 
@@ -343,7 +331,7 @@ describe('useCreateAddress', () => {
     const createdAddress = buildAddress({ id: 'async-addr-uuid' })
     mockService.create.mockResolvedValueOnce(createdAddress)
 
-    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useCreateAddress(), { wrapper: createWrapper().wrapper })
 
     const data = await result.current.mutateAsync(buildAddressInput())
 
@@ -353,7 +341,7 @@ describe('useCreateAddress', () => {
 
 describe('useUpdateAddress', () => {
   it('should be idle before mutate is called', () => {
-    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper().wrapper })
 
     expect(result.current.isIdle).toBe(true)
   })
@@ -363,7 +351,7 @@ describe('useUpdateAddress', () => {
     const partialBody: Partial<AddressInput> = { number: '5678' }
     mockService.update.mockResolvedValueOnce(buildAddress({ number: '5678' }))
 
-    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate({ id, body: partialBody })
 
@@ -378,7 +366,7 @@ describe('useUpdateAddress', () => {
     const updatedAddress = buildAddress({ number: '5678' })
     mockService.update.mockResolvedValueOnce(updatedAddress)
 
-    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate({ id: 'addr-uuid-123', body: { number: '5678' } })
 
@@ -392,7 +380,7 @@ describe('useUpdateAddress', () => {
   it('should set isError to true when update rejects', async () => {
     mockService.update.mockRejectedValueOnce(new Error('Address not found'))
 
-    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate({ id: 'missing-id', body: {} })
 
@@ -411,7 +399,7 @@ describe('useUpdateAddress', () => {
       }),
     )
 
-    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate({ id: 'addr-uuid-123', body: { city: 'Rosario' } })
 
@@ -431,7 +419,7 @@ describe('useUpdateAddress', () => {
     const fullBody = buildAddressInput({ street: 'Belgrano', number: '42' })
     mockService.update.mockResolvedValueOnce(buildAddress())
 
-    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useUpdateAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate({ id, body: fullBody })
 
@@ -445,7 +433,7 @@ describe('useUpdateAddress', () => {
 
 describe('useDeleteAddress', () => {
   it('should be idle before mutate is called', () => {
-    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper().wrapper })
 
     expect(result.current.isIdle).toBe(true)
   })
@@ -454,7 +442,7 @@ describe('useDeleteAddress', () => {
     const id = 'addr-to-delete'
     mockService.delete.mockResolvedValueOnce(undefined)
 
-    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate(id)
 
@@ -469,7 +457,7 @@ describe('useDeleteAddress', () => {
   it('should have undefined data after successful deletion', async () => {
     mockService.delete.mockResolvedValueOnce(undefined)
 
-    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-uuid-123')
 
@@ -483,7 +471,7 @@ describe('useDeleteAddress', () => {
   it('should set isError to true when delete rejects', async () => {
     mockService.delete.mockRejectedValueOnce(new Error('Forbidden'))
 
-    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('protected-addr-id')
 
@@ -502,7 +490,7 @@ describe('useDeleteAddress', () => {
       }),
     )
 
-    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-uuid-123')
 
@@ -520,7 +508,7 @@ describe('useDeleteAddress', () => {
   it('should call delete exactly once per mutate call', async () => {
     mockService.delete.mockResolvedValueOnce(undefined)
 
-    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useDeleteAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-id')
 
@@ -534,7 +522,7 @@ describe('useDeleteAddress', () => {
 
 describe('useSelectAddress', () => {
   it('should be idle before mutate is called', () => {
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     expect(result.current.isIdle).toBe(true)
   })
@@ -543,7 +531,7 @@ describe('useSelectAddress', () => {
     const id = 'addr-to-select'
     mockService.select.mockResolvedValueOnce(buildAddress({ id, is_selected: true }))
 
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate(id)
 
@@ -559,7 +547,7 @@ describe('useSelectAddress', () => {
     const selectedAddress = buildAddress({ id: 'addr-selected', is_selected: true })
     mockService.select.mockResolvedValueOnce(selectedAddress)
 
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-selected')
 
@@ -574,7 +562,7 @@ describe('useSelectAddress', () => {
   it('should set isError to true when select rejects', async () => {
     mockService.select.mockRejectedValueOnce(new Error('Internal Server Error'))
 
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-id')
 
@@ -593,7 +581,7 @@ describe('useSelectAddress', () => {
       }),
     )
 
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-uuid-123')
 
@@ -611,7 +599,7 @@ describe('useSelectAddress', () => {
   it('should call select exactly once per mutate call', async () => {
     mockService.select.mockResolvedValueOnce(buildAddress({ is_selected: true }))
 
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     result.current.mutate('addr-id')
 
@@ -626,7 +614,7 @@ describe('useSelectAddress', () => {
     const selectedAddress = buildAddress({ id: 'async-select-uuid', is_selected: true })
     mockService.select.mockResolvedValueOnce(selectedAddress)
 
-    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper() })
+    const { result } = renderHook(() => useSelectAddress(), { wrapper: createWrapper().wrapper })
 
     const data = await result.current.mutateAsync('async-select-uuid')
 

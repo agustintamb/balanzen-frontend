@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import { categoriesService } from "@/api/categories/categories.service";
 import { Category, CategoryListResponse } from "@/api/categories/categories.types";
 import { useCategories } from "@/hooks/useCategories";
@@ -24,16 +23,6 @@ const buildCategoryListResponse = (categories: Category[]): CategoryListResponse
   categories,
 });
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-    },
-  });
-  const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return wrapper;
-};
 
 describe("useCategories", () => {
   afterEach(() => {
@@ -44,7 +33,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse([]));
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -59,7 +48,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse(categories));
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => {
@@ -74,7 +63,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse([]));
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -87,7 +76,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse([]));
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -105,7 +94,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse(categories));
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -120,7 +109,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockRejectedValueOnce(networkError);
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => {
@@ -138,7 +127,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockRejectedValueOnce(unauthorizedError);
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => {
@@ -155,7 +144,7 @@ describe("useCategories", () => {
       .mockResolvedValueOnce(buildCategoryListResponse(categories))
       .mockResolvedValueOnce(buildCategoryListResponse(categories));
 
-    const wrapper = createWrapper();
+    const { wrapper } = createWrapper();
 
     const { result: first } = renderHook(() => useCategories(), { wrapper });
     const { result: second } = renderHook(() => useCategories(), { wrapper });
@@ -177,7 +166,7 @@ describe("useCategories", () => {
     );
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -191,7 +180,7 @@ describe("useCategories", () => {
     mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse(categories));
 
     const { result } = renderHook(() => useCategories(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));

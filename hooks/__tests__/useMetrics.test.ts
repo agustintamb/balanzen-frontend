@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import { metricsService } from "@/api/metrics/metrics.service";
 import { MetricsSummary } from "@/api/metrics/metrics.types";
 import { useMetricsSummary } from "@/hooks/useMetrics";
@@ -24,16 +23,6 @@ const buildMetricsSummary = (overrides?: Partial<MetricsSummary>): MetricsSummar
   ...overrides,
 });
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-    },
-  });
-  const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return wrapper;
-};
 
 describe("useMetricsSummary", () => {
   afterEach(() => {
@@ -44,7 +33,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockResolvedValueOnce(buildMetricsSummary());
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     expect(result.current.isLoading).toBe(true);
@@ -56,7 +45,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockResolvedValueOnce(summary);
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => {
@@ -70,7 +59,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockResolvedValueOnce(buildMetricsSummary());
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -93,7 +82,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockResolvedValueOnce(summary);
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -118,7 +107,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockResolvedValueOnce(summary);
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -132,7 +121,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockRejectedValueOnce(serverError);
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => {
@@ -150,7 +139,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockRejectedValueOnce(unauthorizedError);
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => {
@@ -167,7 +156,7 @@ describe("useMetricsSummary", () => {
       .mockResolvedValueOnce(summary)
       .mockResolvedValueOnce(summary);
 
-    const wrapper = createWrapper();
+    const { wrapper } = createWrapper();
 
     const { result: first } = renderHook(() => useMetricsSummary(), { wrapper });
     const { result: second } = renderHook(() => useMetricsSummary(), { wrapper });
@@ -190,7 +179,7 @@ describe("useMetricsSummary", () => {
     mockMetricsService.getSummary.mockResolvedValueOnce(summary);
 
     const { result } = renderHook(() => useMetricsSummary(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));

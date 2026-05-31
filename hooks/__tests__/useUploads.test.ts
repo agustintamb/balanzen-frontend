@@ -1,7 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-import React from "react";
 
+import createWrapper from "@/__test-utils__/createWrapper";
 import { uploadsService } from "@/api/uploads/uploads.service";
 import { UploadImageResponse } from "@/api/uploads/uploads.types";
 import { useDeleteImage, useUploadImage } from "@/hooks/useUploads";
@@ -15,17 +14,6 @@ jest.mock("@/api/uploads/uploads.service", () => ({
 
 const mockUploadsService = uploadsService as jest.Mocked<typeof uploadsService>;
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return wrapper;
-};
 
 describe("useUploadImage", () => {
   afterEach(() => {
@@ -34,7 +22,7 @@ describe("useUploadImage", () => {
 
   it("should initialize with idle status", () => {
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     expect(result.current.isPending).toBe(false);
@@ -50,7 +38,7 @@ describe("useUploadImage", () => {
     mockUploadsService.uploadImage.mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     const formData = new FormData();
@@ -73,7 +61,7 @@ describe("useUploadImage", () => {
     mockUploadsService.uploadImage.mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     const formData = new FormData();
@@ -97,7 +85,7 @@ describe("useUploadImage", () => {
     mockUploadsService.uploadImage.mockRejectedValueOnce(networkError);
 
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate(new FormData());
@@ -117,7 +105,7 @@ describe("useUploadImage", () => {
     mockUploadsService.uploadImage.mockRejectedValueOnce(payloadError);
 
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate(new FormData());
@@ -134,7 +122,7 @@ describe("useUploadImage", () => {
     mockUploadsService.uploadImage.mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     let resolvedValue: UploadImageResponse | undefined;
@@ -155,7 +143,7 @@ describe("useUploadImage", () => {
       .mockResolvedValueOnce(secondResponse);
 
     const { result } = renderHook(() => useUploadImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate(new FormData());
@@ -177,7 +165,7 @@ describe("useDeleteImage", () => {
 
   it("should initialize with idle status", () => {
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     expect(result.current.isPending).toBe(false);
@@ -191,7 +179,7 @@ describe("useDeleteImage", () => {
     mockUploadsService.deleteImage.mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate("https://cdn.example.com/to-delete.jpg");
@@ -208,7 +196,7 @@ describe("useDeleteImage", () => {
     mockUploadsService.deleteImage.mockResolvedValueOnce({ message: "Deleted" });
 
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     const imageUrl = "https://res.cloudinary.com/demo/image/upload/v123/photo.jpg";
@@ -232,7 +220,7 @@ describe("useDeleteImage", () => {
     mockUploadsService.deleteImage.mockRejectedValueOnce(notFoundError);
 
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate("https://cdn.example.com/nonexistent.jpg");
@@ -248,7 +236,7 @@ describe("useDeleteImage", () => {
     mockUploadsService.deleteImage.mockRejectedValueOnce(new Error("Connection refused"));
 
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate("https://cdn.example.com/photo.jpg");
@@ -265,7 +253,7 @@ describe("useDeleteImage", () => {
     mockUploadsService.deleteImage.mockResolvedValueOnce({ message: "Removed" });
 
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     let response: { message: string } | undefined;
@@ -281,7 +269,7 @@ describe("useDeleteImage", () => {
     mockUploadsService.deleteImage.mockResolvedValueOnce({ message: "Deleted" });
 
     const { result } = renderHook(() => useDeleteImage(), {
-      wrapper: createWrapper(),
+      wrapper: createWrapper().wrapper,
     });
 
     result.current.mutate("");

@@ -1,6 +1,6 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
-import React from "react";
+
+import createWrapper from "@/__test-utils__/createWrapper";
 
 import { ordersService } from "@/api/orders/orders.service";
 import {
@@ -59,18 +59,6 @@ const buildOrderListResponse = (
   ...overrides,
 });
 
-const createWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false, gcTime: 0 },
-      mutations: { retry: false },
-    },
-  });
-  const Wrapper = ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
-  return Wrapper;
-};
-
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -82,7 +70,7 @@ describe("useOrders", () => {
       mockOrdersService.list.mockResolvedValueOnce(response);
 
       const { result } = renderHook(() => useOrders(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -96,7 +84,7 @@ describe("useOrders", () => {
       mockOrdersService.list.mockResolvedValueOnce(buildOrderListResponse());
 
       const { result } = renderHook(() => useOrders(filters), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -108,7 +96,7 @@ describe("useOrders", () => {
       mockOrdersService.list.mockRejectedValueOnce(new Error("Network Error"));
 
       const { result } = renderHook(() => useOrders(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -124,7 +112,7 @@ describe("useOrders", () => {
       mockOrdersService.list.mockResolvedValueOnce(emptyResponse);
 
       const { result } = renderHook(() => useOrders(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -137,7 +125,7 @@ describe("useOrders", () => {
       mockOrdersService.list.mockResolvedValueOnce(buildOrderListResponse());
 
       const { result } = renderHook(() => useOrders(filters), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -157,7 +145,7 @@ describe("useOrders", () => {
       mockOrdersService.list.mockResolvedValueOnce(response);
 
       const { result } = renderHook(() => useOrders(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -173,7 +161,7 @@ describe("useOrders", () => {
       mockOrdersService.getById.mockResolvedValueOnce(order);
 
       const { result } = renderHook(() => useOrder("order-abc"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -184,7 +172,7 @@ describe("useOrders", () => {
 
     it("should not fetch when id is an empty string", async () => {
       const { result } = renderHook(() => useOrder(""), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.fetchStatus).toBe("idle");
@@ -198,7 +186,7 @@ describe("useOrders", () => {
       mockOrdersService.getById.mockRejectedValueOnce(notFoundError);
 
       const { result } = renderHook(() => useOrder("nonexistent-id"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -211,7 +199,7 @@ describe("useOrders", () => {
       mockOrdersService.getById.mockResolvedValueOnce(order);
 
       const { result } = renderHook(() => useOrder("order-done"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -224,7 +212,7 @@ describe("useOrders", () => {
       mockOrdersService.getById.mockResolvedValueOnce(order);
 
       const { result } = renderHook(() => useOrder("order-x"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -241,7 +229,7 @@ describe("useOrders", () => {
       );
 
       const { result } = renderHook(() => useOrder("order-1"), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.isPending).toBe(true);
@@ -257,7 +245,7 @@ describe("useOrders", () => {
       mockOrdersService.create.mockResolvedValueOnce(created);
 
       const { result } = renderHook(() => useCreateOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("pub-1");
@@ -273,7 +261,7 @@ describe("useOrders", () => {
       mockOrdersService.create.mockResolvedValueOnce(created);
 
       const { result } = renderHook(() => useCreateOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       const order = await result.current.mutateAsync("pub-2");
@@ -288,7 +276,7 @@ describe("useOrders", () => {
       mockOrdersService.create.mockRejectedValueOnce(conflictError);
 
       const { result } = renderHook(() => useCreateOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("pub-1");
@@ -300,7 +288,7 @@ describe("useOrders", () => {
 
     it("should be in idle state before the mutation is called", () => {
       const { result } = renderHook(() => useCreateOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.status).toBe("idle");
@@ -311,7 +299,7 @@ describe("useOrders", () => {
       mockOrdersService.create.mockResolvedValueOnce(buildOrder());
 
       const { result } = renderHook(() => useCreateOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("publication-uuid-1234");
@@ -328,7 +316,7 @@ describe("useOrders", () => {
       mockOrdersService.cancel.mockResolvedValueOnce(cancelled);
 
       const { result } = renderHook(() => useCancelOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-1");
@@ -344,7 +332,7 @@ describe("useOrders", () => {
       mockOrdersService.cancel.mockResolvedValueOnce(cancelled);
 
       const { result } = renderHook(() => useCancelOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       const order = await result.current.mutateAsync("order-2");
@@ -356,7 +344,7 @@ describe("useOrders", () => {
       mockOrdersService.cancel.mockRejectedValueOnce(new Error("Forbidden"));
 
       const { result } = renderHook(() => useCancelOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-1");
@@ -368,7 +356,7 @@ describe("useOrders", () => {
 
     it("should be in idle state before the mutation is called", () => {
       const { result } = renderHook(() => useCancelOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.status).toBe("idle");
@@ -379,7 +367,7 @@ describe("useOrders", () => {
       mockOrdersService.cancel.mockResolvedValueOnce(cancelled);
 
       const { result } = renderHook(() => useCancelOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-xyz");
@@ -394,7 +382,7 @@ describe("useOrders", () => {
       mockOrdersService.cancel.mockResolvedValueOnce(cancelled);
 
       const { result } = renderHook(() => useCancelOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-99");
@@ -412,7 +400,7 @@ describe("useOrders", () => {
       mockOrdersService.deliver.mockResolvedValueOnce(delivered);
 
       const { result } = renderHook(() => useDeliverOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-1");
@@ -428,7 +416,7 @@ describe("useOrders", () => {
       mockOrdersService.deliver.mockResolvedValueOnce(delivered);
 
       const { result } = renderHook(() => useDeliverOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       const order = await result.current.mutateAsync("order-3");
@@ -440,7 +428,7 @@ describe("useOrders", () => {
       mockOrdersService.deliver.mockRejectedValueOnce(new Error("Unprocessable Entity"));
 
       const { result } = renderHook(() => useDeliverOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-1");
@@ -452,7 +440,7 @@ describe("useOrders", () => {
 
     it("should be in idle state before the mutation is called", () => {
       const { result } = renderHook(() => useDeliverOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       expect(result.current.status).toBe("idle");
@@ -464,7 +452,7 @@ describe("useOrders", () => {
       mockOrdersService.deliver.mockResolvedValueOnce(delivered);
 
       const { result } = renderHook(() => useDeliverOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-abc");
@@ -479,7 +467,7 @@ describe("useOrders", () => {
       mockOrdersService.deliver.mockResolvedValueOnce(delivered);
 
       const { result } = renderHook(() => useDeliverOrder(), {
-        wrapper: createWrapper(),
+        wrapper: createWrapper().wrapper,
       });
 
       result.current.mutate("order-final");
