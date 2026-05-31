@@ -47,7 +47,7 @@ const RoleCard = ({ role, selected, onPress }: RoleCardProps) => (
       </View>
 
       <View style={{ opacity: selected ? 1 : 0 }} className="ml-2">
-        <Icon name="checkmark-circle" size={26} />
+        <Icon name="check-circle" size={26} />
       </View>
     </View>
 

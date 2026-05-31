@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useUIStore, type ToastType } from "@/stores/ui.store";
 
 const AUTO_DISMISS_MS = 3500;
@@ -12,32 +12,32 @@ const CONFIG: Record<
     bg: string;
     text: string;
     iconColor: string;
-    iconName: React.ComponentProps<typeof Ionicons>["name"];
+    iconName: React.ComponentProps<typeof Feather>["name"];
   }
 > = {
   error: {
     bg: "#FDECEA",
     text: "#C0392B",
     iconColor: "#E84234",
-    iconName: "alert-circle-outline",
+    iconName: "alert-circle",
   },
   success: {
     bg: "#EAF3DE",
     text: "#27500A",
     iconColor: "#639922",
-    iconName: "checkmark-circle-outline",
+    iconName: "check-circle",
   },
   warning: {
     bg: "#FAEEDA",
     text: "#9A5E0A",
     iconColor: "#BA7517",
-    iconName: "warning-outline",
+    iconName: "alert-triangle",
   },
   info: {
     bg: "#F3F4F6",
     text: "#374151",
     iconColor: "#6B7280",
-    iconName: "information-circle-outline",
+    iconName: "info",
   },
 };
 
@@ -115,7 +115,7 @@ const Toast = () => {
         activeOpacity={0.92}
         style={[styles.container, { backgroundColor: cfg.bg }]}
       >
-        <Ionicons name={cfg.iconName} size={20} color={cfg.iconColor} />
+        <Feather name={cfg.iconName} size={20} color={cfg.iconColor} />
 
         <Text style={[styles.message, { color: cfg.text }]} numberOfLines={3}>
           {toast.message}
@@ -125,7 +125,7 @@ const Toast = () => {
           onPress={hideToast}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Ionicons name="close" size={18} color={cfg.iconColor} />
+          <Feather name="close" size={18} color={cfg.iconColor} />
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>

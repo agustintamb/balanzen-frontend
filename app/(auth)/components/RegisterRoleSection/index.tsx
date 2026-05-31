@@ -5,18 +5,17 @@ import Button from "@/components/ui/Button";
 import RoleCard, { type RoleOption } from "../RoleCard";
 import { useRegisterRoleSection } from "./useRegisterRoleSection";
 
-
 const ROLES: RoleOption[] = [
   {
     id: "CONSUMIDOR",
-    iconName: "person-outline",
+    iconName: "user",
     title: "Soy consumidor",
     description: "Explorá alimentos frescos a precios increíbles.",
     benefits: ["Ofertas cercanas", "Hasta 70% off", "Sin desperdicio"],
   },
   {
     id: "COMERCIO",
-    iconName: "storefront-outline",
+    iconName: "shopping-bag",
     title: "Soy comercio",
     description: "Publicá excedentes y reducí las pérdidas del negocio.",
     benefits: ["Menos pérdidas", "Más clientes", "Impacto positivo"],
@@ -70,7 +69,7 @@ const RegisterRoleSection = ({
         <Button
           disabled={!selectedRole}
           onPress={() => selectedRole && onContinue(selectedRole)}
-          rightIconName="arrow-forward"
+          rightIconName="arrow-right"
         >
           Continuar
         </Button>

@@ -1,9 +1,9 @@
 import { View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { cn } from "@/utils/cn";
 
-// Exportado para que otros archivos no necesiten importar Ionicons solo por el tipo
-export type IconName = React.ComponentProps<typeof Ionicons>["name"];
+// Exportado para que otros archivos no necesiten importar Feather solo por el tipo
+export type IconName = React.ComponentProps<typeof Feather>["name"];
 
 export type IconVariant = "plain" | "soft" | "filled" | "outline";
 export type IconColor =
@@ -55,7 +55,7 @@ const BG_CLASSES: Record<
   },
 };
 
-// Color del ícono Ionicons para cada variante × color
+// Color del ícono Feather para cada variante × color
 const ICON_COLORS: Record<IconVariant, Record<IconColor, string>> = {
   plain: {
     primary: "#639922",
@@ -103,7 +103,7 @@ const Icon = ({
   const iconColor = ICON_COLORS[variant][color];
 
   if (variant === "plain") {
-    return <Ionicons name={name} size={size} color={iconColor} />;
+    return <Feather name={name} size={size} color={iconColor} />;
   }
 
   const resolvedSize = containerSize ?? size * 2;
@@ -118,7 +118,7 @@ const Icon = ({
       style={{ width: resolvedSize, height: resolvedSize }}
       testID={testID}
     >
-      <Ionicons name={name} size={size} color={iconColor} />
+      <Feather name={name} size={size} color={iconColor} />
     </View>
   );
 };
