@@ -1,4 +1,4 @@
-import expoConfig from "eslint-config-expo/flat";
+import expoConfig from "eslint-config-expo/flat.js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import prettier from "eslint-plugin-prettier";
 import { defineConfig } from "eslint/config";
@@ -10,8 +10,7 @@ export default defineConfig([
     plugins: { prettier },
     rules: {
       "prettier/prettier": "error",
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "no-console": "off",
+      "no-console": ["warn", { allow: ["error"] }],
     },
   },
   {

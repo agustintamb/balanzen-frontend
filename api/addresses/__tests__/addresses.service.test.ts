@@ -18,7 +18,7 @@ jest.mock('@/api/client', () => ({
   },
 }))
 
-const mockApiClient = apiClient as {
+const mockApiClient = apiClient as unknown as {
   get: jest.MockedFunction<typeof apiClient.get>
   post: jest.MockedFunction<typeof apiClient.post>
   put: jest.MockedFunction<typeof apiClient.put>

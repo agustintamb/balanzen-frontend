@@ -45,8 +45,8 @@ jest.mock('@/stores/registration.store', () => ({
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { router } = require('expo-router') as { router: { replace: jest.Mock } }
 const mockedUseRegister = useRegister as jest.Mock
-const mockedUseAuthStore = useAuthStore as jest.Mock
-const mockedUseRegistrationStore = useRegistrationStore as jest.Mock
+const mockedUseAuthStore = useAuthStore as unknown as jest.Mock
+const mockedUseRegistrationStore = useRegistrationStore as unknown as jest.Mock
 const mockedPersistSession = persistSession as jest.Mock
 
 const PERSONAL_DATA = {
@@ -432,9 +432,9 @@ describe('useRegisterCommerceSection', () => {
 
       mockedUseForm.mockImplementationOnce(() => ({
         control: {} as ReturnType<typeof mockedUseForm>['control'],
-        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => () => fn(VALID_FORM_DATA),
+        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => async () => fn(VALID_FORM_DATA),
         formState: { isValid: true } as ReturnType<typeof mockedUseForm>['formState'],
-      }))
+      } as unknown as ReturnType<typeof mockedUseForm>))
 
       const { result } = renderHook(() => useRegisterCommerceSection(), {
         wrapper: createWrapper(),
@@ -452,9 +452,9 @@ describe('useRegisterCommerceSection', () => {
 
       mockedUseForm.mockImplementationOnce(() => ({
         control: {} as ReturnType<typeof mockedUseForm>['control'],
-        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => () => fn(VALID_FORM_DATA),
+        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => async () => fn(VALID_FORM_DATA),
         formState: { isValid: true } as ReturnType<typeof mockedUseForm>['formState'],
-      }))
+      } as unknown as ReturnType<typeof mockedUseForm>))
 
       const { result } = renderHook(() => useRegisterCommerceSection(), {
         wrapper: createWrapper(),
@@ -490,9 +490,9 @@ describe('useRegisterCommerceSection', () => {
 
       mockedUseForm.mockImplementationOnce(() => ({
         control: {} as ReturnType<typeof mockedUseForm>['control'],
-        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => () => fn(VALID_FORM_DATA),
+        handleSubmit: (fn: (d: typeof VALID_FORM_DATA) => void) => async () => fn(VALID_FORM_DATA),
         formState: { isValid: true } as ReturnType<typeof mockedUseForm>['formState'],
-      }))
+      } as unknown as ReturnType<typeof mockedUseForm>))
 
       const { result } = renderHook(() => useRegisterCommerceSection(), {
         wrapper: createWrapper(),
