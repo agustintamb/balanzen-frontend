@@ -75,7 +75,7 @@ const LoginSection = ({ onSwitchToRegister }: LoginSectionProps) => {
           disabled={!isValid}
           loading={isPending}
           onPress={onSubmit}
-          rightIconName="arrow-forward"
+          rightIconName="arrow-right"
         >
           Ingresar
         </Button>

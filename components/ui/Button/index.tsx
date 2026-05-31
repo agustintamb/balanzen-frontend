@@ -1,18 +1,24 @@
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { tv } from "tailwind-variants";
 
-type IoniconName = React.ComponentProps<typeof Ionicons>["name"];
+type FeatherName = React.ComponentProps<typeof Feather>["name"];
 
 export interface ButtonProps {
   children: React.ReactNode;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "tertiary" | "neutral" | "textLink" | "danger";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "tertiary"
+    | "neutral"
+    | "textLink"
+    | "danger";
   size?: "sm" | "md" | "lg";
   disabled?: boolean;
   loading?: boolean;
-  leftIconName?: IoniconName;
-  rightIconName?: IoniconName;
+  leftIconName?: FeatherName;
+  rightIconName?: FeatherName;
   className?: string;
   testID?: string;
 }
@@ -168,11 +174,11 @@ const Button = ({
       ) : (
         <>
           {leftIconName && (
-            <Ionicons name={leftIconName} size={iconSize} color={iconColor} />
+            <Feather name={leftIconName} size={iconSize} color={iconColor} />
           )}
           <Text className={labelStyle()}>{children}</Text>
           {rightIconName && (
-            <Ionicons name={rightIconName} size={iconSize} color={iconColor} />
+            <Feather name={rightIconName} size={iconSize} color={iconColor} />
           )}
         </>
       )}

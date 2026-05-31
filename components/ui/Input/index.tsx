@@ -6,7 +6,7 @@ import {
   View,
   type TextInputProps,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { cn } from "@/utils/cn";
 
 type InputType = "text" | "email" | "password" | "number" | "phone";
@@ -109,8 +109,8 @@ const Input = React.forwardRef<TextInput, InputProps>(
               onPress={() => setIsPasswordVisible((v) => !v)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Ionicons
-                name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
+              <Feather
+                name={isPasswordVisible ? "eye" : "eye-off"}
                 size={20}
                 color="#9CA3AF"
               />
