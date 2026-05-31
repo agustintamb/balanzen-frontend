@@ -38,5 +38,7 @@ export const buildAddressFromCoords = async (
 };
 
 // Expo Router requires a default export in app/ — this file is a util, not a screen
-// eslint-disable-next-line import/no-default-export
-export default function _() { return null; }
+
+export default function _() {
+  return null;
+}
