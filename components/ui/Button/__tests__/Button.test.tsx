@@ -1,18 +1,17 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
-
+import { fireEvent, render } from "@testing-library/react-native";
 import Button from "@/components/ui/Button";
 
 // NativeWind processes className at build-time via Babel; mock it so
 // the Babel transform is a no-op and the component renders in Jest.
 jest.mock("nativewind", () => ({ styled: (c: unknown) => c }));
 
-// Ionicons cannot render in Jest — stub it with a View that carries a
+// Feather cannot render in Jest — stub it with a View that carries a
 // deterministic testID so we can assert icon presence/absence.
 jest.mock("@expo/vector-icons", () => {
   const React = require("react");
   const { View } = require("react-native");
-  const Ionicons = ({
+  const Feather = ({
     name,
     testID,
     ...rest
@@ -25,7 +24,7 @@ jest.mock("@expo/vector-icons", () => {
       testID: testID ?? `icon-${name}`,
       ...rest,
     });
-  return { Ionicons };
+  return { Feather };
 });
 
 describe("Button", () => {
@@ -41,7 +40,7 @@ describe("Button", () => {
     it("should render children text correctly", () => {
       // Arrange / Act
       const { getByText } = render(
-        <Button onPress={jest.fn()}>Confirm</Button>
+        <Button onPress={jest.fn()}>Confirm</Button>,
       );
       // Assert
       expect(getByText("Confirm")).toBeTruthy();
@@ -50,7 +49,7 @@ describe("Button", () => {
     it("should render children when a multi-word label is passed", () => {
       // Arrange / Act
       const { getByText } = render(
-        <Button onPress={jest.fn()}>Save changes</Button>
+        <Button onPress={jest.fn()}>Save changes</Button>,
       );
       // Assert
       expect(getByText("Save changes")).toBeTruthy();
@@ -67,7 +66,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} testID="btn-submit">
           Submit
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn-submit")).toBeTruthy();
@@ -85,7 +84,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={handlePress} testID="btn">
           Press me
-        </Button>
+        </Button>,
       );
       // Act
       fireEvent.press(getByTestId("btn"));
@@ -99,7 +98,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={handlePress} disabled testID="btn">
           Press me
-        </Button>
+        </Button>,
       );
       // Act
       fireEvent.press(getByTestId("btn"));
@@ -113,7 +112,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={handlePress} loading testID="btn">
           Press me
-        </Button>
+        </Button>,
       );
       // Act
       fireEvent.press(getByTestId("btn"));
@@ -132,7 +131,7 @@ describe("Button", () => {
       const { getByTestId, UNSAFE_getAllByType } = render(
         <Button onPress={jest.fn()} loading testID="btn">
           Save
-        </Button>
+        </Button>,
       );
       const { ActivityIndicator } = require("react-native");
       // Assert — ActivityIndicator is present in the tree
@@ -145,7 +144,7 @@ describe("Button", () => {
       const { queryByText } = render(
         <Button onPress={jest.fn()} loading>
           Hidden text
-        </Button>
+        </Button>,
       );
       // Assert
       expect(queryByText("Hidden text")).toBeNull();
@@ -156,7 +155,7 @@ describe("Button", () => {
       const { getByText } = render(
         <Button onPress={jest.fn()} loading={false}>
           Visible text
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByText("Visible text")).toBeTruthy();
@@ -167,7 +166,7 @@ describe("Button", () => {
       const { UNSAFE_queryAllByType } = render(
         <Button onPress={jest.fn()} loading={false}>
           Ready
-        </Button>
+        </Button>,
       );
       const { ActivityIndicator } = require("react-native");
       // Assert
@@ -185,7 +184,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} disabled testID="btn-disabled">
           Disabled
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn-disabled")).toBeTruthy();
@@ -196,7 +195,7 @@ describe("Button", () => {
       const { getByText } = render(
         <Button onPress={jest.fn()} disabled>
           Still visible
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByText("Still visible")).toBeTruthy();
@@ -207,7 +206,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} disabled testID="btn">
           Disabled
-        </Button>
+        </Button>,
       );
       // Assert — accessibilityState.disabled is set by TouchableOpacity
       expect(getByTestId("btn").props.accessibilityState?.disabled).toBe(true);
@@ -234,7 +233,7 @@ describe("Button", () => {
         const { getByText } = render(
           <Button onPress={jest.fn()} variant={variant}>
             Label
-          </Button>
+          </Button>,
         );
         // Assert
         expect(getByText("Label")).toBeTruthy();
@@ -246,7 +245,7 @@ describe("Button", () => {
       const tree = render(
         <Button onPress={jest.fn()} variant="primary" testID="btn">
           Primary
-        </Button>
+        </Button>,
       ).toJSON();
       // Assert
       expect(tree).toMatchSnapshot();
@@ -257,7 +256,7 @@ describe("Button", () => {
       const tree = render(
         <Button onPress={jest.fn()} variant="secondary" testID="btn">
           Secondary
-        </Button>
+        </Button>,
       ).toJSON();
       // Assert
       expect(tree).toMatchSnapshot();
@@ -268,7 +267,7 @@ describe("Button", () => {
       const tree = render(
         <Button onPress={jest.fn()} variant="danger" testID="btn">
           Delete
-        </Button>
+        </Button>,
       ).toJSON();
       // Assert
       expect(tree).toMatchSnapshot();
@@ -285,7 +284,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} size="sm" testID="btn">
           Small
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn")).toBeTruthy();
@@ -296,7 +295,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} size="md" testID="btn">
           Medium
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn")).toBeTruthy();
@@ -307,7 +306,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} size="lg" testID="btn">
           Large
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn")).toBeTruthy();
@@ -318,7 +317,7 @@ describe("Button", () => {
       const tree = render(
         <Button onPress={jest.fn()} size="sm" testID="btn">
           Small
-        </Button>
+        </Button>,
       ).toJSON();
       // Assert
       expect(tree).toMatchSnapshot();
@@ -329,7 +328,7 @@ describe("Button", () => {
       const tree = render(
         <Button onPress={jest.fn()} size="lg" testID="btn">
           Large
-        </Button>
+        </Button>,
       ).toJSON();
       // Assert
       expect(tree).toMatchSnapshot();
@@ -344,19 +343,19 @@ describe("Button", () => {
     it("should render an icon before the text when leftIconName is provided", () => {
       // Arrange / Act
       const { getByTestId, getByText } = render(
-        <Button onPress={jest.fn()} leftIconName="add-circle-outline">
+        <Button onPress={jest.fn()} leftIconName="plus-circle">
           Add item
-        </Button>
+        </Button>,
       );
       // Assert
-      expect(getByTestId("icon-add-circle-outline")).toBeTruthy();
+      expect(getByTestId("icon-plus-circle")).toBeTruthy();
       expect(getByText("Add item")).toBeTruthy();
     });
 
     it("should NOT render a left icon when leftIconName is not provided", () => {
       // Arrange / Act
       const { queryByTestId } = render(
-        <Button onPress={jest.fn()}>No icon</Button>
+        <Button onPress={jest.fn()}>No icon</Button>,
       );
       // Assert
       expect(queryByTestId(/^icon-/)).toBeNull();
@@ -367,12 +366,12 @@ describe("Button", () => {
     it("should render an icon after the text when rightIconName is provided", () => {
       // Arrange / Act
       const { getByTestId, getByText } = render(
-        <Button onPress={jest.fn()} rightIconName="chevron-forward-outline">
+        <Button onPress={jest.fn()} rightIconName="chevron-right">
           Next
-        </Button>
+        </Button>,
       );
       // Assert
-      expect(getByTestId("icon-chevron-forward-outline")).toBeTruthy();
+      expect(getByTestId("icon-chevron-right")).toBeTruthy();
       expect(getByText("Next")).toBeTruthy();
     });
 
@@ -381,15 +380,15 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button
           onPress={jest.fn()}
-          leftIconName="star-outline"
-          rightIconName="chevron-forward-outline"
+          leftIconName="star"
+          rightIconName="chevron-right"
         >
           Favorite
-        </Button>
+        </Button>,
       );
       // Assert
-      expect(getByTestId("icon-star-outline")).toBeTruthy();
-      expect(getByTestId("icon-chevron-forward-outline")).toBeTruthy();
+      expect(getByTestId("icon-star")).toBeTruthy();
+      expect(getByTestId("icon-chevron-right")).toBeTruthy();
     });
 
     it("should NOT render icons when loading is true", () => {
@@ -398,15 +397,15 @@ describe("Button", () => {
         <Button
           onPress={jest.fn()}
           loading
-          leftIconName="star-outline"
-          rightIconName="chevron-forward-outline"
+          leftIconName="star"
+          rightIconName="chevron-right"
         >
           Loading
-        </Button>
+        </Button>,
       );
       // Assert — icons are replaced by ActivityIndicator while loading
-      expect(queryByTestId("icon-star-outline")).toBeNull();
-      expect(queryByTestId("icon-chevron-forward-outline")).toBeNull();
+      expect(queryByTestId("icon-star")).toBeNull();
+      expect(queryByTestId("icon-chevron-right")).toBeNull();
     });
   });
 
@@ -420,7 +419,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} className="w-full" testID="btn">
           Full width
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn")).toBeTruthy();
@@ -431,7 +430,7 @@ describe("Button", () => {
       const { getByText } = render(
         <Button onPress={jest.fn()} className="mt-4">
           With extra class
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByText("With extra class")).toBeTruthy();
@@ -448,7 +447,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} testID="btn">
           Default
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn")).toBeTruthy();
@@ -459,7 +458,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={jest.fn()} testID="btn">
           Default size
-        </Button>
+        </Button>,
       );
       // Assert
       expect(getByTestId("btn")).toBeTruthy();
@@ -471,7 +470,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={handlePress} testID="btn">
           Clickable
-        </Button>
+        </Button>,
       );
       // Act
       fireEvent.press(getByTestId("btn"));
@@ -482,7 +481,7 @@ describe("Button", () => {
     it("should not show ActivityIndicator by default", () => {
       // Arrange / Act
       const { UNSAFE_queryAllByType } = render(
-        <Button onPress={jest.fn()}>Default</Button>
+        <Button onPress={jest.fn()}>Default</Button>,
       );
       const { ActivityIndicator } = require("react-native");
       // Assert
@@ -500,7 +499,7 @@ describe("Button", () => {
       const { UNSAFE_getAllByType } = render(
         <Button onPress={jest.fn()} loading disabled>
           Processing
-        </Button>
+        </Button>,
       );
       const { ActivityIndicator } = require("react-native");
       // Assert — spinner is shown (loading path executed, not disabled path)
@@ -513,7 +512,7 @@ describe("Button", () => {
       const { getByTestId } = render(
         <Button onPress={handlePress} loading disabled testID="btn">
           Processing
-        </Button>
+        </Button>,
       );
       // Act
       fireEvent.press(getByTestId("btn"));

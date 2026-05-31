@@ -1,7 +1,7 @@
-import { renderHook, act, waitFor } from "@testing-library/react-native";
-import * as Location from "expo-location";
 import { router } from "expo-router";
-import { useAddressScreen } from "../useAddressScreen";
+import * as Location from "expo-location";
+import { act, renderHook, waitFor } from "@testing-library/react-native";
+import type { Address, AddressInput } from "@/api/addresses/addresses.types";
 import {
   useAddresses,
   useAddressSearch,
@@ -11,11 +11,11 @@ import {
 } from "@/hooks/useAddresses";
 import { useAuthStore } from "@/stores/auth.store";
 import { buildAddressFromCoords } from "../address.utils";
-import type { Address, AddressInput } from "@/api/addresses/addresses.types";
+import { useAddressScreen } from "../useAddressScreen";
 
 // Fake timers prevent the debounce setTimeout (350 ms) and withTimeout (7 s)
 // from becoming open handles that keep the Jest worker alive after tests finish.
-jest.useFakeTimers()
+jest.useFakeTimers();
 
 // ─── Module mocks ──────────────────────────────────────────────────────────────
 
@@ -48,19 +48,38 @@ jest.mock("../address.utils", () => ({
 
 // ─── Typed helpers ─────────────────────────────────────────────────────────────
 
-const mockUseAddresses = useAddresses as jest.MockedFunction<typeof useAddresses>;
-const mockUseAddressSearch = useAddressSearch as jest.MockedFunction<typeof useAddressSearch>;
-const mockUseCreateAddress = useCreateAddress as jest.MockedFunction<typeof useCreateAddress>;
-const mockUseDeleteAddress = useDeleteAddress as jest.MockedFunction<typeof useDeleteAddress>;
-const mockUseSelectAddress = useSelectAddress as jest.MockedFunction<typeof useSelectAddress>;
-const mockUseAuthStore = useAuthStore as jest.MockedFunction<typeof useAuthStore>;
-const mockBuildAddressFromCoords = buildAddressFromCoords as jest.MockedFunction<typeof buildAddressFromCoords>;
+const mockUseAddresses = useAddresses as jest.MockedFunction<
+  typeof useAddresses
+>;
+const mockUseAddressSearch = useAddressSearch as jest.MockedFunction<
+  typeof useAddressSearch
+>;
+const mockUseCreateAddress = useCreateAddress as jest.MockedFunction<
+  typeof useCreateAddress
+>;
+const mockUseDeleteAddress = useDeleteAddress as jest.MockedFunction<
+  typeof useDeleteAddress
+>;
+const mockUseSelectAddress = useSelectAddress as jest.MockedFunction<
+  typeof useSelectAddress
+>;
+const mockUseAuthStore = useAuthStore as jest.MockedFunction<
+  typeof useAuthStore
+>;
+const mockBuildAddressFromCoords =
+  buildAddressFromCoords as jest.MockedFunction<typeof buildAddressFromCoords>;
 const mockRequestForegroundPermissions =
-  Location.requestForegroundPermissionsAsync as jest.MockedFunction<typeof Location.requestForegroundPermissionsAsync>;
+  Location.requestForegroundPermissionsAsync as jest.MockedFunction<
+    typeof Location.requestForegroundPermissionsAsync
+  >;
 const mockGetLastKnownPosition =
-  Location.getLastKnownPositionAsync as jest.MockedFunction<typeof Location.getLastKnownPositionAsync>;
+  Location.getLastKnownPositionAsync as jest.MockedFunction<
+    typeof Location.getLastKnownPositionAsync
+  >;
 const mockGetCurrentPosition =
-  Location.getCurrentPositionAsync as jest.MockedFunction<typeof Location.getCurrentPositionAsync>;
+  Location.getCurrentPositionAsync as jest.MockedFunction<
+    typeof Location.getCurrentPositionAsync
+  >;
 
 // ─── Factories ────────────────────────────────────────────────────────────────
 
@@ -77,7 +96,9 @@ const buildAddress = (overrides: Partial<Address> = {}): Address => ({
   ...overrides,
 });
 
-const buildAddressInput = (overrides: Partial<AddressInput> = {}): AddressInput => ({
+const buildAddressInput = (
+  overrides: Partial<AddressInput> = {},
+): AddressInput => ({
   formatted_address: "Av. Corrientes 1234, Buenos Aires",
   street: "Av. Corrientes",
   number: "1234",
@@ -89,7 +110,15 @@ const buildAddressInput = (overrides: Partial<AddressInput> = {}): AddressInput 
 });
 
 type MutationResult<TData, TError, TVariables> = {
-  mutate: jest.MockedFunction<(variables: TVariables, options?: { onSuccess?: (data: TData) => void; onError?: (err: TError) => void }) => void>;
+  mutate: jest.MockedFunction<
+    (
+      variables: TVariables,
+      options?: {
+        onSuccess?: (data: TData) => void;
+        onError?: (err: TError) => void;
+      },
+    ) => void
+  >;
   isPending: boolean;
 };
 
@@ -103,21 +132,31 @@ const buildMutation = <TData = unknown, TError = Error, TVariables = unknown>(
 
 const buildLocationResult = (lat = -34.6037, lng = -58.3816) =>
   ({
-    coords: { latitude: lat, longitude: lng, altitude: null, accuracy: null, altitudeAccuracy: null, heading: null, speed: null },
+    coords: {
+      latitude: lat,
+      longitude: lng,
+      altitude: null,
+      accuracy: null,
+      altitudeAccuracy: null,
+      heading: null,
+      speed: null,
+    },
     timestamp: Date.now(),
     mocked: false,
-  } as unknown as Location.LocationObject);
+  }) as unknown as Location.LocationObject;
 
 const buildPermissionResponse = (
   granted: boolean,
   canAskAgain = true,
 ): Location.LocationPermissionResponse =>
   ({
-    status: granted ? ("granted" as Location.PermissionStatus) : ("denied" as Location.PermissionStatus),
+    status: granted
+      ? ("granted" as Location.PermissionStatus)
+      : ("denied" as Location.PermissionStatus),
     granted,
     canAskAgain,
     expires: "never",
-  } as Location.LocationPermissionResponse);
+  }) as Location.LocationPermissionResponse;
 
 // ─── Default setup ─────────────────────────────────────────────────────────────
 
@@ -143,7 +182,14 @@ const setupDefaultMocks = () => {
   );
 
   mockUseAuthStore.mockReturnValue({
-    user: { id: "u1", role: "CONSUMIDOR", email: "a@b.com", first_name: "A", last_name: "B", has_address: false },
+    user: {
+      id: "u1",
+      role: "CONSUMIDOR",
+      email: "a@b.com",
+      first_name: "A",
+      last_name: "B",
+      has_address: false,
+    },
     setHasAddress: jest.fn(),
   } as unknown as ReturnType<typeof useAuthStore>);
 };
@@ -184,7 +230,10 @@ describe("useAddressScreen", () => {
     });
 
     it("should pre-select the active address on mount", async () => {
-      const activeAddress = buildAddress({ id: "addr-active", is_selected: true });
+      const activeAddress = buildAddress({
+        id: "addr-active",
+        is_selected: true,
+      });
       mockUseAddresses.mockReturnValue({
         data: [activeAddress, buildAddress({ id: "addr-2" })],
         isLoading: false,
@@ -250,7 +299,9 @@ describe("useAddressScreen", () => {
     it("should call createAddress mutation when pendingAddress is set", () => {
       const mutateMock = jest.fn();
       mockUseCreateAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useCreateAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useCreateAddress
+        >,
       );
       const { result } = renderHook(() => useAddressScreen());
 
@@ -270,7 +321,9 @@ describe("useAddressScreen", () => {
     it("should not call createAddress when pendingAddress is null", () => {
       const mutateMock = jest.fn();
       mockUseCreateAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useCreateAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useCreateAddress
+        >,
       );
       const { result } = renderHook(() => useAddressScreen());
 
@@ -284,7 +337,9 @@ describe("useAddressScreen", () => {
     it("should switch mode to 'list' on createAddress success", () => {
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
       mockUseCreateAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useCreateAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useCreateAddress
+        >,
       );
       const { result } = renderHook(() => useAddressScreen());
 
@@ -304,7 +359,10 @@ describe("useAddressScreen", () => {
   describe("handlePressAddress", () => {
     it("should update localSelectedId when an address is tapped", () => {
       mockUseAddresses.mockReturnValue({
-        data: [buildAddress({ id: "addr-1", is_selected: true }), buildAddress({ id: "addr-2" })],
+        data: [
+          buildAddress({ id: "addr-1", is_selected: true }),
+          buildAddress({ id: "addr-2" }),
+        ],
         isLoading: false,
       } as unknown as ReturnType<typeof useAddresses>);
 
@@ -321,7 +379,10 @@ describe("useAddressScreen", () => {
   describe("handleLongPressAddress", () => {
     it("should set deletingAddressId when long-pressing a non-selected address", async () => {
       mockUseAddresses.mockReturnValue({
-        data: [buildAddress({ id: "addr-1", is_selected: true }), buildAddress({ id: "addr-2" })],
+        data: [
+          buildAddress({ id: "addr-1", is_selected: true }),
+          buildAddress({ id: "addr-2" }),
+        ],
         isLoading: false,
       } as unknown as ReturnType<typeof useAddresses>);
 
@@ -364,10 +425,15 @@ describe("useAddressScreen", () => {
     it("should call deleteAddress mutation with deletingAddressId", async () => {
       const mutateMock = jest.fn();
       mockUseDeleteAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useDeleteAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useDeleteAddress
+        >,
       );
       mockUseAddresses.mockReturnValue({
-        data: [buildAddress({ id: "addr-1", is_selected: true }), buildAddress({ id: "addr-2" })],
+        data: [
+          buildAddress({ id: "addr-1", is_selected: true }),
+          buildAddress({ id: "addr-2" }),
+        ],
         isLoading: false,
       } as unknown as ReturnType<typeof useAddresses>);
 
@@ -393,7 +459,9 @@ describe("useAddressScreen", () => {
     it("should not call deleteAddress when deletingAddressId is null", () => {
       const mutateMock = jest.fn();
       mockUseDeleteAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useDeleteAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useDeleteAddress
+        >,
       );
 
       const { result } = renderHook(() => useAddressScreen());
@@ -408,16 +476,23 @@ describe("useAddressScreen", () => {
     it("should clear deletingAddressId on delete success", async () => {
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
       mockUseDeleteAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useDeleteAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useDeleteAddress
+        >,
       );
       mockUseAddresses.mockReturnValue({
-        data: [buildAddress({ id: "addr-1", is_selected: true }), buildAddress({ id: "addr-2" })],
+        data: [
+          buildAddress({ id: "addr-1", is_selected: true }),
+          buildAddress({ id: "addr-2" }),
+        ],
         isLoading: false,
       } as unknown as ReturnType<typeof useAddresses>);
 
       const { result } = renderHook(() => useAddressScreen());
 
-      await waitFor(() => expect(result.current.localSelectedId).toBe("addr-1"));
+      await waitFor(() =>
+        expect(result.current.localSelectedId).toBe("addr-1"),
+      );
 
       act(() => {
         result.current.handleLongPressAddress("addr-2");
@@ -433,7 +508,10 @@ describe("useAddressScreen", () => {
   describe("handleDeleteCancel", () => {
     it("should clear deletingAddressId", () => {
       mockUseAddresses.mockReturnValue({
-        data: [buildAddress({ id: "addr-1", is_selected: true }), buildAddress({ id: "addr-2" })],
+        data: [
+          buildAddress({ id: "addr-1", is_selected: true }),
+          buildAddress({ id: "addr-2" }),
+        ],
         isLoading: false,
       } as unknown as ReturnType<typeof useAddresses>);
 
@@ -456,7 +534,9 @@ describe("useAddressScreen", () => {
     it("should call selectAddress with localSelectedId", async () => {
       const mutateMock = jest.fn();
       mockUseSelectAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useSelectAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useSelectAddress
+        >,
       );
       mockUseAddresses.mockReturnValue({
         data: [buildAddress({ id: "addr-1", is_selected: true })],
@@ -465,7 +545,9 @@ describe("useAddressScreen", () => {
 
       const { result } = renderHook(() => useAddressScreen());
 
-      await waitFor(() => expect(result.current.localSelectedId).toBe("addr-1"));
+      await waitFor(() =>
+        expect(result.current.localSelectedId).toBe("addr-1"),
+      );
 
       act(() => {
         result.current.handleContinue();
@@ -480,7 +562,9 @@ describe("useAddressScreen", () => {
     it("should not call selectAddress when no address is selected", () => {
       const mutateMock = jest.fn();
       mockUseSelectAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useSelectAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useSelectAddress
+        >,
       );
 
       const { result } = renderHook(() => useAddressScreen());
@@ -495,13 +579,22 @@ describe("useAddressScreen", () => {
     it("should call setHasAddress(true) and navigate to consumer home on success for CONSUMIDOR role", async () => {
       const setHasAddressMock = jest.fn();
       mockUseAuthStore.mockReturnValue({
-        user: { id: "u1", role: "CONSUMIDOR", email: "a@b.com", first_name: "A", last_name: "B", has_address: false },
+        user: {
+          id: "u1",
+          role: "CONSUMIDOR",
+          email: "a@b.com",
+          first_name: "A",
+          last_name: "B",
+          has_address: false,
+        },
         setHasAddress: setHasAddressMock,
       } as unknown as ReturnType<typeof useAuthStore>);
 
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
       mockUseSelectAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useSelectAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useSelectAddress
+        >,
       );
       mockUseAddresses.mockReturnValue({
         data: [buildAddress({ id: "addr-1", is_selected: true })],
@@ -510,7 +603,9 @@ describe("useAddressScreen", () => {
 
       const { result } = renderHook(() => useAddressScreen());
 
-      await waitFor(() => expect(result.current.localSelectedId).toBe("addr-1"));
+      await waitFor(() =>
+        expect(result.current.localSelectedId).toBe("addr-1"),
+      );
 
       act(() => {
         result.current.handleContinue();
@@ -522,13 +617,22 @@ describe("useAddressScreen", () => {
 
     it("should navigate to commerce home on success for COMERCIO role", async () => {
       mockUseAuthStore.mockReturnValue({
-        user: { id: "u2", role: "COMERCIO", email: "c@d.com", first_name: "C", last_name: "D", has_address: false },
+        user: {
+          id: "u2",
+          role: "COMERCIO",
+          email: "c@d.com",
+          first_name: "C",
+          last_name: "D",
+          has_address: false,
+        },
         setHasAddress: jest.fn(),
       } as unknown as ReturnType<typeof useAuthStore>);
 
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
       mockUseSelectAddress.mockReturnValue(
-        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<typeof useSelectAddress>,
+        buildMutation({ mutate: mutateMock }) as unknown as ReturnType<
+          typeof useSelectAddress
+        >,
       );
       mockUseAddresses.mockReturnValue({
         data: [buildAddress({ id: "addr-1", is_selected: true })],
@@ -537,7 +641,9 @@ describe("useAddressScreen", () => {
 
       const { result } = renderHook(() => useAddressScreen());
 
-      await waitFor(() => expect(result.current.localSelectedId).toBe("addr-1"));
+      await waitFor(() =>
+        expect(result.current.localSelectedId).toBe("addr-1"),
+      );
 
       act(() => {
         result.current.handleContinue();

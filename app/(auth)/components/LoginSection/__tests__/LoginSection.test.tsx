@@ -36,7 +36,7 @@ jest.mock('@/components/Banner', () => {
 })
 
 jest.mock('@expo/vector-icons', () => ({
-  Ionicons: () => null,
+  Feather: () => null,
 }))
 
 const mockUseLoginSection = useLoginSection as jest.MockedFunction<typeof useLoginSection>
