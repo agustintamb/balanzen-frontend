@@ -1,5 +1,15 @@
-import { Stack } from "expo-router";
+import { Tabs } from "expo-router";
+import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import TabBar from "@/components/TabBar";
 
-const ConsumerLayout = () => <Stack screenOptions={{ headerShown: false }} />;
+const renderTabBar = (props: BottomTabBarProps) => <TabBar {...props} />;
+
+const ConsumerLayout = () => (
+  <Tabs screenOptions={{ headerShown: false }} tabBar={renderTabBar}>
+    <Tabs.Screen name="home" />
+    <Tabs.Screen name="orders" />
+    <Tabs.Screen name="profile" />
+  </Tabs>
+);
 
 export default ConsumerLayout;
