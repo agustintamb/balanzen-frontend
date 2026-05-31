@@ -29,12 +29,12 @@ const DEFAULT_REGION: Region = {
 const LOCATION_TIMEOUT_MS = 7000;
 
 const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
-  let id: ReturnType<typeof setTimeout>
+  let id: ReturnType<typeof setTimeout>;
   const timeout = new Promise<T>((_, reject) => {
-    id = setTimeout(() => reject(new Error("Tiempo de espera agotado")), ms)
-  })
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(id))
-}
+    id = setTimeout(() => reject(new Error("Tiempo de espera agotado")), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(id));
+};
 
 export const useAddressScreen = () => {
   const [mode, setMode] = useState<AddressMode>("list");
@@ -226,6 +226,15 @@ export const useAddressScreen = () => {
     });
   };
 
+  // ─── Helpers ──────────────────────────────────────────────────────────────
+
+  const savedSelectedId = addresses.find((a) => a.is_selected)?.id ?? null;
+
+  const sortedAddresses = [...addresses].sort((a, b) => {
+    if (a.is_selected === b.is_selected) return 0;
+    return a.is_selected ? -1 : 1;
+  });
+
   // ─── Handlers — continuar ─────────────────────────────────────────────────
 
   const handleContinue = () => {
@@ -233,11 +242,15 @@ export const useAddressScreen = () => {
     selectAddress(localSelectedId, {
       onSuccess: () => {
         setHasAddress(true);
-        router.replace(
-          (user?.role === "COMERCIO"
-            ? "/(commerce)/home"
-            : "/(consumer)/home") as never,
-        );
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace(
+            (user?.role === "COMERCIO"
+              ? "/(commerce)/home"
+              : "/(consumer)/home") as never,
+          );
+        }
       },
     });
   };
@@ -254,10 +267,10 @@ export const useAddressScreen = () => {
     permissionDenied,
     locationError,
     // Lista
-    addresses,
+    addresses: sortedAddresses,
     isLoadingAddresses,
     localSelectedId,
-    canContinue: !!localSelectedId && addresses.length > 0,
+    canContinue: !!localSelectedId && localSelectedId !== savedSelectedId,
     // Eliminación
     deletingAddressId,
     isDeleting,
@@ -283,4 +296,4 @@ export const useAddressScreen = () => {
 // Expo Router requires a default export in app/ — this file is a hook, not a screen
 export default function _() {
   return null;
-} // eslint-disable-line import/no-default-export
+}

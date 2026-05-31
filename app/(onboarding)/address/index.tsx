@@ -154,11 +154,18 @@ const AddressScreen = () => {
           </ScrollView>
 
           {/* Footer fijo: "Agregar dirección" + "Guardar" */}
-          <View style={{ paddingHorizontal: 20, paddingBottom: 12, paddingTop: 8, gap: 10 }}>
+          <View
+            style={{
+              paddingHorizontal: 20,
+              paddingBottom: 12,
+              paddingTop: 8,
+              gap: 10,
+            }}
+          >
             <Button
               variant="neutral"
               onPress={() => setMode("add")}
-              leftIconName="add-outline"
+              leftIconName="plus"
             >
               Agregar dirección
             </Button>
@@ -178,7 +185,7 @@ const AddressScreen = () => {
         {/* ActionSheet de confirmación de eliminación */}
         <ActionSheet
           visible={!!deletingAddressId}
-          iconName="trash-outline"
+          iconName="trash"
           iconColor="error"
           title="¿Eliminar dirección?"
           message={
