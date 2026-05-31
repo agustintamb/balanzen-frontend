@@ -125,7 +125,7 @@ const Toast = () => {
           onPress={hideToast}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Feather name="close" size={18} color={cfg.iconColor} />
+          <Feather name="x" size={18} color={cfg.iconColor} />
         </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>

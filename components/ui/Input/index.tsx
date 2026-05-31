@@ -21,6 +21,8 @@ export interface InputProps {
   hint?: string;
   error?: string;
   disabled?: boolean;
+  multiline?: boolean;
+  numberOfLines?: number;
   returnKeyType?: TextInputProps["returnKeyType"];
   onSubmitEditing?: () => void;
   autoCapitalize?: TextInputProps["autoCapitalize"];
@@ -52,6 +54,8 @@ const Input = React.forwardRef<TextInput, InputProps>(
       hint,
       error,
       disabled = false,
+      multiline = false,
+      numberOfLines,
       returnKeyType,
       onSubmitEditing,
       autoCapitalize,
@@ -71,7 +75,8 @@ const Input = React.forwardRef<TextInput, InputProps>(
     else if (isFocused) borderClass = "border-primary";
 
     const containerClass = cn(
-      "bg-white rounded-2xl border px-4 flex-row items-center",
+      "bg-white rounded-2xl border px-4",
+      multiline ? "flex-row items-start" : "flex-row items-center",
       borderClass,
       disabled ? "bg-surface opacity-70" : "",
       className,
@@ -85,7 +90,11 @@ const Input = React.forwardRef<TextInput, InputProps>(
           </Text>
         )}
         <View className={containerClass}>
-          {leftIcon && <View className="mr-2">{leftIcon}</View>}
+          {leftIcon && (
+            <View className={cn("mr-2", multiline && "mt-[14px]")}>
+              {leftIcon}
+            </View>
+          )}
           <TextInput
             ref={ref}
             value={value}
@@ -93,9 +102,15 @@ const Input = React.forwardRef<TextInput, InputProps>(
             placeholder={placeholder}
             placeholderTextColor="#9CA3AF"
             className="flex-1 font-sans text-base text-primary-dark"
-            style={{ paddingVertical: 14, paddingHorizontal: 0 }}
+            style={{
+              paddingVertical: 14,
+              paddingHorizontal: 0,
+              ...(multiline ? { minHeight: 80, textAlignVertical: "top" } : {}),
+            }}
             editable={!disabled}
             secureTextEntry={isPassword && !isPasswordVisible}
+            multiline={multiline}
+            numberOfLines={multiline ? numberOfLines : undefined}
             returnKeyType={returnKeyType}
             onSubmitEditing={onSubmitEditing}
             autoCapitalize={autoCapitalize ?? typeConfig.autoCapitalize}

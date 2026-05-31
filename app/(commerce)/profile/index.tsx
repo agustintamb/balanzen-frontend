@@ -11,6 +11,7 @@ const CommerceProfile = () => {
     email,
     initials,
     photoUrl,
+    photoFullUrl,
     addressShort,
     unreadCount,
     handleEditProfile,
@@ -30,6 +31,7 @@ const CommerceProfile = () => {
           email={email}
           initials={initials}
           photoUrl={photoUrl}
+          photoFullUrl={photoFullUrl}
           addressShort={addressShort}
           testID="commerce-profile-header"
         />
