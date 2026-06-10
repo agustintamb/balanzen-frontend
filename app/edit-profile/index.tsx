@@ -181,6 +181,7 @@ const EditProfile = () => {
             )}
           />
         )}
+
       </ScrollView>
 
       <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
@@ -202,7 +203,6 @@ const EditProfile = () => {
     <>
       <StatusBar style="dark" />
       <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
-        {/* Header */}
         <View className="flex-row items-center px-2 pt-2 pb-1">
           <TouchableOpacity
             onPress={handleBack}
@@ -218,7 +218,6 @@ const EditProfile = () => {
           <View className="w-10" />
         </View>
 
-        {/* Avatar */}
         <View className="items-center pt-6 pb-8">
           <UserAvatar
             photoUrl={displayPhotoUrl}
