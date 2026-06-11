@@ -8,7 +8,6 @@
  */
 import { StyleSheet, Text, View } from "react-native";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let NativeMapView: React.ComponentType<any> | null = null;
 
 try {
@@ -20,7 +19,6 @@ try {
 
 export const MAPS_AVAILABLE = !!NativeMapView;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MapFallback = ({ style, children }: any) => (
   <View style={[style, styles.fallback]}>
     <View style={styles.card}>
@@ -34,7 +32,6 @@ const MapFallback = ({ style, children }: any) => (
   </View>
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const SafeMapView: React.ComponentType<any> =
   NativeMapView ?? MapFallback;
 

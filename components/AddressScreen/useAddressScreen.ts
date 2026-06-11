@@ -243,6 +243,20 @@ export const useAddressScreen = () => {
     return a.is_selected ? -1 : 1;
   });
 
+  // ─── Handlers — volver ────────────────────────────────────────────────────
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace(
+        (user?.role === "COMERCIO"
+          ? "/(commerce)/home"
+          : "/(consumer)/home") as never,
+      );
+    }
+  };
+
   // ─── Handlers — continuar ─────────────────────────────────────────────────
 
   const handleContinue = () => {
@@ -268,7 +282,8 @@ export const useAddressScreen = () => {
   return {
     mode,
     setMode,
-    canGoBack: user?.has_selected_address === true,
+    canGoBack: router.canGoBack(),
+    handleBack,
     // Buscador
     searchQuery,
     setSearchQuery,

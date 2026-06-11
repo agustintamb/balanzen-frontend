@@ -11,6 +11,13 @@ export default defineConfig([
     rules: {
       "prettier/prettier": "error",
       "no-console": ["warn", { allow: ["error"] }],
+      "import/no-unresolved": ["error", { ignore: ["react-native-svg"] }],
+    },
+  },
+  {
+    files: ["**/__tests__/**/*.{ts,tsx}", "**/*.test.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
   {

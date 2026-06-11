@@ -111,6 +111,7 @@ export const useRegisterPersonalSection = (
                 first_name: response.first_name,
                 last_name: response.last_name,
                 has_address: false,
+                has_selected_address: false,
                 photo_url: null,
               },
               setAccessToken,
@@ -137,7 +138,6 @@ export const useRegisterPersonalSection = (
 };
 
 // Expo Router requires a default export in app/ — this file is a hook, not a screen
-// eslint-disable-next-line import/no-default-export
 export default function _() {
   return null;
 }

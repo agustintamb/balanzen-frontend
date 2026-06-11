@@ -15,7 +15,6 @@ jest.mock("react-hook-form", () => {
   const actual = jest.requireActual("react-hook-form");
   return { ...actual, useForm: jest.fn().mockImplementation(actual.useForm) };
 });
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const mockedUseForm = (
   require("react-hook-form") as {
     useForm: jest.MockedFunction<typeof import("react-hook-form").useForm>;
@@ -42,12 +41,19 @@ jest.mock("@/stores/registration.store", () => ({
   useRegistrationStore: jest.fn(),
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { router } = require("expo-router") as { router: { replace: jest.Mock } };
-const mockedUseRegister = useRegister as jest.Mock;
-const mockedUseAuthStore = useAuthStore as unknown as jest.Mock;
-const mockedUseRegistrationStore = useRegistrationStore as unknown as jest.Mock;
-const mockedPersistSession = persistSession as jest.Mock;
+const mockedUseRegister = useRegister as jest.MockedFunction<
+  typeof useRegister
+>;
+const mockedUseAuthStore = useAuthStore as jest.MockedFunction<
+  typeof useAuthStore
+>;
+const mockedUseRegistrationStore = useRegistrationStore as jest.MockedFunction<
+  typeof useRegistrationStore
+>;
+const mockedPersistSession = persistSession as jest.MockedFunction<
+  typeof persistSession
+>;
 
 const REGISTER_RESPONSE: RegisterResponse = {
   id: "user-id-123",
@@ -57,16 +63,6 @@ const REGISTER_RESPONSE: RegisterResponse = {
   last_name: "Doe",
   access_token: "access-token-abc",
   refresh_token: "refresh-token-xyz",
-};
-
-const VALID_PERSONAL_DATA = {
-  firstName: "Jane",
-  lastName: "Doe",
-  email: "jane@example.com",
-  password: "Secret123!",
-  confirmPassword: "Secret123!",
-  phone: "1122334455",
-  dni: "12345678",
 };
 
 const buildMockMutate = (
@@ -84,8 +80,14 @@ const createWrapper = () => {
       mutations: { retry: false },
     },
   });
-  return ({ children }: { children: React.ReactNode }) =>
-    React.createElement(QueryClientProvider, { client: queryClient }, children);
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return React.createElement(
+      QueryClientProvider,
+      { client: queryClient },
+      children,
+    );
+  }
+  return Wrapper;
 };
 
 const setupMocks = (

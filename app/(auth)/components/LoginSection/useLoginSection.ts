@@ -47,6 +47,7 @@ export const useLoginSection = () => {
               first_name: response.user.first_name,
               last_name: response.user.last_name,
               has_address: response.user.has_address,
+              has_selected_address: false,
               photo_url: response.user.photo_url,
             },
             setAccessToken,

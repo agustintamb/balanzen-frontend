@@ -7,7 +7,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import AddressList from "@/components/AddressScreen/AddressList";
 import AddressMap from "@/components/AddressScreen/AddressMap";
@@ -18,11 +17,11 @@ import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 
 const AddressScreen = () => {
-  const router = useRouter();
   const {
     mode,
     setMode,
     canGoBack,
+    handleBack,
     // Buscador
     searchQuery,
     setSearchQuery,
@@ -129,7 +128,7 @@ const AddressScreen = () => {
           >
             {canGoBack ? (
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={handleBack}
                 style={{ padding: 8 }}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >

@@ -3,18 +3,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { StatusBar } from "expo-status-bar";
+import { useQueryClient } from "@tanstack/react-query";
 import { setAuthToken } from "@/api/client";
 import Button from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth.store";
 
 const ConsumerHome = () => {
   const { user, clear } = useAuthStore();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     await SecureStore.deleteItemAsync("access_token");
     await SecureStore.deleteItemAsync("refresh_token");
     setAuthToken(null);
     clear();
+    queryClient.clear();
     router.replace("/(auth)" as never);
   };
 

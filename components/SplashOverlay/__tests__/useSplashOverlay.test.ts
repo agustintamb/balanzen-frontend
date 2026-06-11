@@ -132,7 +132,7 @@ describe("useSplashOverlay", () => {
 
       expect(timingSpy).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining({ duration: 200 }),
+        expect.objectContaining({ duration: FADE_DURATION_MS }),
       );
 
       timingSpy.mockRestore();

@@ -202,6 +202,8 @@ const setupDefaultMocks = () => {
     setHasAddress: jest.fn(),
     setHasSelectedAddress: jest.fn(),
   } as unknown as ReturnType<typeof useAuthStore>);
+
+  (router.canGoBack as jest.Mock).mockReturnValue(false);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -797,6 +799,34 @@ describe("useAddressScreen", () => {
       expect(result.current.mode).not.toBe("map");
     });
 
+    it("should set locationError when the GPS request times out (withTimeout fires after 7 s)", async () => {
+      mockRequestForegroundPermissions.mockResolvedValueOnce(
+        buildPermissionResponse(true),
+      );
+      mockGetLastKnownPosition.mockResolvedValueOnce(null);
+      // getCurrentPosition never resolves — withTimeout will reject first
+      mockGetCurrentPosition.mockReturnValueOnce(new Promise(() => {}));
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      await act(async () => {
+        void result.current.handleUseCurrentLocation();
+        // Let permission + getLastKnownPosition microtasks resolve
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+        // Fire the 7 s timeout
+        jest.advanceTimersByTime(7001);
+        // Let the rejection propagate through Promise.race / catch
+        await Promise.resolve();
+        await Promise.resolve();
+        await Promise.resolve();
+      });
+
+      expect(result.current.locationError).toMatch(/ubicación/i);
+      expect(result.current.isGettingLocation).toBe(false);
+    });
+
     it("should not trigger a second location request while already fetching", async () => {
       mockRequestForegroundPermissions.mockResolvedValue({
         status: "granted" as Location.PermissionStatus,
@@ -829,6 +859,76 @@ describe("useAddressScreen", () => {
     });
   });
 
+  // ─── handleBack ─────────────────────────────────────────────────────────────
+
+  describe("handleBack", () => {
+    it("should call router.back when canGoBack is true", () => {
+      (router.canGoBack as jest.Mock).mockReturnValue(true);
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.handleBack();
+      });
+
+      expect(router.back).toHaveBeenCalledTimes(1);
+      expect(router.replace).not.toHaveBeenCalled();
+    });
+
+    it("should navigate to consumer home when canGoBack is false and role is CONSUMIDOR", () => {
+      (router.canGoBack as jest.Mock).mockReturnValue(false);
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.handleBack();
+      });
+
+      expect(router.replace).toHaveBeenCalledWith("/(consumer)/home");
+      expect(router.back).not.toHaveBeenCalled();
+    });
+
+    it("should navigate to commerce home when canGoBack is false and role is COMERCIO", () => {
+      (router.canGoBack as jest.Mock).mockReturnValue(false);
+      mockUseAuthStore.mockReturnValue({
+        user: {
+          id: "u2",
+          role: "COMERCIO",
+          email: "c@d.com",
+          first_name: "C",
+          last_name: "D",
+          has_address: false,
+        },
+        setHasAddress: jest.fn(),
+        setHasSelectedAddress: jest.fn(),
+      } as unknown as ReturnType<typeof useAuthStore>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.handleBack();
+      });
+
+      expect(router.replace).toHaveBeenCalledWith("/(commerce)/home");
+      expect(router.back).not.toHaveBeenCalled();
+    });
+
+    it("should navigate to consumer home when canGoBack is false and user is null", () => {
+      (router.canGoBack as jest.Mock).mockReturnValue(false);
+      mockUseAuthStore.mockReturnValue({
+        user: null,
+        setHasAddress: jest.fn(),
+        setHasSelectedAddress: jest.fn(),
+      } as unknown as ReturnType<typeof useAuthStore>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      act(() => {
+        result.current.handleBack();
+      });
+
+      expect(router.replace).toHaveBeenCalledWith("/(consumer)/home");
+    });
+  });
+
   // ─── handleContinue — canGoBack branch ─────────────────────────────────────
 
   describe("handleContinue — router.canGoBack() === true", () => {
@@ -836,7 +936,7 @@ describe("useAddressScreen", () => {
       const mockCanGoBack = router.canGoBack as jest.MockedFunction<
         typeof router.canGoBack
       >;
-      mockCanGoBack.mockReturnValueOnce(true);
+      mockCanGoBack.mockReturnValue(true);
 
       const mutateMock = jest.fn((_, opts) => opts?.onSuccess?.());
       mockUseSelectAddress.mockReturnValue(
@@ -1002,6 +1102,69 @@ describe("useAddressScreen", () => {
       });
 
       expect(mockUseAddressSearch).toHaveBeenLastCalledWith("cor");
+    });
+  });
+
+  // ─── sortedAddresses ────────────────────────────────────────────────────────
+
+  describe("sortedAddresses ordering", () => {
+    it("should keep equal is_selected values in their original order (return 0 branch)", async () => {
+      mockUseAddresses.mockReturnValue({
+        data: [
+          buildAddress({ id: "addr-a", is_selected: false }),
+          buildAddress({ id: "addr-b", is_selected: false }),
+        ],
+        isLoading: false,
+      } as unknown as ReturnType<typeof useAddresses>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      await waitFor(() => {
+        expect(result.current.addresses).toHaveLength(2);
+      });
+
+      const ids = result.current.addresses.map((a) => a.id);
+      expect(ids).toEqual(["addr-a", "addr-b"]);
+    });
+
+    it("should sort selected address first when unselected appears before selected in source array (return 1 branch)", async () => {
+      mockUseAddresses.mockReturnValue({
+        data: [
+          buildAddress({ id: "addr-unselected", is_selected: false }),
+          buildAddress({ id: "addr-selected", is_selected: true }),
+        ],
+        isLoading: false,
+      } as unknown as ReturnType<typeof useAddresses>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      await waitFor(() => {
+        expect(result.current.addresses[0].id).toBe("addr-selected");
+      });
+    });
+  });
+
+  // ─── default values when data is undefined ───────────────────────────────────
+
+  describe("data default values", () => {
+    it("should default addresses to empty array when useAddresses returns no data", () => {
+      mockUseAddresses.mockReturnValue({
+        isLoading: false,
+      } as unknown as ReturnType<typeof useAddresses>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      expect(result.current.addresses).toEqual([]);
+    });
+
+    it("should default searchResults to empty array when useAddressSearch returns no data", () => {
+      mockUseAddressSearch.mockReturnValue({
+        isFetching: false,
+      } as unknown as ReturnType<typeof useAddressSearch>);
+
+      const { result } = renderHook(() => useAddressScreen());
+
+      expect(result.current.searchResults).toEqual([]);
     });
   });
 
