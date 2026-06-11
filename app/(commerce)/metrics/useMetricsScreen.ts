@@ -9,8 +9,10 @@ export const useMetricsScreen = () => {
     router.back();
   };
 
+  const metrics = data;
+
   return {
-    metrics: data,
+    metrics,
     isLoading,
     handleBack,
     refetch,

@@ -46,7 +46,6 @@ const MetricCard = ({ label, value, icon, color }: MetricCardProps) => (
 const MetricsScreen = () => {
   const { metrics, isLoading, handleBack, refetch } = useMetricsScreen();
 
-  // Función para formatear moneda
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("es-AR", {
       style: "currency",
@@ -57,8 +56,7 @@ const MetricsScreen = () => {
       .replace("ARS", "$");
   };
 
-  // NOTA: Como el campo "$ recuperado" no existe en MetricsSummary según el código,
-  // se utiliza 0 por defecto hasta que el backend lo provea.
+  // El campo de dinero recuperado no está en la API aún, se muestra 0 por ahora
   const recoveredAmount = 0;
 
   return (
