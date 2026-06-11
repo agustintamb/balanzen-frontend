@@ -50,8 +50,7 @@
           "locationWhenInUsePermission": "BalanZen usa tu ubicación para mostrarte publicaciones cercanas y ayudarte a confirmar tu dirección.",
           "locationAlwaysAndWhenInUsePermission": "BalanZen usa tu ubicación para mostrarte publicaciones cercanas y ayudarte a confirmar tu dirección."
         }
-      ],
-      "react-native-maps"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
