@@ -2,14 +2,12 @@ import { useState } from "react";
 import {
   Dimensions,
   Image,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
-  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Controller } from "react-hook-form";
@@ -31,7 +29,6 @@ const EditProfile = () => {
     isSubmitting,
     isPhotoUploading,
     isCommerce,
-    androidKeyboardPad,
     displayPhotoUrl,
     displayPhotoFullUrl,
     initials,
@@ -48,14 +45,84 @@ const EditProfile = () => {
 
   const canSave = isDirty && isValid && !isPhotoUploading;
 
-  const formContent = (
+  return (
     <>
-      <ScrollView
+      <StatusBar style="dark" />
+      <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
+        <View className="flex-row items-center px-2 pt-6 pb-4">
+          <TouchableOpacity
+            onPress={handleBack}
+            className="p-2"
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            testID="btn-back"
+          >
+            <Icon name="chevron-left" size={24} color="primary-dark" />
+          </TouchableOpacity>
+          <Text className="flex-1 text-center font-sans-semibold text-lg text-primary-dark">
+            Editar Perfil
+          </Text>
+          <View className="w-10" />
+        </View>
+
+        <View className="items-center pt-6 pb-8">
+          <UserAvatar
+            photoUrl={displayPhotoUrl}
+            initials={initials}
+            size={128}
+            isLoading={isPhotoUploading}
+            editable
+            onPress={
+              displayPhotoFullUrl && !isPhotoUploading
+                ? () => setViewerVisible(true)
+                : undefined
+            }
+            onEditPress={handleAvatarPress}
+            testID="edit-profile-avatar"
+          />
+        </View>
+      </SafeAreaView>
+
+      {displayPhotoFullUrl !== null && (
+        <Modal
+          visible={viewerVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setViewerVisible(false)}
+        >
+          <StatusBar style="light" />
+          <TouchableOpacity
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.92)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => setViewerVisible(false)}
+            activeOpacity={1}
+            testID="photo-viewer-backdrop"
+          >
+            <Image
+              source={{ uri: displayPhotoFullUrl }}
+              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
+              resizeMode="contain"
+              testID="photo-viewer-image"
+            />
+          </TouchableOpacity>
+        </Modal>
+      )}
+
+      <KeyboardAwareScrollView
         style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 24,
+          paddingBottom: 16,
+          gap: 16,
+        }}
         className="bg-surface"
-        contentContainerClassName="px-4 pt-6 pb-4 gap-4"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        bottomOffset={16}
       >
         {isCommerce && (
           <Controller
@@ -181,7 +248,7 @@ const EditProfile = () => {
             )}
           />
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
         <View className="px-4 pt-3 pb-2">
@@ -195,84 +262,6 @@ const EditProfile = () => {
           </Button>
         </View>
       </SafeAreaView>
-    </>
-  );
-
-  return (
-    <>
-      <StatusBar style="dark" />
-      <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
-        <View className="flex-row items-center px-2 pt-2 pb-1">
-          <TouchableOpacity
-            onPress={handleBack}
-            className="p-2"
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            testID="btn-back"
-          >
-            <Icon name="chevron-left" size={24} color="primary-dark" />
-          </TouchableOpacity>
-          <Text className="flex-1 text-center font-sans-semibold text-lg text-primary-dark">
-            Editar Perfil
-          </Text>
-          <View className="w-10" />
-        </View>
-
-        <View className="items-center pt-6 pb-8">
-          <UserAvatar
-            photoUrl={displayPhotoUrl}
-            initials={initials}
-            size={128}
-            isLoading={isPhotoUploading}
-            editable
-            onPress={
-              displayPhotoFullUrl && !isPhotoUploading
-                ? () => setViewerVisible(true)
-                : undefined
-            }
-            onEditPress={handleAvatarPress}
-            testID="edit-profile-avatar"
-          />
-        </View>
-      </SafeAreaView>
-
-      {displayPhotoFullUrl !== null && (
-        <Modal
-          visible={viewerVisible}
-          transparent
-          animationType="fade"
-          onRequestClose={() => setViewerVisible(false)}
-        >
-          <StatusBar style="light" />
-          <TouchableOpacity
-            style={{
-              flex: 1,
-              backgroundColor: "rgba(0,0,0,0.92)",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => setViewerVisible(false)}
-            activeOpacity={1}
-            testID="photo-viewer-backdrop"
-          >
-            <Image
-              source={{ uri: displayPhotoFullUrl }}
-              style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH }}
-              resizeMode="contain"
-              testID="photo-viewer-image"
-            />
-          </TouchableOpacity>
-        </Modal>
-      )}
-
-      {Platform.OS === "ios" ? (
-        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-          {formContent}
-        </KeyboardAvoidingView>
-      ) : (
-        <View style={{ flex: 1, paddingBottom: androidKeyboardPad }}>
-          {formContent}
-        </View>
-      )}
     </>
   );
 };

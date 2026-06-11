@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Keyboard, Platform, TextInput } from "react-native";
+import { Alert, Platform, TextInput } from "react-native";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -47,7 +47,6 @@ export const useEditProfileScreen = () => {
 
   const [localPhotoUri, setLocalPhotoUri] = useState<string | null>(null);
   const [isPhotoUploading, setIsPhotoUploading] = useState(false);
-  const [androidKeyboardPad, setAndroidKeyboardPad] = useState(0);
 
   const businessNameRef = useRef<TextInput>(null);
   const firstNameRef = useRef<TextInput>(null);
@@ -78,20 +77,6 @@ export const useEditProfileScreen = () => {
       });
     }
   }, [user, reset]);
-
-  useEffect(() => {
-    if (Platform.OS !== "android") return;
-    const show = Keyboard.addListener("keyboardDidShow", (e) => {
-      setAndroidKeyboardPad(e.endCoordinates.height);
-    });
-    const hide = Keyboard.addListener("keyboardDidHide", () => {
-      setAndroidKeyboardPad(0);
-    });
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
 
   // displayPhotoUrl: preferir la URI local (optimista) mientras sube,
   // de lo contrario usar la URL del usuario en caché.
@@ -146,7 +131,9 @@ export const useEditProfileScreen = () => {
       }
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: "images",
-        allowsEditing: true,
+        // allowsEditing on Android causes the native crop UI confirm button to be
+        // obscured by the system navigation bar on gesture-nav devices.
+        allowsEditing: Platform.OS === "ios",
         aspect: [1, 1],
         quality: 0.8,
       });
@@ -163,7 +150,7 @@ export const useEditProfileScreen = () => {
         return;
       }
       const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
+        allowsEditing: Platform.OS === "ios",
         aspect: [1, 1],
         quality: 0.8,
       });
@@ -183,20 +170,24 @@ export const useEditProfileScreen = () => {
   };
 
   const handleSave = handleSubmit(async (values) => {
-    await updateProfile({
-      first_name: values.first_name,
-      last_name: values.last_name,
-      email: values.email,
-      phone: values.phone,
-      ...(isCommerce
-        ? {
-            business_name: values.business_name,
-            description: values.description?.trim() || null,
-          }
-        : {}),
-    });
-    showSuccess("Perfil actualizado");
-    router.back();
+    try {
+      await updateProfile({
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        phone: values.phone,
+        ...(isCommerce
+          ? {
+              business_name: values.business_name,
+              description: values.description?.trim() || null,
+            }
+          : {}),
+      });
+      showSuccess("Perfil actualizado");
+      router.back();
+    } catch {
+      // Error toast shown automatically by QueryProvider
+    }
   });
 
   return {
@@ -206,7 +197,6 @@ export const useEditProfileScreen = () => {
     isSubmitting,
     isPhotoUploading,
     isCommerce,
-    androidKeyboardPad,
     displayPhotoUrl,
     displayPhotoFullUrl,
     initials,
