@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-
 import createWrapper from "@/__test-utils__/createWrapper";
 import { metricsService } from "@/api/metrics/metrics.service";
 import { MetricsSummary } from "@/api/metrics/metrics.types";
@@ -13,7 +12,9 @@ jest.mock("@/api/metrics/metrics.service", () => ({
 
 const mockMetricsService = metricsService as jest.Mocked<typeof metricsService>;
 
-const buildMetricsSummary = (overrides?: Partial<MetricsSummary>): MetricsSummary => ({
+const buildMetricsSummary = (
+  overrides?: Partial<MetricsSummary>,
+): MetricsSummary => ({
   total_publications: 10,
   active_publications: 4,
   total_reservations: 20,
@@ -22,7 +23,6 @@ const buildMetricsSummary = (overrides?: Partial<MetricsSummary>): MetricsSummar
   conversion_rate: 0.75,
   ...overrides,
 });
-
 
 describe("useMetricsSummary", () => {
   afterEach(() => {
@@ -66,7 +66,7 @@ describe("useMetricsSummary", () => {
 
     expect(mockMetricsService.getSummary).toHaveBeenCalledTimes(1);
     expect(mockMetricsService.getSummary).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: ["metrics", "summary"] })
+      expect.objectContaining({ queryKey: ["metrics", "summary"] }),
     );
   });
 
@@ -158,8 +158,12 @@ describe("useMetricsSummary", () => {
 
     const { wrapper } = createWrapper();
 
-    const { result: first } = renderHook(() => useMetricsSummary(), { wrapper });
-    const { result: second } = renderHook(() => useMetricsSummary(), { wrapper });
+    const { result: first } = renderHook(() => useMetricsSummary(), {
+      wrapper,
+    });
+    const { result: second } = renderHook(() => useMetricsSummary(), {
+      wrapper,
+    });
 
     await waitFor(() => expect(first.current.isSuccess).toBe(true));
     await waitFor(() => expect(second.current.isSuccess).toBe(true));

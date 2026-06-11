@@ -1,7 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
-
 import createWrapper from "@/__test-utils__/createWrapper";
-
 import { ordersService } from "@/api/orders/orders.service";
 import {
   Order,
@@ -253,7 +251,10 @@ describe("useOrders", () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(result.current.data).toEqual(created);
-      expect(mockOrdersService.create).toHaveBeenCalledWith("pub-1", expect.anything());
+      expect(mockOrdersService.create).toHaveBeenCalledWith(
+        "pub-1",
+        expect.anything(),
+      );
     });
 
     it("should call mutateAsync with a publicationId and resolve with Order", async () => {
@@ -306,7 +307,10 @@ describe("useOrders", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockOrdersService.create).toHaveBeenCalledWith("publication-uuid-1234", expect.anything());
+      expect(mockOrdersService.create).toHaveBeenCalledWith(
+        "publication-uuid-1234",
+        expect.anything(),
+      );
     });
   });
 
@@ -324,7 +328,10 @@ describe("useOrders", () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(result.current.data).toEqual(cancelled);
-      expect(mockOrdersService.cancel).toHaveBeenCalledWith("order-1", expect.anything());
+      expect(mockOrdersService.cancel).toHaveBeenCalledWith(
+        "order-1",
+        expect.anything(),
+      );
     });
 
     it("should call mutateAsync with an orderId and resolve with the cancelled Order", async () => {
@@ -374,7 +381,10 @@ describe("useOrders", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockOrdersService.cancel).toHaveBeenCalledWith("order-xyz", expect.anything());
+      expect(mockOrdersService.cancel).toHaveBeenCalledWith(
+        "order-xyz",
+        expect.anything(),
+      );
     });
 
     it("should return an updated order with the correct id after cancellation", async () => {
@@ -408,7 +418,10 @@ describe("useOrders", () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(result.current.data).toEqual(delivered);
-      expect(mockOrdersService.deliver).toHaveBeenCalledWith("order-1", expect.anything());
+      expect(mockOrdersService.deliver).toHaveBeenCalledWith(
+        "order-1",
+        expect.anything(),
+      );
     });
 
     it("should call mutateAsync with an orderId and resolve with the delivered Order", async () => {
@@ -425,7 +438,9 @@ describe("useOrders", () => {
     });
 
     it("should return error state when ordersService.deliver rejects", async () => {
-      mockOrdersService.deliver.mockRejectedValueOnce(new Error("Unprocessable Entity"));
+      mockOrdersService.deliver.mockRejectedValueOnce(
+        new Error("Unprocessable Entity"),
+      );
 
       const { result } = renderHook(() => useDeliverOrder(), {
         wrapper: createWrapper().wrapper,
@@ -459,7 +474,10 @@ describe("useOrders", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockOrdersService.deliver).toHaveBeenCalledWith("order-abc", expect.anything());
+      expect(mockOrdersService.deliver).toHaveBeenCalledWith(
+        "order-abc",
+        expect.anything(),
+      );
     });
 
     it("should return an updated order with DELIVERED status and correct id", async () => {

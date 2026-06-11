@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-
 import { healthService } from "@/api/health/health.service";
 import { HealthResponse } from "@/api/health/health.types";
 

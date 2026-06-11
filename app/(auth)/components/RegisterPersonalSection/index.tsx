@@ -44,7 +44,7 @@ const RegisterPersonalSection = ({
           disabled={!isValid}
           loading={isPending}
           onPress={onSubmit}
-          rightIconName={isConsumidor ? undefined : "arrow-forward"}
+          rightIconName={isConsumidor ? undefined : "arrow-right"}
         >
           {isConsumidor ? "Crear cuenta" : "Continuar"}
         </Button>

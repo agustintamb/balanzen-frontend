@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import Icon, { type IconColor } from "@/components/ui/Icon";
-import { type TabItemProps, labelClass } from "./tabBar.utils";
+import { labelClass, type TabItemProps } from "./tabBar.utils";
 
 // Tab estándar con indicador de punto activo
 const RegularTab = ({ config, isFocused, onPress, testID }: TabItemProps) => {

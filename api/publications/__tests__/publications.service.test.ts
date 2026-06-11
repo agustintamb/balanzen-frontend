@@ -23,7 +23,9 @@ jest.mock("@/api/client", () => ({
   },
 }));
 
-const buildPublication = (overrides: Partial<Publication> = {}): Publication => ({
+const buildPublication = (
+  overrides: Partial<Publication> = {},
+): Publication => ({
   id: "pub-1",
   title: "Pan integral",
   description: "Pan artesanal de ayer",
@@ -68,7 +70,9 @@ describe("publicationsService", () => {
       await publicationsService.list();
 
       expect(mockGet).toHaveBeenCalledTimes(1);
-      expect(mockGet).toHaveBeenCalledWith("/publications", { params: undefined });
+      expect(mockGet).toHaveBeenCalledWith("/publications", {
+        params: undefined,
+      });
     });
 
     it("should call GET /publications passing all provided filter params", async () => {
@@ -90,12 +94,17 @@ describe("publicationsService", () => {
 
       await publicationsService.list(filters);
 
-      expect(mockGet).toHaveBeenCalledWith("/publications", { params: filters });
+      expect(mockGet).toHaveBeenCalledWith("/publications", {
+        params: filters,
+      });
     });
 
     it("should return a PublicationListResponse with publications and pagination", async () => {
       const mockResponse = buildPublicationListResponse({
-        publications: [buildPublication({ id: "pub-1" }), buildPublication({ id: "pub-2" })],
+        publications: [
+          buildPublication({ id: "pub-1" }),
+          buildPublication({ id: "pub-2" }),
+        ],
         pagination: { page: 1, limit: 10, total: 2, total_pages: 1 },
       });
       mockGet.mockResolvedValueOnce(mockResponse);
@@ -130,7 +139,9 @@ describe("publicationsService", () => {
 
       await publicationsService.list(filters);
 
-      expect(mockGet).toHaveBeenCalledWith("/publications", { params: filters });
+      expect(mockGet).toHaveBeenCalledWith("/publications", {
+        params: filters,
+      });
     });
   });
 
@@ -161,7 +172,9 @@ describe("publicationsService", () => {
       });
       mockGet.mockRejectedValueOnce(notFoundError);
 
-      await expect(publicationsService.getById("nonexistent-id")).rejects.toMatchObject({
+      await expect(
+        publicationsService.getById("nonexistent-id"),
+      ).rejects.toMatchObject({
         response: { status: 404 },
       });
     });
@@ -176,7 +189,11 @@ describe("publicationsService", () => {
     });
 
     it("should return a donation publication correctly", async () => {
-      const pub = buildPublication({ id: "pub-donation", is_donation: true, final_price: 0 });
+      const pub = buildPublication({
+        id: "pub-donation",
+        is_donation: true,
+        final_price: 0,
+      });
       mockGet.mockResolvedValueOnce(pub);
 
       const result = await publicationsService.getById("pub-donation");
@@ -193,7 +210,9 @@ describe("publicationsService", () => {
       await publicationsService.getMyPublications();
 
       expect(mockGet).toHaveBeenCalledTimes(1);
-      expect(mockGet).toHaveBeenCalledWith("/publications/me", { params: undefined });
+      expect(mockGet).toHaveBeenCalledWith("/publications/me", {
+        params: undefined,
+      });
     });
 
     it("should call GET /publications/me passing status filter param", async () => {
@@ -202,7 +221,9 @@ describe("publicationsService", () => {
 
       await publicationsService.getMyPublications(filters);
 
-      expect(mockGet).toHaveBeenCalledWith("/publications/me", { params: filters });
+      expect(mockGet).toHaveBeenCalledWith("/publications/me", {
+        params: filters,
+      });
     });
 
     it("should call GET /publications/me passing pagination params", async () => {
@@ -211,7 +232,9 @@ describe("publicationsService", () => {
 
       await publicationsService.getMyPublications(filters);
 
-      expect(mockGet).toHaveBeenCalledWith("/publications/me", { params: filters });
+      expect(mockGet).toHaveBeenCalledWith("/publications/me", {
+        params: filters,
+      });
     });
 
     it("should return a PublicationListResponse for my publications", async () => {
@@ -232,21 +255,31 @@ describe("publicationsService", () => {
     it("should propagate errors thrown by the API client", async () => {
       mockGet.mockRejectedValueOnce(new Error("Forbidden"));
 
-      await expect(publicationsService.getMyPublications()).rejects.toThrow("Forbidden");
+      await expect(publicationsService.getMyPublications()).rejects.toThrow(
+        "Forbidden",
+      );
     });
 
     it("should pass combined status and pagination filters", async () => {
-      const filters: MyPublicationsFilters = { status: "RESERVED", page: 1, limit: 20 };
+      const filters: MyPublicationsFilters = {
+        status: "RESERVED",
+        page: 1,
+        limit: 20,
+      };
       mockGet.mockResolvedValueOnce(buildPublicationListResponse());
 
       await publicationsService.getMyPublications(filters);
 
-      expect(mockGet).toHaveBeenCalledWith("/publications/me", { params: filters });
+      expect(mockGet).toHaveBeenCalledWith("/publications/me", {
+        params: filters,
+      });
     });
   });
 
   describe("create", () => {
-    const buildCreateBody = (overrides: Partial<CreatePublicationBody> = {}): CreatePublicationBody => ({
+    const buildCreateBody = (
+      overrides: Partial<CreatePublicationBody> = {},
+    ): CreatePublicationBody => ({
       title: "Facturas",
       description: "Facturas de grasa de hoy",
       original_price: 600,
@@ -295,7 +328,9 @@ describe("publicationsService", () => {
 
     it("should pass a body for a donation publication (final_price: 0)", async () => {
       const body = buildCreateBody({ original_price: 400, final_price: 0 });
-      mockPost.mockResolvedValueOnce(buildPublication({ is_donation: true, final_price: 0 }));
+      mockPost.mockResolvedValueOnce(
+        buildPublication({ is_donation: true, final_price: 0 }),
+      );
 
       await publicationsService.create(body);
 
@@ -309,7 +344,9 @@ describe("publicationsService", () => {
       });
       mockPost.mockRejectedValueOnce(validationError);
 
-      await expect(publicationsService.create(buildCreateBody())).rejects.toMatchObject({
+      await expect(
+        publicationsService.create(buildCreateBody()),
+      ).rejects.toMatchObject({
         response: { status: 422 },
       });
     });
@@ -326,7 +363,9 @@ describe("publicationsService", () => {
   });
 
   describe("update", () => {
-    const buildUpdateBody = (overrides: Partial<UpdatePublicationBody> = {}): UpdatePublicationBody => ({
+    const buildUpdateBody = (
+      overrides: Partial<UpdatePublicationBody> = {},
+    ): UpdatePublicationBody => ({
       title: "Pan artesanal actualizado",
       final_price: 200,
       ...overrides,
@@ -376,7 +415,9 @@ describe("publicationsService", () => {
       });
       mockPut.mockRejectedValueOnce(notFoundError);
 
-      await expect(publicationsService.update("bad-id", {})).rejects.toMatchObject({
+      await expect(
+        publicationsService.update("bad-id", {}),
+      ).rejects.toMatchObject({
         response: { status: 404 },
       });
     });
@@ -424,7 +465,9 @@ describe("publicationsService", () => {
       });
       mockDelete.mockRejectedValueOnce(notFoundError);
 
-      await expect(publicationsService.delete("nonexistent")).rejects.toMatchObject({
+      await expect(
+        publicationsService.delete("nonexistent"),
+      ).rejects.toMatchObject({
         response: { status: 404 },
       });
     });
@@ -435,7 +478,9 @@ describe("publicationsService", () => {
       });
       mockDelete.mockRejectedValueOnce(forbiddenError);
 
-      await expect(publicationsService.delete("pub-other-user")).rejects.toMatchObject({
+      await expect(
+        publicationsService.delete("pub-other-user"),
+      ).rejects.toMatchObject({
         response: { status: 403 },
       });
     });

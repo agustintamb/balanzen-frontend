@@ -180,7 +180,9 @@ describe("favoritesService", () => {
 
       await favoritesService.add("pub-uuid-001");
 
-      expect(mockApiClient.post).toHaveBeenCalledWith("/favorites/pub-uuid-001");
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/favorites/pub-uuid-001",
+      );
     });
 
     it("should call POST /favorites/:publicationId exactly once", async () => {
@@ -205,7 +207,9 @@ describe("favoritesService", () => {
 
       await favoritesService.add("pub-uuid-999");
 
-      expect(mockApiClient.post).toHaveBeenCalledWith("/favorites/pub-uuid-999");
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        "/favorites/pub-uuid-999",
+      );
     });
 
     it("should return void (undefined) on success", async () => {

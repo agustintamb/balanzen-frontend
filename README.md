@@ -8,11 +8,11 @@ Marketplace de alimentos por vencer. Consumidores reservan productos con descuen
 
 ## Requisitos
 
-| Herramienta | Versión | Notas |
-|---|---|---|
-| Node.js | ≥ 20 | |
-| npm | ≥ 10 | incluido con Node |
-| Java JDK | 17 | ver instalación abajo |
+| Herramienta    | Versión        | Notas                  |
+| -------------- | -------------- | ---------------------- |
+| Node.js        | ≥ 20           |                        |
+| npm            | ≥ 10           | incluido con Node      |
+| Java JDK       | 17             | ver instalación abajo  |
 | Android Studio | última estable | incluye SDK y emulador |
 
 ---
@@ -65,6 +65,7 @@ java -version   # debe mostrar openjdk version "17.x.x"
 ```
 
 > Si ya tenés Android Studio instalado, podés usar su JDK integrado:
+>
 > ```bash
 > echo 'export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"' >> ~/.zshrc
 > source ~/.zshrc
@@ -82,6 +83,7 @@ winget install EclipseAdoptium.Temurin.17.JDK
 ```
 
 Verificar en PowerShell:
+
 ```powershell
 java -version   # debe mostrar openjdk version "17.x.x"
 ```
@@ -104,6 +106,7 @@ java -version   # debe mostrar openjdk version "17.x.x"
 ### Variables de entorno del SDK (si Expo no lo detecta)
 
 **macOS** — agregar a `~/.zshrc`:
+
 ```bash
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
@@ -111,6 +114,7 @@ export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
 
 **Windows** — agregar a Variables de entorno del sistema:
+
 ```
 ANDROID_HOME = %LOCALAPPDATA%\Android\Sdk
 PATH += %LOCALAPPDATA%\Android\Sdk\emulator
@@ -143,13 +147,13 @@ Después de esta compilación, `npm run start` / `npx expo start` ya no usa Expo
 
 #### ¿Cuándo hay que volver a correr `expo run:android`?
 
-| Situación | ¿Recompilar? |
-|---|---|
-| Cambié una pantalla, componente o lógica JS | ❌ No — `expo start` alcanza |
-| Instalé un nuevo módulo nativo (`expo-camera`, `react-native-maps`, etc.) | ✅ Sí |
-| Cambié plugins, permisos o `android.config` en `app.json` | ✅ Sí |
-| El mapa u otro módulo nativo no funciona / aparece fallback | ✅ Sí |
-| Actualicé la versión de Expo SDK | ✅ Sí |
+| Situación                                                                 | ¿Recompilar?                 |
+| ------------------------------------------------------------------------- | ---------------------------- |
+| Cambié una pantalla, componente o lógica JS                               | ❌ No — `expo start` alcanza |
+| Instalé un nuevo módulo nativo (`expo-camera`, `react-native-maps`, etc.) | ✅ Sí                        |
+| Cambié plugins, permisos o `android.config` en `app.json`                 | ✅ Sí                        |
+| El mapa u otro módulo nativo no funciona / aparece fallback               | ✅ Sí                        |
+| Actualicé la versión de Expo SDK                                          | ✅ Sí                        |
 
 ---
 
@@ -165,11 +169,11 @@ Estos módulos **no funcionan en Expo Go** y necesitan haber corrido `expo run:a
 
 ## Scripts disponibles
 
-| Comando | Descripción |
-|---|---|
-| `npm run start` | Metro/Expo (Expo Go o dev client) |
-| `npm run android` | Igual a `expo start --android` |
+| Comando                | Descripción                             |
+| ---------------------- | --------------------------------------- |
+| `npm run start`        | Metro/Expo (Expo Go o dev client)       |
+| `npm run android`      | Igual a `expo start --android`          |
 | `npx expo run:android` | Compilación nativa + instala dev client |
-| `npm test` | Tests unitarios |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier |
+| `npm test`             | Tests unitarios                         |
+| `npm run lint`         | ESLint                                  |
+| `npm run format`       | Prettier                                |

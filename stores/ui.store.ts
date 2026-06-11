@@ -19,8 +19,7 @@ export const useUIStore = create<UIState>((set) => ({
   showToast: (message, type = "error") =>
     set({ toast: { visible: true, message, type } }),
 
-  hideToast: () =>
-    set((s) => ({ toast: { ...s.toast, visible: false } })),
+  hideToast: () => set((s) => ({ toast: { ...s.toast, visible: false } })),
 }));
 
 // ─── Helpers reutilizables ────────────────────────────────────────────────────

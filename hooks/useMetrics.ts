@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-
 import { metricsService } from "@/api/metrics/metrics.service";
 import { MetricsSummary } from "@/api/metrics/metrics.types";
 

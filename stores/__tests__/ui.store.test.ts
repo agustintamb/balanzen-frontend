@@ -1,6 +1,6 @@
 import React from "react";
 import { act, create } from "react-test-renderer";
-import { useUIStore, useToast, ToastType } from "@/stores/ui.store";
+import { ToastType, useToast, useUIStore } from "@/stores/ui.store";
 
 // Renders a hook in a proper React context using react-test-renderer.
 // Returns a ref-like object whose `.current` is updated after each act().
@@ -74,7 +74,9 @@ describe("useUIStore", () => {
         useUIStore.getState().showToast("Item added to favorites");
       });
 
-      expect(useUIStore.getState().toast.message).toBe("Item added to favorites");
+      expect(useUIStore.getState().toast.message).toBe(
+        "Item added to favorites",
+      );
     });
 
     it("should default to error type when no type is provided", () => {

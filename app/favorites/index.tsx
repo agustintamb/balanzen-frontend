@@ -10,9 +10,9 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Feather } from "@expo/vector-icons";
+import type { Favorite } from "@/api/favorites/favorites.types";
 import Icon from "@/components/ui/Icon";
 import { buildCardImageUrl } from "@/utils/cloudinary";
-import type { Favorite } from "@/api/favorites/favorites.types";
 import { useFavoritesScreen } from "./useFavoritesScreen";
 
 const CARD_IMAGE_SIZE = 90;
@@ -27,9 +27,7 @@ const formatExpiry = (dateStr: string): string => {
   today.setHours(0, 0, 0, 0);
   const expiry = new Date(dateStr);
   expiry.setHours(0, 0, 0, 0);
-  const diffDays = Math.round(
-    (expiry.getTime() - today.getTime()) / 86400000,
-  );
+  const diffDays = Math.round((expiry.getTime() - today.getTime()) / 86400000);
   if (diffDays < 0) return "Vencido";
   if (diffDays === 0) return "Vence hoy";
   if (diffDays === 1) return "Vence mañana";
@@ -123,10 +121,7 @@ const FavoriteCard = ({
         </Text>
 
         {publication.expiry_date && (
-          <View
-            className="flex-row items-center mt-1"
-            style={{ gap: 4 }}
-          >
+          <View className="flex-row items-center mt-1" style={{ gap: 4 }}>
             <Feather name="clock" size={11} color="#9CA3AF" />
             <Text className="font-sans text-xs text-gray-400">
               {formatExpiry(publication.expiry_date)}
@@ -219,7 +214,8 @@ const FavoritesScreen = () => {
               Todavía no tenés favoritos
             </Text>
             <Text className="font-sans text-sm text-gray-400 text-center">
-              Guardá publicaciones que te interesen para encontrarlas fácilmente.
+              Guardá publicaciones que te interesen para encontrarlas
+              fácilmente.
             </Text>
           </View>
         ) : (

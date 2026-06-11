@@ -36,7 +36,12 @@ export interface PublicationFilters extends PaginationParams {
   category_id?: string;
   min_discount?: number;
   max_price?: number;
-  sort_by?: "created_at" | "discount_pct" | "expiry_date" | "final_price" | "distance";
+  sort_by?:
+    | "created_at"
+    | "discount_pct"
+    | "expiry_date"
+    | "final_price"
+    | "distance";
   sort_order?: "asc" | "desc";
   lat?: number;
   lng?: number;

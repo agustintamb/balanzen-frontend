@@ -7,6 +7,7 @@ import type {
   RegisterConsumerBody,
   RegisterResponse,
 } from "@/api/auth/auth.types";
+import apiClient from "@/api/client";
 
 jest.mock("@/api/client", () => ({
   __esModule: true,
@@ -15,8 +16,6 @@ jest.mock("@/api/client", () => ({
     put: jest.fn(),
   },
 }));
-
-import apiClient from "@/api/client";
 
 const mockPost = apiClient.post as jest.MockedFunction<typeof apiClient.post>;
 const mockPut = apiClient.put as jest.MockedFunction<typeof apiClient.put>;

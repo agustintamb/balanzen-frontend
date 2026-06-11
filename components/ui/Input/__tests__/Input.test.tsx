@@ -1,11 +1,11 @@
 import React, { createRef } from "react";
 import { TextInput } from "react-native";
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
+import Input from "@/components/ui/Input";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { TouchableOpacity } = require("react-native") as typeof import("react-native");
-
-import Input from "@/components/ui/Input";
+const { TouchableOpacity } =
+  require("react-native") as typeof import("react-native");
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -16,7 +16,7 @@ describe("Input", () => {
     it("should render a TextInput with the given placeholder", () => {
       // Arrange
       const { getByPlaceholderText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="Enter email" />
+        <Input value="" onChangeText={jest.fn()} placeholder="Enter email" />,
       );
       // Act / Assert
       expect(getByPlaceholderText("Enter email")).toBeTruthy();
@@ -25,7 +25,7 @@ describe("Input", () => {
     it("should render the current value inside the TextInput", () => {
       // Arrange
       const { getByDisplayValue } = render(
-        <Input value="hello@example.com" onChangeText={jest.fn()} />
+        <Input value="hello@example.com" onChangeText={jest.fn()} />,
       );
       // Assert
       expect(getByDisplayValue("hello@example.com")).toBeTruthy();
@@ -34,7 +34,7 @@ describe("Input", () => {
     it("should render the label when label prop is provided", () => {
       // Arrange
       const { getByText } = render(
-        <Input value="" onChangeText={jest.fn()} label="Email" />
+        <Input value="" onChangeText={jest.fn()} label="Email" />,
       );
       // Assert
       expect(getByText("Email")).toBeTruthy();
@@ -43,7 +43,7 @@ describe("Input", () => {
     it("should not render a label when label prop is omitted", () => {
       // Arrange
       const { queryByText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="Email" />
+        <Input value="" onChangeText={jest.fn()} placeholder="Email" />,
       );
       // Assert — only the placeholder text exists, no label element
       expect(queryByText("Email")).toBeNull();
@@ -55,7 +55,7 @@ describe("Input", () => {
       // Arrange
       const onChangeText = jest.fn();
       const { getByPlaceholderText } = render(
-        <Input value="" onChangeText={onChangeText} placeholder="Type here" />
+        <Input value="" onChangeText={onChangeText} placeholder="Type here" />,
       );
       // Act
       fireEvent.changeText(getByPlaceholderText("Type here"), "new text");
@@ -74,7 +74,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="password"
           placeholder="Password"
-        />
+        />,
       );
       // Assert
       expect(getByPlaceholderText("Password").props.secureTextEntry).toBe(true);
@@ -88,7 +88,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="password"
           placeholder="Password"
-        />
+        />,
       );
       // Assert — locate the TouchableOpacity that wraps the eye icon
       expect(UNSAFE_getByType(TouchableOpacity)).toBeTruthy();
@@ -102,12 +102,14 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="password"
           placeholder="Password"
-        />
+        />,
       );
       // Act
       fireEvent.press(UNSAFE_getByType(TouchableOpacity));
       // Assert
-      expect(getByPlaceholderText("Password").props.secureTextEntry).toBe(false);
+      expect(getByPlaceholderText("Password").props.secureTextEntry).toBe(
+        false,
+      );
     });
 
     it("should toggle secureTextEntry back to true on second press", () => {
@@ -118,7 +120,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="password"
           placeholder="Password"
-        />
+        />,
       );
       const toggleBtn = UNSAFE_getByType(TouchableOpacity);
       // Act — press twice
@@ -131,7 +133,12 @@ describe("Input", () => {
     it("should not render a toggle button when type is not password", () => {
       // Arrange
       const { UNSAFE_queryAllByType } = render(
-        <Input value="" onChangeText={jest.fn()} type="text" placeholder="Name" />
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          type="text"
+          placeholder="Name"
+        />,
       );
       // Assert — no TouchableOpacity rendered for non-password types
       expect(UNSAFE_queryAllByType(TouchableOpacity)).toHaveLength(0);
@@ -147,11 +154,11 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="email"
           placeholder="Email"
-        />
+        />,
       );
       // Assert
       expect(getByPlaceholderText("Email").props.keyboardType).toBe(
-        "email-address"
+        "email-address",
       );
     });
 
@@ -163,7 +170,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="email"
           placeholder="Email"
-        />
+        />,
       );
       // Assert
       expect(getByPlaceholderText("Email").props.autoCapitalize).toBe("none");
@@ -179,7 +186,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="number"
           placeholder="Amount"
-        />
+        />,
       );
       // Assert
       expect(getByPlaceholderText("Amount").props.keyboardType).toBe("numeric");
@@ -195,10 +202,12 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           type="phone"
           placeholder="Phone"
-        />
+        />,
       );
       // Assert
-      expect(getByPlaceholderText("Phone").props.keyboardType).toBe("phone-pad");
+      expect(getByPlaceholderText("Phone").props.keyboardType).toBe(
+        "phone-pad",
+      );
     });
   });
 
@@ -210,7 +219,7 @@ describe("Input", () => {
           value=""
           onChangeText={jest.fn()}
           error="This field is required"
-        />
+        />,
       );
       // Assert
       expect(getByText("This field is required")).toBeTruthy();
@@ -219,7 +228,7 @@ describe("Input", () => {
     it("should not render any helper text when neither error nor hint is provided", () => {
       // Arrange
       const { queryByText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="Name" />
+        <Input value="" onChangeText={jest.fn()} placeholder="Name" />,
       );
       // Assert — no stray text node below the input
       expect(queryByText("This field is required")).toBeNull();
@@ -228,7 +237,7 @@ describe("Input", () => {
     it("should apply error color class to the helper text when error is set", () => {
       // Arrange
       const { getByText } = render(
-        <Input value="" onChangeText={jest.fn()} error="Invalid email" />
+        <Input value="" onChangeText={jest.fn()} error="Invalid email" />,
       );
       // Assert — RNTL exposes className as a prop on the Text node via NativeWind
       const errorText = getByText("Invalid email");
@@ -240,7 +249,11 @@ describe("Input", () => {
     it("should render hint text when hint prop is provided", () => {
       // Arrange
       const { getByText } = render(
-        <Input value="" onChangeText={jest.fn()} hint="Must be at least 8 characters" />
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          hint="Must be at least 8 characters"
+        />,
       );
       // Assert
       expect(getByText("Must be at least 8 characters")).toBeTruthy();
@@ -254,7 +267,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           error="Required"
           hint="Some hint"
-        />
+        />,
       );
       // Assert — error takes precedence (error ?? hint shows error first)
       expect(getByText("Required")).toBeTruthy();
@@ -264,7 +277,7 @@ describe("Input", () => {
     it("should apply gray color class to hint text when only hint is provided", () => {
       // Arrange
       const { getByText } = render(
-        <Input value="" onChangeText={jest.fn()} hint="Use 8+ characters" />
+        <Input value="" onChangeText={jest.fn()} hint="Use 8+ characters" />,
       );
       // Assert
       const hintText = getByText("Use 8+ characters");
@@ -281,7 +294,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           disabled
           placeholder="Disabled input"
-        />
+        />,
       );
       // Assert
       expect(getByPlaceholderText("Disabled input").props.editable).toBe(false);
@@ -295,7 +308,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           disabled={false}
           placeholder="Active input"
-        />
+        />,
       );
       // Assert
       expect(getByPlaceholderText("Active input").props.editable).toBe(true);
@@ -304,7 +317,7 @@ describe("Input", () => {
     it("should set editable to true by default when disabled is omitted", () => {
       // Arrange
       const { getByPlaceholderText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="Default input" />
+        <Input value="" onChangeText={jest.fn()} placeholder="Default input" />,
       );
       // Assert
       expect(getByPlaceholderText("Default input").props.editable).toBe(true);
@@ -318,11 +331,14 @@ describe("Input", () => {
         <Input
           value=""
           onChangeText={jest.fn()}
-          leftIcon={<React.Fragment><></>
-            {/* Use testID on a View to verify it renders */}
-          </React.Fragment>}
+          leftIcon={
+            <React.Fragment>
+              <></>
+              {/* Use testID on a View to verify it renders */}
+            </React.Fragment>
+          }
           placeholder="With icon"
-        />
+        />,
       );
       // Assert via placeholder since the icon is a node — just check the input still renders
       expect(getByTestId !== undefined).toBe(true);
@@ -336,7 +352,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           leftIcon={<TextInput testID="left-icon-element" editable={false} />}
           placeholder="With icon"
-        />
+        />,
       );
       // Assert — the icon node appears in the tree
       expect(getByTestId("left-icon-element")).toBeTruthy();
@@ -353,7 +369,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           onSubmitEditing={onSubmitEditing}
           placeholder="Submit me"
-        />
+        />,
       );
       // Act
       fireEvent(getByPlaceholderText("Submit me"), "submitEditing");
@@ -364,11 +380,15 @@ describe("Input", () => {
     it("should not throw when onSubmitEditing is not provided", () => {
       // Arrange
       const { getByPlaceholderText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="No submit handler" />
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          placeholder="No submit handler"
+        />,
       );
       // Act / Assert — should not throw
       expect(() =>
-        fireEvent(getByPlaceholderText("No submit handler"), "submitEditing")
+        fireEvent(getByPlaceholderText("No submit handler"), "submitEditing"),
       ).not.toThrow();
     });
   });
@@ -382,10 +402,12 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           returnKeyType="done"
           placeholder="Return key"
-        />
+        />,
       );
       // Assert
-      expect(getByPlaceholderText("Return key").props.returnKeyType).toBe("done");
+      expect(getByPlaceholderText("Return key").props.returnKeyType).toBe(
+        "done",
+      );
     });
   });
 
@@ -398,7 +420,7 @@ describe("Input", () => {
           onChangeText={jest.fn()}
           testID="input-container"
           placeholder="Test"
-        />
+        />,
       );
       // Assert — testID is placed on the wrapping View
       expect(getByTestId("input-container")).toBeTruthy();
@@ -415,7 +437,7 @@ describe("Input", () => {
           value=""
           onChangeText={jest.fn()}
           placeholder="Ref input"
-        />
+        />,
       );
       // Assert — ref.current should be a TextInput instance
       expect(ref.current).not.toBeNull();
@@ -427,23 +449,23 @@ describe("Input", () => {
     it("should not throw when the TextInput receives focus", () => {
       // Arrange
       const { getByPlaceholderText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="Focus me" />
+        <Input value="" onChangeText={jest.fn()} placeholder="Focus me" />,
       );
       // Act / Assert
       expect(() =>
-        fireEvent(getByPlaceholderText("Focus me"), "focus")
+        fireEvent(getByPlaceholderText("Focus me"), "focus"),
       ).not.toThrow();
     });
 
     it("should not throw when the TextInput loses focus", () => {
       // Arrange
       const { getByPlaceholderText } = render(
-        <Input value="" onChangeText={jest.fn()} placeholder="Blur me" />
+        <Input value="" onChangeText={jest.fn()} placeholder="Blur me" />,
       );
       // Act — focus then blur
       fireEvent(getByPlaceholderText("Blur me"), "focus");
       expect(() =>
-        fireEvent(getByPlaceholderText("Blur me"), "blur")
+        fireEvent(getByPlaceholderText("Blur me"), "blur"),
       ).not.toThrow();
     });
   });

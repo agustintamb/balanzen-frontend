@@ -5,7 +5,8 @@ import CommerceForm from "../CommerceForm";
 import { useRegisterCommerceSection } from "./useRegisterCommerceSection";
 
 const RegisterCommerceSection = () => {
-  const { control, onSubmit, isValid, isPending } = useRegisterCommerceSection();
+  const { control, onSubmit, isValid, isPending } =
+    useRegisterCommerceSection();
 
   return (
     <View style={{ flex: 1 }}>

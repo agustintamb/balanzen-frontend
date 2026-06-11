@@ -1,8 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-
 import createWrapper from "@/__test-utils__/createWrapper";
 import { categoriesService } from "@/api/categories/categories.service";
-import { Category, CategoryListResponse } from "@/api/categories/categories.types";
+import {
+  Category,
+  CategoryListResponse,
+} from "@/api/categories/categories.types";
 import { useCategories } from "@/hooks/useCategories";
 
 jest.mock("@/api/categories/categories.service", () => ({
@@ -11,7 +13,9 @@ jest.mock("@/api/categories/categories.service", () => ({
   },
 }));
 
-const mockCategoriesService = categoriesService as jest.Mocked<typeof categoriesService>;
+const mockCategoriesService = categoriesService as jest.Mocked<
+  typeof categoriesService
+>;
 
 const buildCategory = (overrides?: Partial<Category>): Category => ({
   id: "cat-uuid-1",
@@ -19,10 +23,11 @@ const buildCategory = (overrides?: Partial<Category>): Category => ({
   ...overrides,
 });
 
-const buildCategoryListResponse = (categories: Category[]): CategoryListResponse => ({
+const buildCategoryListResponse = (
+  categories: Category[],
+): CategoryListResponse => ({
   categories,
 });
-
 
 describe("useCategories", () => {
   afterEach(() => {
@@ -30,7 +35,9 @@ describe("useCategories", () => {
   });
 
   it("should start in loading state before the query resolves", () => {
-    mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse([]));
+    mockCategoriesService.list.mockResolvedValueOnce(
+      buildCategoryListResponse([]),
+    );
 
     const { result } = renderHook(() => useCategories(), {
       wrapper: createWrapper().wrapper,
@@ -45,7 +52,9 @@ describe("useCategories", () => {
       buildCategory({ id: "cat-1", name: "Panadería" }),
       buildCategory({ id: "cat-2", name: "Lácteos" }),
     ];
-    mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse(categories));
+    mockCategoriesService.list.mockResolvedValueOnce(
+      buildCategoryListResponse(categories),
+    );
 
     const { result } = renderHook(() => useCategories(), {
       wrapper: createWrapper().wrapper,
@@ -60,7 +69,9 @@ describe("useCategories", () => {
   });
 
   it("should return an empty array when the API returns no categories", async () => {
-    mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse([]));
+    mockCategoriesService.list.mockResolvedValueOnce(
+      buildCategoryListResponse([]),
+    );
 
     const { result } = renderHook(() => useCategories(), {
       wrapper: createWrapper().wrapper,
@@ -73,7 +84,9 @@ describe("useCategories", () => {
   });
 
   it("should call categoriesService.list with no arguments", async () => {
-    mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse([]));
+    mockCategoriesService.list.mockResolvedValueOnce(
+      buildCategoryListResponse([]),
+    );
 
     const { result } = renderHook(() => useCategories(), {
       wrapper: createWrapper().wrapper,
@@ -91,7 +104,9 @@ describe("useCategories", () => {
       buildCategory({ id: "uuid-def", name: "Frutas" }),
       buildCategory({ id: "uuid-ghi", name: "Carnes" }),
     ];
-    mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse(categories));
+    mockCategoriesService.list.mockResolvedValueOnce(
+      buildCategoryListResponse(categories),
+    );
 
     const { result } = renderHook(() => useCategories(), {
       wrapper: createWrapper().wrapper,
@@ -99,9 +114,18 @@ describe("useCategories", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(result.current.data?.[0]).toEqual({ id: "uuid-abc", name: "Verduras" });
-    expect(result.current.data?.[1]).toEqual({ id: "uuid-def", name: "Frutas" });
-    expect(result.current.data?.[2]).toEqual({ id: "uuid-ghi", name: "Carnes" });
+    expect(result.current.data?.[0]).toEqual({
+      id: "uuid-abc",
+      name: "Verduras",
+    });
+    expect(result.current.data?.[1]).toEqual({
+      id: "uuid-def",
+      name: "Frutas",
+    });
+    expect(result.current.data?.[2]).toEqual({
+      id: "uuid-ghi",
+      name: "Carnes",
+    });
   });
 
   it("should set isError and expose the error when the service fails", async () => {
@@ -159,10 +183,10 @@ describe("useCategories", () => {
 
   it("should handle a large list of categories without errors", async () => {
     const manyCategories = Array.from({ length: 50 }, (_, i) =>
-      buildCategory({ id: `cat-${i}`, name: `Category ${i}` })
+      buildCategory({ id: `cat-${i}`, name: `Category ${i}` }),
     );
     mockCategoriesService.list.mockResolvedValueOnce(
-      buildCategoryListResponse(manyCategories)
+      buildCategoryListResponse(manyCategories),
     );
 
     const { result } = renderHook(() => useCategories(), {
@@ -172,12 +196,17 @@ describe("useCategories", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toHaveLength(50);
-    expect(result.current.data?.[49]).toEqual({ id: "cat-49", name: "Category 49" });
+    expect(result.current.data?.[49]).toEqual({
+      id: "cat-49",
+      name: "Category 49",
+    });
   });
 
   it("should return data as a plain Category array, not wrapped in CategoryListResponse", async () => {
     const categories = [buildCategory({ id: "cat-1", name: "Bebidas" })];
-    mockCategoriesService.list.mockResolvedValueOnce(buildCategoryListResponse(categories));
+    mockCategoriesService.list.mockResolvedValueOnce(
+      buildCategoryListResponse(categories),
+    );
 
     const { result } = renderHook(() => useCategories(), {
       wrapper: createWrapper().wrapper,

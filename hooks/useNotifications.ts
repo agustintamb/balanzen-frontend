@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { notificationsService } from "@/api/notifications/notifications.service";
 import {
   NotificationFilters,

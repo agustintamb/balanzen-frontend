@@ -12,7 +12,7 @@ jest.mock("@/api/client", () => ({
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const buildMetricsSummary = (
-  overrides?: Partial<MetricsSummary>
+  overrides?: Partial<MetricsSummary>,
 ): MetricsSummary => ({
   total_publications: 20,
   active_publications: 8,
@@ -135,7 +135,7 @@ describe("metricsService", () => {
       expect(mockedApiClient.get).toHaveBeenCalledWith("/metrics/summary");
       expect(mockedApiClient.get).not.toHaveBeenCalledWith(
         "/metrics/summary",
-        expect.anything()
+        expect.anything(),
       );
     });
 
@@ -151,7 +151,7 @@ describe("metricsService", () => {
       mockedApiClient.get.mockRejectedValueOnce(error);
 
       await expect(metricsService.getSummary()).rejects.toThrow(
-        "Internal Server Error"
+        "Internal Server Error",
       );
     });
   });

@@ -21,7 +21,10 @@ export const useChangePasswordScreen = () => {
       return;
     }
     if (newPassword.length < 8) {
-      Alert.alert("Error", "La nueva contraseña debe tener al menos 8 caracteres");
+      Alert.alert(
+        "Error",
+        "La nueva contraseña debe tener al menos 8 caracteres",
+      );
       return;
     }
     if (newPassword !== confirmPassword) {

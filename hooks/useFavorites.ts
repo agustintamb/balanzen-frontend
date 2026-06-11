@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { favoritesService } from "@/api/favorites/favorites.service";
-import { FavoriteListResponse, FavoritesParams } from "@/api/favorites/favorites.types";
+import {
+  FavoriteListResponse,
+  FavoritesParams,
+} from "@/api/favorites/favorites.types";
 
 export const useFavorites = (params?: FavoritesParams) =>
   useQuery<FavoriteListResponse, Error>({

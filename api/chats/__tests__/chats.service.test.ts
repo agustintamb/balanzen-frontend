@@ -1,4 +1,3 @@
-import apiClient from "@/api/client";
 import { chatsService } from "@/api/chats/chats.service";
 import type {
   Chat,
@@ -7,6 +6,7 @@ import type {
   Message,
   MessageListResponse,
 } from "@/api/chats/chats.types";
+import apiClient from "@/api/client";
 import type { Pagination } from "@/api/shared.types";
 
 jest.mock("@/api/client", () => ({
@@ -251,9 +251,9 @@ describe("chatsService", () => {
       const networkError = new Error("Network Error");
       mockApiClient.get.mockRejectedValueOnce(networkError);
 
-      await expect(
-        chatsService.getMessages("order-uuid-001"),
-      ).rejects.toThrow("Network Error");
+      await expect(chatsService.getMessages("order-uuid-001")).rejects.toThrow(
+        "Network Error",
+      );
     });
 
     it("should propagate a 404 error when the order does not exist", async () => {

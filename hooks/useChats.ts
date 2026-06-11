@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { chatsService } from "@/api/chats/chats.service";
 import {
   Chat,

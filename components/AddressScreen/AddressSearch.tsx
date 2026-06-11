@@ -46,7 +46,10 @@ const AddressSearch = ({
         }}
       >
         {onBack && (
-          <TouchableOpacity onPress={onBack} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <TouchableOpacity
+            onPress={onBack}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
             <Icon name="arrow-left" size={24} color="primary-dark" />
           </TouchableOpacity>
         )}
@@ -151,7 +154,8 @@ const AddressSearch = ({
         {permissionDenied && (
           <View className="bg-warning-light rounded-xl p-3">
             <Text className="font-sans text-sm text-warning leading-5">
-              Para usar tu ubicación, habilitá el permiso en Configuración del sistema.
+              Para usar tu ubicación, habilitá el permiso en Configuración del
+              sistema.
             </Text>
           </View>
         )}

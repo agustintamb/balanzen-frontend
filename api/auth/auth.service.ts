@@ -1,4 +1,3 @@
-import apiClient from "@/api/client";
 import {
   ChangePasswordBody,
   LoginBody,
@@ -6,6 +5,7 @@ import {
   RegisterBody,
   RegisterResponse,
 } from "@/api/auth/auth.types";
+import apiClient from "@/api/client";
 
 export const authService = {
   register: (body: RegisterBody): Promise<RegisterResponse> =>

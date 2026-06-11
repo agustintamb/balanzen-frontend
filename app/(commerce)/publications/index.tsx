@@ -9,9 +9,7 @@ const CommercePublications = () => (
       edges={["top", "left", "right"]}
       className="flex-1 bg-surface items-center justify-center px-6"
     >
-      <Text className="font-sans-bold text-xl text-primary-dark">
-        Publicar
-      </Text>
+      <Text className="font-sans-bold text-xl text-primary-dark">Publicar</Text>
       <Text className="font-sans text-base text-gray-500 mt-2 text-center">
         En construcción
       </Text>

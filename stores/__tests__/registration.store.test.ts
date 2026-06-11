@@ -1,6 +1,11 @@
-import { useRegistrationStore, PersonalData } from "@/stores/registration.store";
+import {
+  PersonalData,
+  useRegistrationStore,
+} from "@/stores/registration.store";
 
-const buildPersonalData = (overrides?: Partial<PersonalData>): PersonalData => ({
+const buildPersonalData = (
+  overrides?: Partial<PersonalData>,
+): PersonalData => ({
   firstName: "Juan",
   lastName: "Pérez",
   email: "juan.perez@example.com",
@@ -77,7 +82,7 @@ describe("useRegistrationStore", () => {
       useRegistrationStore.getState().setPersonalData(secondData);
 
       expect(useRegistrationStore.getState().personalData?.email).toBe(
-        "second@example.com"
+        "second@example.com",
       );
     });
 
@@ -86,7 +91,10 @@ describe("useRegistrationStore", () => {
         firstName: "Carlos",
         lastName: "Rodríguez",
       });
-      const secondData = buildPersonalData({ firstName: "Ana", lastName: "López" });
+      const secondData = buildPersonalData({
+        firstName: "Ana",
+        lastName: "López",
+      });
 
       useRegistrationStore.getState().setPersonalData(firstData);
       useRegistrationStore.getState().setPersonalData(secondData);
@@ -158,12 +166,18 @@ describe("useRegistrationStore", () => {
     });
 
     it("should not share state between independent set and clear sequences", () => {
-      useRegistrationStore.getState().setPersonalData(buildPersonalData({ email: "a@example.com" }));
+      useRegistrationStore
+        .getState()
+        .setPersonalData(buildPersonalData({ email: "a@example.com" }));
       useRegistrationStore.getState().clear();
 
-      useRegistrationStore.getState().setPersonalData(buildPersonalData({ email: "b@example.com" }));
+      useRegistrationStore
+        .getState()
+        .setPersonalData(buildPersonalData({ email: "b@example.com" }));
 
-      expect(useRegistrationStore.getState().personalData?.email).toBe("b@example.com");
+      expect(useRegistrationStore.getState().personalData?.email).toBe(
+        "b@example.com",
+      );
     });
   });
 });

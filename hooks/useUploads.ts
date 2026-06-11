@@ -1,5 +1,4 @@
 import { useMutation } from "@tanstack/react-query";
-
 import { uploadsService } from "@/api/uploads/uploads.service";
 import { UploadImageResponse } from "@/api/uploads/uploads.types";
 
