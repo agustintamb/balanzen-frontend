@@ -10,6 +10,8 @@ export interface FavoritePublication {
   discount_pct: number;
   photos: string[];
   status: PublicationStatus;
+  is_donation?: boolean;
+  expiry_date?: string;
   commerce: {
     business_name: string;
     selected_address: Pick<AddressInput, "formatted_address">;
