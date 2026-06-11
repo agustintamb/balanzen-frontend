@@ -8,11 +8,11 @@ Marketplace de alimentos por vencer. Consumidores reservan productos con descuen
 
 ## Requisitos
 
-| Herramienta    | Versión   | Notas                  |
-| -------------- | --------- | ---------------------- |
-| Node.js        | ≥ 20      |                        |
-| npm            | ≥ 10      | incluido con Node      |
-| Java JDK       | 17        | ver instalación abajo  |
+| Herramienta    | Versión        | Notas                  |
+| -------------- | -------------- | ---------------------- |
+| Node.js        | ≥ 20           |                        |
+| npm            | ≥ 10           | incluido con Node      |
+| Java JDK       | 17             | ver instalación abajo  |
 | Android Studio | última estable | incluye SDK y emulador |
 
 ---
@@ -27,27 +27,21 @@ npm install
 
 ## Variables de entorno
 
-Copiá `.env.local` y completá tus valores:
+Copiá `.env.local.example` como `.env.local` y completá tus valores:
 
-```env
-# Puerto del backend local
-API_LOCAL_PORT=3001
-
-# Entorno: local | testing | production (default: local)
-APP_ENV=local
-
-# Google Maps API Key — necesaria para el mapa en Android
-# Conseguila en: https://console.cloud.google.com/ → Maps SDK for Android
-GOOGLE_MAPS_API_KEY=
-
-# Solo necesario si usás un dispositivo físico (no emulador)
-# Obtené tu IP: ip route get 1.1.1.1 (Linux/Mac) / ipconfig (Windows)
-# API_LOCAL_DEVICE_URL=http://192.168.x.x:3001/api/v1
+```bash
+cp .env.local.example .env.local
 ```
 
 > **Emulador Android:** el backend local se resuelve automáticamente como `http://10.0.2.2:3001/api/v1`.
 >
-> **Dispositivo físico:** descomentá `API_LOCAL_DEVICE_URL` con tu IP local. El dispositivo y la PC deben estar en la misma red.
+> **Dispositivo físico:** descomentá `API_LOCAL_DEVICE_URL` con tu IP local. El dispositivo y la PC deben estar en la misma red. Para obtener tu IP:
+>
+> ```bash
+> hostname -I | awk '{print $1}'   # Linux
+> ipconfig getifaddr en0           # macOS
+> ipconfig | findstr IPv4          # Windows
+> ```
 
 Después de editar `.env.local`, reiniciá Metro con `--clear`:
 
@@ -154,22 +148,22 @@ Compila la app nativa e instala el dev client en el emulador. **Tarda 5–15 min
 
 #### ¿Cuándo recompilar?
 
-| Situación | ¿Recompilar? |
-| --------- | ------------ |
-| Cambié una pantalla, componente o lógica JS | ❌ No |
-| Instalé un nuevo paquete con módulo nativo | ✅ Sí |
-| Cambié plugins o permisos en `app.json` | ✅ Sí |
-| Actualicé la versión de Expo SDK | ✅ Sí |
+| Situación                                   | ¿Recompilar? |
+| ------------------------------------------- | ------------ |
+| Cambié una pantalla, componente o lógica JS | ❌ No        |
+| Instalé un nuevo paquete con módulo nativo  | ✅ Sí        |
+| Cambié plugins o permisos en `app.json`     | ✅ Sí        |
+| Actualicé la versión de Expo SDK            | ✅ Sí        |
 
 ---
 
 ## Scripts
 
-| Comando                | Descripción                                   |
-| ---------------------- | --------------------------------------------- |
-| `npm run start`        | Levanta Metro (Expo Go o dev client)          |
-| `npx expo run:android` | Compilación nativa + instala dev client       |
-| `npm test`             | Tests unitarios                               |
-| `npm run test:coverage`| Tests con reporte de cobertura               |
-| `npm run lint`         | ESLint                                        |
-| `npm run format`       | Prettier sobre todo el proyecto               |
+| Comando                 | Descripción                             |
+| ----------------------- | --------------------------------------- |
+| `npm run start`         | Levanta Metro (Expo Go o dev client)    |
+| `npx expo run:android`  | Compilación nativa + instala dev client |
+| `npm test`              | Tests unitarios                         |
+| `npm run test:coverage` | Tests con reporte de cobertura          |
+| `npm run lint`          | ESLint                                  |
+| `npm run format`        | Prettier sobre todo el proyecto         |
