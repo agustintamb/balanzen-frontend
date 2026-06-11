@@ -4,7 +4,6 @@ import FeaturedTab from "../FeaturedTab";
 import type { TabItemProps } from "../tabBar.utils";
 
 jest.mock("expo-linear-gradient", () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require("react-native");
   return {
     LinearGradient: ({ children }: { children: React.ReactNode }) => (
@@ -14,7 +13,6 @@ jest.mock("expo-linear-gradient", () => {
 });
 
 jest.mock("@expo/vector-icons", () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { View } = require("react-native");
   return {
     Feather: ({ name, testID }: { name: string; testID?: string }) => (

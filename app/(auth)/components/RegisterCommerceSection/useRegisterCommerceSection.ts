@@ -75,6 +75,7 @@ export const useRegisterCommerceSection = () => {
               first_name: response.first_name,
               last_name: response.last_name,
               has_address: false,
+              has_selected_address: false,
               photo_url: null,
             },
             setAccessToken,

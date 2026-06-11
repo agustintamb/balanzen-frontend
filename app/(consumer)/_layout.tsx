@@ -11,6 +11,7 @@ const ConsumerLayout = () => (
       sceneStyle: { backgroundColor: "#F1EFE8" },
     }}
     tabBar={renderTabBar}
+    backBehavior="firstRoute"
   >
     <Tabs.Screen name="home" />
     <Tabs.Screen name="orders" />

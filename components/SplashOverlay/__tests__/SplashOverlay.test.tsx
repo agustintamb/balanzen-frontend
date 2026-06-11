@@ -20,7 +20,7 @@ afterEach(() => {
 describe("SplashOverlay", () => {
   describe("initial render — splash visible", () => {
     it("should render the animated container when splash is visible", () => {
-      const { getByTestId, UNSAFE_getAllByType } = render(<SplashOverlay />);
+      const { UNSAFE_getAllByType } = render(<SplashOverlay />);
       const { Animated } = require("react-native");
 
       // The Animated.View renders — confirms the overlay is in the tree

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BackHandler, Keyboard, Platform } from "react-native";
+import { BackHandler } from "react-native";
 import type { UserRole } from "@/api/users/users.types";
 
 export type AuthMode =
@@ -11,10 +11,6 @@ export type AuthMode =
 export const useAuthScreen = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
-  const [androidKeyboardPad, setAndroidKeyboardPad] = useState(0);
-  // En Android con edgeToEdgeEnabled, KeyboardAvoidingView no restaura
-  // el layout correctamente al cerrar el teclado. Trackeamos la altura
-  // del teclado manualmente y la aplicamos como paddingBottom.
 
   const handleRoleContinue = (role: UserRole) => {
     setSelectedRole(role);
@@ -48,29 +44,14 @@ export const useAuthScreen = () => {
         handleGoToLogin();
         return true;
       }
-      return false; // login: comportamiento por defecto (salir / stack anterior)
+      return false;
     });
     return () => sub.remove();
   }, [mode]);
 
-  useEffect(() => {
-    if (Platform.OS !== "android") return;
-    const show = Keyboard.addListener("keyboardDidShow", (e) => {
-      setAndroidKeyboardPad(e.endCoordinates.height);
-    });
-    const hide = Keyboard.addListener("keyboardDidHide", () => {
-      setAndroidKeyboardPad(0);
-    });
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, []);
-
   return {
     mode,
     selectedRole,
-    androidKeyboardPad,
     handleRoleContinue,
     handlePersonalBack,
     handlePersonalContinue,

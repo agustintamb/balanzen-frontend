@@ -1,7 +1,11 @@
 import "@/global.css";
 import { useEffect } from "react";
+import { Platform } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
+import * as NavigationBar from "expo-navigation-bar";
+import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
 import {
   Inter_400Regular,
@@ -20,6 +24,14 @@ colorScheme.set("light");
 SystemUI.setBackgroundColorAsync("#F1EFE8");
 SplashScreen.preventAutoHideAsync();
 
+const AppTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: "#F1EFE8",
+  },
+};
+
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -31,24 +43,31 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (!fontsLoaded) return;
-    // Acá va la lógica de carga: auth check, etc.
     SplashScreen.hideAsync();
   }, [fontsLoaded]);
 
+  useEffect(() => {
+    if (Platform.OS !== "android") return;
+    NavigationBar.setButtonStyleAsync("dark");
+  }, []);
+
   return (
-    <ThemeProvider value={DefaultTheme}>
-      <QueryProvider>
-        <AuthProvider>
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "#F1EFE8" },
-            }}
-          />
-          <SplashOverlay />
-          <Toast />
-        </AuthProvider>
-      </QueryProvider>
+    <ThemeProvider value={AppTheme}>
+      <KeyboardProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <StatusBar style="dark" backgroundColor="transparent" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#F1EFE8" },
+              }}
+            />
+            <SplashOverlay />
+            <Toast />
+          </AuthProvider>
+        </QueryProvider>
+      </KeyboardProvider>
     </ThemeProvider>
   );
 }

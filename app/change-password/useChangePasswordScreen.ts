@@ -1,57 +1,66 @@
-import { useState } from "react";
-import { Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { useChangePassword } from "@/hooks/useAuth";
 import { useToast } from "@/stores/ui.store";
 
+const schema = z
+  .object({
+    current_password: z.string().min(1, "Requerido"),
+    new_password: z
+      .string()
+      .min(8, "Mínimo 8 caracteres")
+      .regex(/[a-zA-Z]/, "Debe incluir letras")
+      .regex(/[0-9]/, "Debe incluir números"),
+    confirm_password: z.string().min(1, "Requerido"),
+  })
+  .refine((data) => data.new_password === data.confirm_password, {
+    message: "Las contraseñas no coinciden",
+    path: ["confirm_password"],
+  });
+
+type FormValues = z.infer<typeof schema>;
+
 export const useChangePasswordScreen = () => {
   const router = useRouter();
-  const { mutateAsync: changePassword, isPending } = useChangePassword();
+  const { mutateAsync: changePassword } = useChangePassword();
   const { showSuccess } = useToast();
 
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { isValid, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    mode: "onChange",
+    defaultValues: {
+      current_password: "",
+      new_password: "",
+      confirm_password: "",
+    },
+  });
 
   const handleBack = () => router.back();
 
-  const handleSave = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert("Error", "Completá todos los campos");
-      return;
-    }
-    if (newPassword.length < 8) {
-      Alert.alert(
-        "Error",
-        "La nueva contraseña debe tener al menos 8 caracteres",
-      );
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas nuevas no coinciden");
-      return;
-    }
+  const handleSave = handleSubmit(async (values) => {
     try {
       await changePassword({
-        current_password: currentPassword,
-        new_password: newPassword,
-        confirm_password: confirmPassword,
+        current_password: values.current_password,
+        new_password: values.new_password,
+        confirm_password: values.confirm_password,
       });
       showSuccess("Contraseña actualizada");
       router.back();
     } catch {
-      // Error manejado globalmente por QueryProvider
+      // Error toast shown automatically by QueryProvider
     }
-  };
+  });
 
   return {
-    currentPassword,
-    setCurrentPassword,
-    newPassword,
-    setNewPassword,
-    confirmPassword,
-    setConfirmPassword,
-    isPending,
+    control,
+    isValid,
+    isSubmitting,
     handleBack,
     handleSave,
   };

@@ -86,6 +86,7 @@ const buildState = (routes: RouteStub[], activeIndex = 0) => ({
   key: "tab-state",
   routeNames: routes.map((r) => r.name),
   history: [],
+  preloadedRouteKeys: [],
   stale: false as const,
   type: "tab" as const,
 });

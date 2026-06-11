@@ -29,4 +29,4 @@ export interface FavoriteListResponse {
   pagination: Pagination;
 }
 
-export interface FavoritesParams extends PaginationParams {}
+export type FavoritesParams = PaginationParams;

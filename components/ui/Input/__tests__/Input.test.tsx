@@ -3,7 +3,6 @@ import { TextInput } from "react-native";
 import { fireEvent, render } from "@testing-library/react-native";
 import Input from "@/components/ui/Input";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { TouchableOpacity } =
   require("react-native") as typeof import("react-native");
 
@@ -442,6 +441,67 @@ describe("Input", () => {
       // Assert — ref.current should be a TextInput instance
       expect(ref.current).not.toBeNull();
       expect(ref.current).toBeInstanceOf(TextInput);
+    });
+  });
+
+  describe("multiline prop", () => {
+    it("should set multiline to true on TextInput when multiline=true", () => {
+      const { getByPlaceholderText } = render(
+        <Input value="" onChangeText={jest.fn()} multiline placeholder="Bio" />,
+      );
+      expect(getByPlaceholderText("Bio").props.multiline).toBe(true);
+    });
+
+    it("should forward numberOfLines to TextInput when multiline=true", () => {
+      const { getByPlaceholderText } = render(
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          multiline
+          numberOfLines={5}
+          placeholder="Bio"
+        />,
+      );
+      expect(getByPlaceholderText("Bio").props.numberOfLines).toBe(5);
+    });
+
+    it("should not pass numberOfLines to TextInput when multiline=false", () => {
+      const { getByPlaceholderText } = render(
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          numberOfLines={5}
+          placeholder="Single line"
+        />,
+      );
+      expect(
+        getByPlaceholderText("Single line").props.numberOfLines,
+      ).toBeUndefined();
+    });
+
+    it("should include textAlignVertical and minHeight in style when multiline=true", () => {
+      const { getByPlaceholderText } = render(
+        <Input value="" onChangeText={jest.fn()} multiline placeholder="Bio" />,
+      );
+      const rawStyle = getByPlaceholderText("Bio").props.style;
+      const flat: Record<string, unknown> = Array.isArray(rawStyle)
+        ? Object.assign({}, ...rawStyle)
+        : (rawStyle ?? {});
+      expect(flat.textAlignVertical).toBe("top");
+      expect(flat.minHeight).toBe(80);
+    });
+
+    it("should render leftIcon with multiline layout when multiline=true and leftIcon is provided", () => {
+      const { getByTestId } = render(
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          multiline
+          leftIcon={<TextInput testID="icon-multiline" editable={false} />}
+          placeholder="Bio"
+        />,
+      );
+      expect(getByTestId("icon-multiline")).toBeTruthy();
     });
   });
 

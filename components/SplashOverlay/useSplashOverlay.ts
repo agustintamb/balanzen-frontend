@@ -18,7 +18,7 @@ export function useSplashOverlay() {
     }, SPLASH_DURATION_MS);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [opacity]);
 
   return { visible, opacity };
 }

@@ -8,6 +8,7 @@ const buildAuthUser = (overrides: Partial<AuthUser> = {}): AuthUser => ({
   first_name: "Juan",
   last_name: "Perez",
   has_address: false,
+  has_selected_address: false,
   photo_url: null,
   ...overrides,
 });
@@ -215,6 +216,70 @@ describe("useAuthStore", () => {
 
       const { accessToken, isInitialized } = useAuthStore.getState();
       expect(accessToken).toBe("token-xyz");
+      expect(isInitialized).toBe(true);
+    });
+  });
+
+  describe("setHasSelectedAddress", () => {
+    it("should update has_selected_address to true on the existing user", () => {
+      const user = buildAuthUser({ has_selected_address: false });
+      useAuthStore.setState({ user });
+
+      useAuthStore.getState().setHasSelectedAddress(true);
+
+      expect(useAuthStore.getState().user?.has_selected_address).toBe(true);
+    });
+
+    it("should update has_selected_address to false on the existing user", () => {
+      const user = buildAuthUser({ has_selected_address: true });
+      useAuthStore.setState({ user });
+
+      useAuthStore.getState().setHasSelectedAddress(false);
+
+      expect(useAuthStore.getState().user?.has_selected_address).toBe(false);
+    });
+
+    it("should not affect other user fields when updating has_selected_address", () => {
+      const user = buildAuthUser({
+        id: "user-789",
+        email: "keep@example.com",
+        first_name: "Luis",
+        last_name: "Torres",
+        has_address: true,
+        has_selected_address: false,
+        photo_url: "https://photo.url",
+      });
+      useAuthStore.setState({ user });
+
+      useAuthStore.getState().setHasSelectedAddress(true);
+
+      const storedUser = useAuthStore.getState().user;
+      expect(storedUser?.id).toBe("user-789");
+      expect(storedUser?.email).toBe("keep@example.com");
+      expect(storedUser?.has_address).toBe(true);
+      expect(storedUser?.photo_url).toBe("https://photo.url");
+    });
+
+    it("should leave user as null when called with no user in state", () => {
+      useAuthStore.setState({ user: null });
+
+      useAuthStore.getState().setHasSelectedAddress(true);
+
+      expect(useAuthStore.getState().user).toBeNull();
+    });
+
+    it("should not affect accessToken or isInitialized when updating has_selected_address", () => {
+      const user = buildAuthUser();
+      useAuthStore.setState({
+        user,
+        accessToken: "token-abc",
+        isInitialized: true,
+      });
+
+      useAuthStore.getState().setHasSelectedAddress(true);
+
+      const { accessToken, isInitialized } = useAuthStore.getState();
+      expect(accessToken).toBe("token-abc");
       expect(isInitialized).toBe(true);
     });
   });

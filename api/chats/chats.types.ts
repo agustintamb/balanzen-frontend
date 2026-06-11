@@ -39,4 +39,4 @@ export interface MessageListResponse {
   pagination: Pagination;
 }
 
-export interface ChatMessagesParams extends PaginationParams {}
+export type ChatMessagesParams = PaginationParams;

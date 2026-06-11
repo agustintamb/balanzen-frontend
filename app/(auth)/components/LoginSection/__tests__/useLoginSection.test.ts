@@ -4,7 +4,9 @@ import type { LoginResponse } from "@/api/auth/auth.types";
 import { useLogin } from "@/hooks/useAuth";
 import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 import { persistSession } from "@/utils/auth";
-import { useLoginSection } from "../useLoginSection";
+import useLoginSectionDefaultExport, {
+  useLoginSection,
+} from "../useLoginSection";
 
 jest.mock("@/hooks/useAuth", () => ({
   useLogin: jest.fn(),
@@ -201,6 +203,7 @@ describe("useLoginSection", () => {
             first_name: CONSUMER_LOGIN_RESPONSE.user.first_name,
             last_name: CONSUMER_LOGIN_RESPONSE.user.last_name,
             has_address: CONSUMER_LOGIN_RESPONSE.user.has_address,
+            has_selected_address: false,
             photo_url: CONSUMER_LOGIN_RESPONSE.user.photo_url,
           } satisfies AuthUser,
           mockSetAccessToken,
@@ -430,6 +433,12 @@ describe("useLoginSection", () => {
       setupMocks();
       renderHook(() => useLoginSection());
       expect(mockedUseAuthStore).toHaveBeenCalled();
+    });
+  });
+
+  describe("default export", () => {
+    it("should return null — Expo Router required dummy export", () => {
+      expect(useLoginSectionDefaultExport()).toBeNull();
     });
   });
 });

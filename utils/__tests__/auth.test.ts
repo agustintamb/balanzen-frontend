@@ -24,6 +24,7 @@ const mockUser: AuthUser = {
   first_name: "John",
   last_name: "Doe",
   has_address: true,
+  has_selected_address: false,
   photo_url: null,
 };
 

@@ -1,96 +1,22 @@
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { Controller } from "react-hook-form";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import Input from "@/components/ui/Input";
 import { useChangePasswordScreen } from "./useChangePasswordScreen";
 
 const ChangePassword = () => {
-  const {
-    currentPassword,
-    setCurrentPassword,
-    newPassword,
-    setNewPassword,
-    confirmPassword,
-    setConfirmPassword,
-    isPending,
-    handleBack,
-    handleSave,
-  } = useChangePasswordScreen();
-
-  const content = (
-    <ScrollView
-      style={{ flex: 1 }}
-      className="bg-surface"
-      contentContainerClassName="px-4 pt-8 pb-6 gap-4"
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      <View className="items-center mb-2">
-        <Icon
-          name="lock"
-          size={28}
-          variant="soft"
-          color="primary"
-          containerSize={64}
-        />
-      </View>
-
-      <Input
-        label="Contraseña actual"
-        value={currentPassword}
-        onChangeText={setCurrentPassword}
-        type="password"
-        leftIcon={<Icon name="lock" size={18} color="muted" />}
-        testID="input-current-password"
-      />
-
-      <Input
-        label="Nueva contraseña"
-        value={newPassword}
-        onChangeText={setNewPassword}
-        type="password"
-        leftIcon={<Icon name="lock" size={18} color="muted" />}
-        testID="input-new-password"
-      />
-
-      <Input
-        label="Confirmar nueva contraseña"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        type="password"
-        leftIcon={<Icon name="lock" size={18} color="muted" />}
-        testID="input-confirm-password"
-      />
-
-      <Button
-        onPress={handleSave}
-        loading={isPending}
-        className="mt-2"
-        testID="btn-save-password"
-      >
-        Guardar contraseña
-      </Button>
-
-      <Text className="text-center font-sans text-xs text-gray-400 mt-1">
-        Usá al menos 8 caracteres con letras, números y símbolos.
-      </Text>
-    </ScrollView>
-  );
+  const { control, isValid, isSubmitting, handleBack, handleSave } =
+    useChangePasswordScreen();
 
   return (
     <>
       <StatusBar style="dark" />
       <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
-        <View className="flex-row items-center px-2 pt-2 pb-1">
+        <View className="flex-row items-center px-2 pt-6 pb-4">
           <TouchableOpacity
             onPress={handleBack}
             className="p-2"
@@ -106,13 +32,85 @@ const ChangePassword = () => {
         </View>
       </SafeAreaView>
 
-      {Platform.OS === "ios" ? (
-        <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
-          {content}
-        </KeyboardAvoidingView>
-      ) : (
-        <View style={{ flex: 1 }}>{content}</View>
-      )}
+      <KeyboardAwareScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: 16, paddingTop: 24, gap: 16 }}
+        className="bg-surface"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
+        <Controller
+          control={control}
+          name="current_password"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Input
+              label="Contraseña actual"
+              value={value}
+              onChangeText={onChange}
+              placeholder="Tu contraseña actual"
+              type="password"
+              leftIcon={<Icon name="lock" size={18} color="muted" />}
+              error={error?.message}
+              testID="input-current-password"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="new_password"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Input
+              label="Nueva contraseña"
+              value={value}
+              onChangeText={onChange}
+              placeholder="Mínimo 8 caracteres"
+              type="password"
+              leftIcon={<Icon name="lock" size={18} color="muted" />}
+              error={error?.message}
+              testID="input-new-password"
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="confirm_password"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <Input
+              label="Confirmar nueva contraseña"
+              value={value}
+              onChangeText={onChange}
+              placeholder="Repetí la nueva contraseña"
+              type="password"
+              leftIcon={<Icon name="lock" size={18} color="muted" />}
+              error={error?.message}
+              testID="input-confirm-password"
+            />
+          )}
+        />
+
+        <View className="flex-row items-start gap-2 px-1">
+          <Icon name="info" size={13} color="muted" />
+          <Text className="flex-1 font-sans text-xs text-gray-400 leading-4">
+            Usá al menos 8 caracteres con letras, números y símbolos.
+          </Text>
+        </View>
+      </KeyboardAwareScrollView>
+
+      <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
+        <View className="px-4 pt-3 pb-2">
+          <Button
+            onPress={handleSave}
+            disabled={!isValid}
+            loading={isSubmitting}
+            testID="btn-save-password"
+          >
+            Guardar contraseña
+          </Button>
+        </View>
+      </SafeAreaView>
     </>
   );
 };

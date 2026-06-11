@@ -6,6 +6,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useCurrentUser } from "@/hooks/useUsers";
 import { useAuthStore } from "@/stores/auth.store";
 import { buildDetailImageUrl, buildProfilePhotoUrl } from "@/utils/cloudinary";
+import { safePush } from "@/utils/navigation";
 
 const getInitials = (firstName: string, lastName: string): string =>
   `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
@@ -37,23 +38,23 @@ export const useProfileScreen = () => {
   const unreadCount = notifications?.unread_count ?? 0;
 
   const handleEditProfile = () => {
-    router.push("/edit-profile");
+    safePush("/edit-profile");
   };
 
   const handleAddresses = () => {
-    router.push("/(onboarding)/address");
+    safePush("/(onboarding)/address");
   };
 
   const handleChangePassword = () => {
-    router.push("/change-password");
+    safePush("/change-password");
   };
 
   const handleNotifications = () => {
-    router.push("/(commerce)/profile/notifications");
+    safePush("/notifications");
   };
 
   const handleMetrics = () => {
-    router.push("/(commerce)/metrics" as never);
+    safePush("/metrics" as never);
   };
 
   const handleLogout = async () => {
