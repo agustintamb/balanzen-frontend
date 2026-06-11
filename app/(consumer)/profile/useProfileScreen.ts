@@ -40,11 +40,11 @@ export const useProfileScreen = () => {
   };
 
   const handleChangePassword = () => {
-    console.error("Navigate to change password — not implemented");
+    router.push("/change-password");
   };
 
   const handleFavorites = () => {
-    console.error("Navigate to favorites — not implemented");
+    router.push("/favorites");
   };
 
   const handleNotifications = () => {
