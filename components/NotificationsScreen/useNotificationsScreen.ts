@@ -8,7 +8,8 @@ import {
 export const useNotificationsScreen = () => {
   const router = useRouter();
 
-  const { data, isLoading, isError } = useNotifications();
+  const { data, isLoading, isError, refetch, isRefetching } =
+    useNotifications();
   const { mutate: markRead } = useMarkNotificationRead();
   const { mutate: markAllRead, isPending: isMarkingAll } =
     useMarkAllNotificationsRead();
@@ -36,9 +37,11 @@ export const useNotificationsScreen = () => {
     unreadCount,
     isLoading,
     isError,
+    isRefetching,
     isMarkingAll,
     handleBack,
     handlePressNotification,
     handleMarkAllRead,
+    refetch,
   };
 };
