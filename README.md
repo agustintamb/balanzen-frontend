@@ -8,11 +8,11 @@ Marketplace de alimentos por vencer. Consumidores reservan productos con descuen
 
 ## Requisitos
 
-| Herramienta    | Versión        | Notas                  |
-| -------------- | -------------- | ---------------------- |
-| Node.js        | ≥ 20           |                        |
-| npm            | ≥ 10           | incluido con Node      |
-| Java JDK       | 17             | ver instalación abajo  |
+| Herramienta    | Versión   | Notas                  |
+| -------------- | --------- | ---------------------- |
+| Node.js        | ≥ 20      |                        |
+| npm            | ≥ 10      | incluido con Node      |
+| Java JDK       | 17        | ver instalación abajo  |
 | Android Studio | última estable | incluye SDK y emulador |
 
 ---
@@ -27,66 +27,74 @@ npm install
 
 ## Variables de entorno
 
-Editá `.env.local` con tus valores locales:
+Copiá `.env.local` y completá tus valores:
 
 ```env
 # Puerto del backend local
 API_LOCAL_PORT=3001
 
-# Google Maps API Key — necesaria para el mapa en Android (nativa build)
-# Conseguila en: https://console.cloud.google.com/
-# Habilitá: Maps SDK for Android → crear credencial tipo API Key
+# Entorno: local | testing | production (default: local)
+APP_ENV=local
+
+# Google Maps API Key — necesaria para el mapa en Android
+# Conseguila en: https://console.cloud.google.com/ → Maps SDK for Android
 GOOGLE_MAPS_API_KEY=
 
-# Solo necesario en dispositivo físico (no emulador)
+# Solo necesario si usás un dispositivo físico (no emulador)
+# Obtené tu IP: ip route get 1.1.1.1 (Linux/Mac) / ipconfig (Windows)
 # API_LOCAL_DEVICE_URL=http://192.168.x.x:3001/api/v1
 ```
 
-> En emulador Android, el backend local se accede como `http://10.0.2.2:PUERTO/api/v1` (configurado automáticamente).
+> **Emulador Android:** el backend local se resuelve automáticamente como `http://10.0.2.2:3001/api/v1`.
+>
+> **Dispositivo físico:** descomentá `API_LOCAL_DEVICE_URL` con tu IP local. El dispositivo y la PC deben estar en la misma red.
+
+Después de editar `.env.local`, reiniciá Metro con `--clear`:
+
+```bash
+npx expo start --clear
+```
 
 ---
 
 ## Java JDK 17
 
-Necesario para compilar el proyecto Android nativo.
+### Linux
+
+```bash
+# Ubuntu/Debian
+sudo apt install openjdk-17-jdk
+
+# Fedora/RHEL
+sudo dnf install java-17-openjdk-devel
+
+# Verificar
+java -version
+```
 
 ### macOS
 
 ```bash
-# Instalar con Homebrew (recomendado)
+# Con Homebrew
 brew install --cask zulu@17
 
-# Agregar JAVA_HOME a ~/.zshrc (o ~/.bashrc)
-echo 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home' >> ~/.zshrc
-source ~/.zshrc
+# Agregar a ~/.zshrc o ~/.bashrc
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 
 # Verificar
-java -version   # debe mostrar openjdk version "17.x.x"
+java -version
 ```
 
-> Si ya tenés Android Studio instalado, podés usar su JDK integrado:
->
-> ```bash
-> echo 'export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"' >> ~/.zshrc
-> source ~/.zshrc
-> ```
+> Si ya tenés Android Studio instalado podés usar su JDK:
+> `export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"`
 
 ### Windows
 
 ```powershell
-# Opción 1: winget (recomendado)
 winget install EclipseAdoptium.Temurin.17.JDK
-
-# Opción 2: descargar instalador desde https://www.azul.com/downloads/?package=jdk
-# Seleccionar Java 17, Windows, .msi → instalar con opciones por defecto
-# El instalador configura JAVA_HOME automáticamente
 ```
 
-Verificar en PowerShell:
-
-```powershell
-java -version   # debe mostrar openjdk version "17.x.x"
-```
+> El instalador configura `JAVA_HOME` automáticamente. Verificar con `java -version` en PowerShell.
 
 ---
 
@@ -94,21 +102,20 @@ java -version   # debe mostrar openjdk version "17.x.x"
 
 1. Descargar e instalar [Android Studio](https://developer.android.com/studio)
 2. En el Setup Wizard elegir **Standard Installation**
-3. Ir a **Settings → Android SDK** y verificar que estén instalados:
-   - Android SDK Platform (API 35 o superior)
+3. En **Settings → Android SDK** verificar que estén instalados:
+   - Android SDK Platform (API 35+)
    - Android SDK Platform-Tools
    - Android Emulator
-4. Crear un AVD en **Device Manager**:
-   - Device: **Pixel 9**
-   - System Image: elegir una con **"Google APIs"** o **"Google Play"** (necesario para Google Maps)
-5. Iniciar el emulador y dejarlo corriendo
+4. Crear un AVD en **Device Manager** (Device: Pixel 9, System Image: **Google Play**)
+5. Iniciar el emulador antes de correr la app
 
 ### Variables de entorno del SDK (si Expo no lo detecta)
 
-**macOS** — agregar a `~/.zshrc`:
+**Linux/macOS** — agregar a `~/.bashrc` o `~/.zshrc`:
 
 ```bash
-export ANDROID_HOME=$HOME/Library/Android/sdk
+export ANDROID_HOME=$HOME/Android/Sdk          # Linux
+# export ANDROID_HOME=$HOME/Library/Android/sdk  # macOS
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 ```
@@ -125,55 +132,44 @@ PATH += %LOCALAPPDATA%\Android\Sdk\platform-tools
 
 ## Levantar la app
 
-### Uso diario (solo JS — sin módulos nativos)
+### Uso diario
 
 ```bash
 npm run start
-# o
-npx expo start
 ```
 
-Presionás `a` para abrir en Android. Usa **Expo Go** — rápido, pero **no incluye módulos nativos** (react-native-maps, expo-location, etc.).
+Presionás `a` para abrir en el emulador Android. Usá `--clear` si hay problemas de caché:
 
-### Primera vez o al agregar módulos nativos (native build)
+```bash
+npx expo start --clear
+```
+
+### Primera vez o al agregar módulos nativos
 
 ```bash
 npx expo run:android
 ```
 
-Esto compila la app con todos los módulos nativos y la instala en el emulador. **Tarda 5-15 minutos** la primera vez.
+Compila la app nativa e instala el dev client en el emulador. **Tarda 5–15 minutos la primera vez.** Después, `npm run start` ya no usa Expo Go sino el dev client instalado.
 
-Después de esta compilación, `npm run start` / `npx expo start` ya no usa Expo Go sino el **dev client** instalado, que incluye todos los módulos nativos. Los cambios de JS siguen viéndose al instante.
+#### ¿Cuándo recompilar?
 
-#### ¿Cuándo hay que volver a correr `expo run:android`?
-
-| Situación                                                                 | ¿Recompilar?                 |
-| ------------------------------------------------------------------------- | ---------------------------- |
-| Cambié una pantalla, componente o lógica JS                               | ❌ No — `expo start` alcanza |
-| Instalé un nuevo módulo nativo (`expo-camera`, `react-native-maps`, etc.) | ✅ Sí                        |
-| Cambié plugins, permisos o `android.config` en `app.json`                 | ✅ Sí                        |
-| El mapa u otro módulo nativo no funciona / aparece fallback               | ✅ Sí                        |
-| Actualicé la versión de Expo SDK                                          | ✅ Sí                        |
+| Situación | ¿Recompilar? |
+| --------- | ------------ |
+| Cambié una pantalla, componente o lógica JS | ❌ No |
+| Instalé un nuevo paquete con módulo nativo | ✅ Sí |
+| Cambié plugins o permisos en `app.json` | ✅ Sí |
+| Actualicé la versión de Expo SDK | ✅ Sí |
 
 ---
 
-## Módulos que requieren build nativa
+## Scripts
 
-Estos módulos **no funcionan en Expo Go** y necesitan haber corrido `expo run:android` al menos una vez:
-
-- `react-native-maps` (mapa)
-- `expo-location` (GPS)
-- `expo-dev-client` (el dev client mismo)
-
----
-
-## Scripts disponibles
-
-| Comando                | Descripción                             |
-| ---------------------- | --------------------------------------- |
-| `npm run start`        | Metro/Expo (Expo Go o dev client)       |
-| `npm run android`      | Igual a `expo start --android`          |
-| `npx expo run:android` | Compilación nativa + instala dev client |
-| `npm test`             | Tests unitarios                         |
-| `npm run lint`         | ESLint                                  |
-| `npm run format`       | Prettier                                |
+| Comando                | Descripción                                   |
+| ---------------------- | --------------------------------------------- |
+| `npm run start`        | Levanta Metro (Expo Go o dev client)          |
+| `npx expo run:android` | Compilación nativa + instala dev client       |
+| `npm test`             | Tests unitarios                               |
+| `npm run test:coverage`| Tests con reporte de cobertura               |
+| `npm run lint`         | ESLint                                        |
+| `npm run format`       | Prettier sobre todo el proyecto               |
