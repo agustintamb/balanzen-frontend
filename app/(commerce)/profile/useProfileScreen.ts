@@ -49,7 +49,7 @@ export const useProfileScreen = () => {
   };
 
   const handleNotifications = () => {
-    router.push("/notifications" as never);
+    router.push("/(commerce)/profile/notifications");
   };
 
   const handleMetrics = () => {
