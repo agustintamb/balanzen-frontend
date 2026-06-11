@@ -48,7 +48,7 @@ export const useProfileScreen = () => {
   };
 
   const handleNotifications = () => {
-    console.error("Navigate to notifications — not implemented");
+    router.push("/(consumer)/profile/notifications");
   };
 
   const handleLogout = async () => {
