@@ -1,6 +1,6 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import * as SecureStore from "expo-secure-store";
+import { useQueryClient } from "@tanstack/react-query";
 import { setAuthToken } from "@/api/client";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useCurrentUser } from "@/hooks/useUsers";
@@ -45,7 +45,7 @@ export const useProfileScreen = () => {
   };
 
   const handleChangePassword = () => {
-    console.error("Navigate to change password — not implemented");
+    router.push("/change-password");
   };
 
   const handleNotifications = () => {
@@ -53,7 +53,7 @@ export const useProfileScreen = () => {
   };
 
   const handleMetrics = () => {
-    router.push("/(commerce)/metrics");
+    router.push("/(commerce)/metrics" as never);
   };
 
   const handleLogout = async () => {

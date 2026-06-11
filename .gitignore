@@ -44,7 +44,7 @@ app-example
 /ios
 /android
 
-# Cloud files
+# claude files
 CLAUDE.md
 .claude/
 docs/
