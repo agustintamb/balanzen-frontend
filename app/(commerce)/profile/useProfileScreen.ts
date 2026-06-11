@@ -45,11 +45,11 @@ export const useProfileScreen = () => {
   };
 
   const handleChangePassword = () => {
-    console.error("Navigate to change password — not implemented");
+    router.push("/change-password");
   };
 
   const handleNotifications = () => {
-    router.push("/notifications");
+    console.error("Navigate to notifications — not implemented");
   };
 
   const handleMetrics = () => {
