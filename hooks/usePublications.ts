@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { publicationsService } from "@/api/publications/publications.service";
 import {
   CreatePublicationBody,

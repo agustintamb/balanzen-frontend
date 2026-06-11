@@ -161,11 +161,10 @@ describe("cn", () => {
   describe("mixed inputs (strings + objects + arrays)", () => {
     it("should handle a combination of strings, objects, and arrays", () => {
       // Arrange / Act
-      const result = cn(
-        "flex",
-        { "bg-primary": true, "text-error": false },
-        ["px-4", "py-2"]
-      );
+      const result = cn("flex", { "bg-primary": true, "text-error": false }, [
+        "px-4",
+        "py-2",
+      ]);
       // Assert
       expect(result).toBe("flex bg-primary px-4 py-2");
     });
@@ -174,11 +173,10 @@ describe("cn", () => {
       // Arrange
       const isDisabled = true;
       // Act
-      const result = cn(
-        "rounded-xl px-4 py-3",
-        isDisabled && "opacity-50",
-        { "bg-primary": !isDisabled, "bg-surface-dark": isDisabled }
-      );
+      const result = cn("rounded-xl px-4 py-3", isDisabled && "opacity-50", {
+        "bg-primary": !isDisabled,
+        "bg-surface-dark": isDisabled,
+      });
       // Assert
       expect(result).toBe("rounded-xl px-4 py-3 opacity-50 bg-surface-dark");
     });

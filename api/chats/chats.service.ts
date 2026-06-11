@@ -1,10 +1,10 @@
-import apiClient from "@/api/client";
 import {
   ChatListResponse,
   ChatMessagesParams,
   Message,
   MessageListResponse,
 } from "@/api/chats/chats.types";
+import apiClient from "@/api/client";
 
 export const chatsService = {
   list: (): Promise<ChatListResponse> => apiClient.get("/chats"),

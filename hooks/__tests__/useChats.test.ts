@@ -1,7 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
-
 import createWrapper from "@/__test-utils__/createWrapper";
-
 import { chatsService } from "@/api/chats/chats.service";
 import {
   Chat,
@@ -116,7 +114,10 @@ describe("useChats", () => {
     });
 
     it("should unwrap the chats array from the ChatListResponse", async () => {
-      const chat = buildChat({ order_id: "order-99", publication_title: "Croissants" });
+      const chat = buildChat({
+        order_id: "order-99",
+        publication_title: "Croissants",
+      });
       mockChatsService.list.mockResolvedValueOnce({ chats: [chat] });
 
       const { result } = renderHook(() => useChats(), {
@@ -147,7 +148,9 @@ describe("useChats", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(result.current.data?.[0].counterpart.business_name).toBe("La Panadería SRL");
+      expect(result.current.data?.[0].counterpart.business_name).toBe(
+        "La Panadería SRL",
+      );
     });
 
     it("should return a chat with null last_message when no messages have been sent", async () => {
@@ -194,12 +197,17 @@ describe("useChats", () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(result.current.data).toEqual(response);
-      expect(mockChatsService.getMessages).toHaveBeenCalledWith("order-1", undefined);
+      expect(mockChatsService.getMessages).toHaveBeenCalledWith(
+        "order-1",
+        undefined,
+      );
     });
 
     it("should call chatsService.getMessages with orderId and pagination params", async () => {
       const params: ChatMessagesParams = { page: 2, limit: 20 };
-      mockChatsService.getMessages.mockResolvedValueOnce(buildMessageListResponse());
+      mockChatsService.getMessages.mockResolvedValueOnce(
+        buildMessageListResponse(),
+      );
 
       const { result } = renderHook(() => useChatMessages("order-1", params), {
         wrapper: createWrapper().wrapper,
@@ -207,7 +215,10 @@ describe("useChats", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockChatsService.getMessages).toHaveBeenCalledWith("order-1", params);
+      expect(mockChatsService.getMessages).toHaveBeenCalledWith(
+        "order-1",
+        params,
+      );
     });
 
     it("should not fetch when orderId is an empty string", async () => {
@@ -220,7 +231,9 @@ describe("useChats", () => {
     });
 
     it("should return error state when chatsService.getMessages rejects", async () => {
-      mockChatsService.getMessages.mockRejectedValueOnce(new Error("Forbidden"));
+      mockChatsService.getMessages.mockRejectedValueOnce(
+        new Error("Forbidden"),
+      );
 
       const { result } = renderHook(() => useChatMessages("order-1"), {
         wrapper: createWrapper().wrapper,
@@ -251,8 +264,16 @@ describe("useChats", () => {
       const response = buildMessageListResponse({
         messages: [
           buildMessage({ id: "msg-1", sender_id: "user-1", content: "Hola" }),
-          buildMessage({ id: "msg-2", sender_id: "user-2", content: "Buenas!" }),
-          buildMessage({ id: "msg-3", sender_id: "user-1", content: "¿Puedo retirar hoy?" }),
+          buildMessage({
+            id: "msg-2",
+            sender_id: "user-2",
+            content: "Buenas!",
+          }),
+          buildMessage({
+            id: "msg-3",
+            sender_id: "user-1",
+            content: "¿Puedo retirar hoy?",
+          }),
         ],
         pagination: { page: 1, limit: 20, total: 3, total_pages: 1 },
       });
@@ -269,7 +290,9 @@ describe("useChats", () => {
     });
 
     it("should pass different orderIds correctly in the query", async () => {
-      mockChatsService.getMessages.mockResolvedValueOnce(buildMessageListResponse());
+      mockChatsService.getMessages.mockResolvedValueOnce(
+        buildMessageListResponse(),
+      );
 
       const { result } = renderHook(() => useChatMessages("order-uuid-9999"), {
         wrapper: createWrapper().wrapper,
@@ -277,7 +300,10 @@ describe("useChats", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockChatsService.getMessages).toHaveBeenCalledWith("order-uuid-9999", undefined);
+      expect(mockChatsService.getMessages).toHaveBeenCalledWith(
+        "order-uuid-9999",
+        undefined,
+      );
     });
 
     it("should return a message with an optional order_id field", async () => {
@@ -310,7 +336,10 @@ describe("useChats", () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(result.current.data).toEqual(sent);
-      expect(mockChatsService.sendMessage).toHaveBeenCalledWith("order-1", "Confirmado");
+      expect(mockChatsService.sendMessage).toHaveBeenCalledWith(
+        "order-1",
+        "Confirmado",
+      );
     });
 
     it("should call mutateAsync with content and resolve with the sent Message", async () => {
@@ -327,7 +356,9 @@ describe("useChats", () => {
     });
 
     it("should return error state when chatsService.sendMessage rejects", async () => {
-      mockChatsService.sendMessage.mockRejectedValueOnce(new Error("Service Unavailable"));
+      mockChatsService.sendMessage.mockRejectedValueOnce(
+        new Error("Service Unavailable"),
+      );
 
       const { result } = renderHook(() => useSendMessage("order-1"), {
         wrapper: createWrapper().wrapper,
@@ -368,8 +399,12 @@ describe("useChats", () => {
 
     it("should use the orderId provided at hook initialization for every mutation call", async () => {
       mockChatsService.sendMessage
-        .mockResolvedValueOnce(buildMessage({ id: "msg-a", content: "Mensaje 1" }))
-        .mockResolvedValueOnce(buildMessage({ id: "msg-b", content: "Mensaje 2" }));
+        .mockResolvedValueOnce(
+          buildMessage({ id: "msg-a", content: "Mensaje 1" }),
+        )
+        .mockResolvedValueOnce(
+          buildMessage({ id: "msg-b", content: "Mensaje 2" }),
+        );
 
       const { result } = renderHook(() => useSendMessage("order-static"), {
         wrapper: createWrapper().wrapper,
@@ -391,7 +426,9 @@ describe("useChats", () => {
     });
 
     it("should handle sending an empty string content without throwing", async () => {
-      mockChatsService.sendMessage.mockResolvedValueOnce(buildMessage({ content: "" }));
+      mockChatsService.sendMessage.mockResolvedValueOnce(
+        buildMessage({ content: "" }),
+      );
 
       const { result } = renderHook(() => useSendMessage("order-1"), {
         wrapper: createWrapper().wrapper,

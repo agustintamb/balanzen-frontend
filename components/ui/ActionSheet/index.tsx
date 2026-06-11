@@ -9,8 +9,8 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Icon, { type IconColor, type IconName } from "@/components/ui/Icon";
 import Button from "@/components/ui/Button";
+import Icon, { type IconColor, type IconName } from "@/components/ui/Icon";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 

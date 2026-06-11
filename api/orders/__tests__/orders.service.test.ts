@@ -353,7 +353,10 @@ describe("ordersService", () => {
     });
 
     it("should include the correct order id in the cancel URL", async () => {
-      const order = buildOrder({ id: "order-uuid-special", status: "CANCELLED" });
+      const order = buildOrder({
+        id: "order-uuid-special",
+        status: "CANCELLED",
+      });
       (mockApiClient.put as jest.Mock).mockResolvedValueOnce(order);
 
       await ordersService.cancel("order-uuid-special");

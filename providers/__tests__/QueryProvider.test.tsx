@@ -1,13 +1,13 @@
 import React from "react";
 import { Text } from "react-native";
-import { render, act } from "@testing-library/react-native";
 import {
-  useMutation,
-  useQueryClient,
   MutationCache,
   QueryClient,
   QueryClientProvider,
+  useMutation,
+  useQueryClient,
 } from "@tanstack/react-query";
+import { act, render } from "@testing-library/react-native";
 import { useUIStore } from "@/stores/ui.store";
 import QueryProvider, { handleMutationError } from "../QueryProvider";
 
@@ -97,7 +97,9 @@ describe("QueryProvider", () => {
     it("should call showToast with the error message when a mutation fails", async () => {
       const testClient = buildTestQueryClient();
 
-      const failingMutation = jest.fn().mockRejectedValue(new Error("Red caída"));
+      const failingMutation = jest
+        .fn()
+        .mockRejectedValue(new Error("Red caída"));
 
       const MutationTrigger = () => {
         const { mutate } = useMutation({
@@ -105,10 +107,7 @@ describe("QueryProvider", () => {
         });
 
         return (
-          <Text
-            testID="trigger"
-            onPress={() => mutate(undefined)}
-          >
+          <Text testID="trigger" onPress={() => mutate(undefined)}>
             trigger
           </Text>
         );
@@ -140,10 +139,7 @@ describe("QueryProvider", () => {
         });
 
         return (
-          <Text
-            testID="trigger"
-            onPress={() => mutate(undefined)}
-          >
+          <Text testID="trigger" onPress={() => mutate(undefined)}>
             trigger
           </Text>
         );
@@ -169,7 +165,9 @@ describe("QueryProvider", () => {
     it("should call showToast with error type set to 'error'", async () => {
       const testClient = buildTestQueryClient();
 
-      const failingMutation = jest.fn().mockRejectedValue(new Error("Algo salió mal"));
+      const failingMutation = jest
+        .fn()
+        .mockRejectedValue(new Error("Algo salió mal"));
 
       const MutationTrigger = () => {
         const { mutate } = useMutation({ mutationFn: failingMutation });

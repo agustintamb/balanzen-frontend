@@ -5,7 +5,13 @@ import TabBar from "@/components/TabBar";
 const renderTabBar = (props: BottomTabBarProps) => <TabBar {...props} />;
 
 const ConsumerLayout = () => (
-  <Tabs screenOptions={{ headerShown: false }} tabBar={renderTabBar}>
+  <Tabs
+    screenOptions={{
+      headerShown: false,
+      sceneStyle: { backgroundColor: "#F1EFE8" },
+    }}
+    tabBar={renderTabBar}
+  >
     <Tabs.Screen name="home" />
     <Tabs.Screen name="orders" />
     <Tabs.Screen name="profile" />

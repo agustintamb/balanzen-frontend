@@ -1,8 +1,9 @@
-import type {
-  AxiosRequestConfig,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
+import axios, {
+  type AxiosRequestConfig,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
 } from "axios";
+import apiClient, { setAuthToken } from "@/api/client";
 
 jest.mock("@/config/env", () => ({
   __esModule: true,
@@ -35,11 +36,10 @@ jest.mock("axios", () => {
   };
 });
 
-import axios from "axios";
-import apiClient, { setAuthToken } from "@/api/client";
-
 describe("apiClient", () => {
-  const mockedAxiosCreate = axios.create as jest.MockedFunction<typeof axios.create>;
+  const mockedAxiosCreate = axios.create as jest.MockedFunction<
+    typeof axios.create
+  >;
 
   type MockedInstance = ReturnType<typeof mockedAxiosCreate> & {
     interceptors: {
@@ -48,7 +48,9 @@ describe("apiClient", () => {
     };
   };
 
-  let requestSuccessHandler: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig;
+  let requestSuccessHandler: (
+    config: InternalAxiosRequestConfig,
+  ) => InternalAxiosRequestConfig;
   let requestErrorHandler: (error: unknown) => Promise<never>;
   let responseSuccessHandler: (response: AxiosResponse) => unknown;
   let responseErrorHandler: (error: unknown) => Promise<never>;
@@ -58,10 +60,13 @@ describe("apiClient", () => {
     const requestUseCalls = instance.interceptors.request.use.mock.calls;
     const responseUseCalls = instance.interceptors.response.use.mock.calls;
 
-    requestSuccessHandler = requestUseCalls[0]?.[0] as typeof requestSuccessHandler;
+    requestSuccessHandler =
+      requestUseCalls[0]?.[0] as typeof requestSuccessHandler;
     requestErrorHandler = requestUseCalls[0]?.[1] as typeof requestErrorHandler;
-    responseSuccessHandler = responseUseCalls[0]?.[0] as typeof responseSuccessHandler;
-    responseErrorHandler = responseUseCalls[0]?.[1] as typeof responseErrorHandler;
+    responseSuccessHandler =
+      responseUseCalls[0]?.[0] as typeof responseSuccessHandler;
+    responseErrorHandler =
+      responseUseCalls[0]?.[1] as typeof responseErrorHandler;
   });
 
   afterEach(() => {
@@ -136,7 +141,9 @@ describe("apiClient", () => {
 
       const result = requestSuccessHandler(config);
 
-      expect((result.headers as Record<string, string>).Authorization).toBeUndefined();
+      expect(
+        (result.headers as Record<string, string>).Authorization,
+      ).toBeUndefined();
     });
   });
 
@@ -162,12 +169,17 @@ describe("apiClient", () => {
 
       const result = requestSuccessHandler(config);
 
-      expect((result.headers as Record<string, string>).Authorization).toBeUndefined();
+      expect(
+        (result.headers as Record<string, string>).Authorization,
+      ).toBeUndefined();
     });
 
     it("should return the config object unchanged when token is not set", () => {
       const config = {
-        headers: { "Content-Type": "application/json" } as Record<string, string>,
+        headers: { "Content-Type": "application/json" } as Record<
+          string,
+          string
+        >,
         url: "/publications",
         method: "get",
       } as InternalAxiosRequestConfig;
@@ -176,12 +188,16 @@ describe("apiClient", () => {
 
       expect(result.url).toBe("/publications");
       expect(result.method).toBe("get");
-      expect((result.headers as Record<string, string>)["Content-Type"]).toBe("application/json");
+      expect((result.headers as Record<string, string>)["Content-Type"]).toBe(
+        "application/json",
+      );
     });
 
     it("should reject with the original error when request setup fails", async () => {
       const error = new Error("Network setup error");
-      await expect(requestErrorHandler(error)).rejects.toThrow("Network setup error");
+      await expect(requestErrorHandler(error)).rejects.toThrow(
+        "Network setup error",
+      );
     });
   });
 
@@ -222,7 +238,9 @@ describe("apiClient", () => {
         message: "Request failed with status code 401",
       };
 
-      await expect(responseErrorHandler(apiError)).rejects.toThrow("Unauthorized access");
+      await expect(responseErrorHandler(apiError)).rejects.toThrow(
+        "Unauthorized access",
+      );
     });
 
     it("should reject with error.message as fallback when response has no data.message", async () => {
@@ -231,7 +249,9 @@ describe("apiClient", () => {
         message: "Internal Server Error",
       };
 
-      await expect(responseErrorHandler(networkError)).rejects.toThrow("Internal Server Error");
+      await expect(responseErrorHandler(networkError)).rejects.toThrow(
+        "Internal Server Error",
+      );
     });
 
     it("should reject with error.message when response is undefined (network error)", async () => {
@@ -240,7 +260,9 @@ describe("apiClient", () => {
         message: "Network Error",
       };
 
-      await expect(responseErrorHandler(networkError)).rejects.toThrow("Network Error");
+      await expect(responseErrorHandler(networkError)).rejects.toThrow(
+        "Network Error",
+      );
     });
 
     it("should reject with 'Error desconocido' when both response message and error message are missing", async () => {
@@ -249,7 +271,9 @@ describe("apiClient", () => {
         message: undefined,
       };
 
-      await expect(responseErrorHandler(unknownError)).rejects.toThrow("Error desconocido");
+      await expect(responseErrorHandler(unknownError)).rejects.toThrow(
+        "Error desconocido",
+      );
     });
 
     it("should reject with an instance of Error", async () => {
@@ -258,7 +282,9 @@ describe("apiClient", () => {
         message: "Request failed",
       };
 
-      await expect(responseErrorHandler(apiError)).rejects.toBeInstanceOf(Error);
+      await expect(responseErrorHandler(apiError)).rejects.toBeInstanceOf(
+        Error,
+      );
     });
 
     it("should prefer response.data.message over error.message", async () => {
@@ -267,7 +293,9 @@ describe("apiClient", () => {
         message: "Generic axios error",
       };
 
-      await expect(responseErrorHandler(apiError)).rejects.toThrow("Specific API error");
+      await expect(responseErrorHandler(apiError)).rejects.toThrow(
+        "Specific API error",
+      );
     });
   });
 });

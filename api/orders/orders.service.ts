@@ -1,5 +1,9 @@
 import apiClient from "@/api/client";
-import { Order, OrderFilters, OrderListResponse } from "@/api/orders/orders.types";
+import {
+  Order,
+  OrderFilters,
+  OrderListResponse,
+} from "@/api/orders/orders.types";
 
 export const ordersService = {
   create: (publicationId: string): Promise<Order> =>
@@ -10,8 +14,7 @@ export const ordersService = {
 
   getById: (id: string): Promise<Order> => apiClient.get(`/orders/${id}`),
 
-  cancel: (id: string): Promise<Order> =>
-    apiClient.put(`/orders/${id}/cancel`),
+  cancel: (id: string): Promise<Order> => apiClient.put(`/orders/${id}/cancel`),
 
   deliver: (id: string): Promise<Order> =>
     apiClient.put(`/orders/${id}/deliver`),

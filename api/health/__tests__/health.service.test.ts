@@ -12,7 +12,7 @@ jest.mock("@/api/client", () => ({
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const buildHealthResponse = (
-  overrides?: Partial<HealthResponse>
+  overrides?: Partial<HealthResponse>,
 ): HealthResponse => ({
   success: true,
   message: "API is running",
@@ -125,7 +125,7 @@ describe("healthService", () => {
       expect(mockedApiClient.get).toHaveBeenCalledWith("/health");
       expect(mockedApiClient.get).not.toHaveBeenCalledWith(
         "/health",
-        expect.anything()
+        expect.anything(),
       );
     });
 

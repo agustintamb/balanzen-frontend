@@ -173,7 +173,7 @@ describe("usersService", () => {
 
         expect(mockedApiClient.put).toHaveBeenCalledWith(
           "/users/me",
-          updateBody
+          updateBody,
         );
         expect(mockedApiClient.put).toHaveBeenCalledTimes(1);
       });
@@ -200,8 +200,7 @@ describe("usersService", () => {
         const updatedCommerce: User = {
           ...mockCommerceUser,
           business_name: "Panadería El Trigo Premium",
-          description:
-            "Panadería artesanal con productos frescos y orgánicos",
+          description: "Panadería artesanal con productos frescos y orgánicos",
         };
         mockedApiClient.put.mockResolvedValueOnce(updatedCommerce);
 
@@ -209,7 +208,7 @@ describe("usersService", () => {
 
         expect(result.business_name).toBe("Panadería El Trigo Premium");
         expect(result.description).toBe(
-          "Panadería artesanal con productos frescos y orgánicos"
+          "Panadería artesanal con productos frescos y orgánicos",
         );
       });
 
@@ -242,12 +241,12 @@ describe("usersService", () => {
               status: 422,
               data: { message: "Invalid phone format" },
             },
-          }
+          },
         );
         mockedApiClient.put.mockRejectedValueOnce(validationError);
 
         await expect(
-          usersService.updateMe({ phone: "invalid-phone" })
+          usersService.updateMe({ phone: "invalid-phone" }),
         ).rejects.toThrow("Unprocessable Entity");
       });
 
@@ -271,7 +270,7 @@ describe("usersService", () => {
         await usersService.getPublicProfile(userId);
 
         expect(mockedApiClient.get).toHaveBeenCalledWith(
-          `/users/${userId}/public`
+          `/users/${userId}/public`,
         );
         expect(mockedApiClient.get).toHaveBeenCalledTimes(1);
       });
@@ -286,7 +285,7 @@ describe("usersService", () => {
         const commerceResult = result as PublicUserCommerce;
         expect(commerceResult.business_name).toBe("Panadería El Trigo");
         expect(commerceResult.selected_address.formatted_address).toBe(
-          "Av. Corrientes 1234, Buenos Aires"
+          "Av. Corrientes 1234, Buenos Aires",
         );
       });
 
@@ -300,7 +299,7 @@ describe("usersService", () => {
         const consumerResult = result as PublicUserConsumer;
         expect(consumerResult.id).toBe("user-uuid-consumer-1");
         expect(consumerResult.photo_url).toBe(
-          "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+          "https://res.cloudinary.com/demo/image/upload/sample.jpg",
         );
       });
 
@@ -317,11 +316,11 @@ describe("usersService", () => {
 
         expect(mockedApiClient.get).toHaveBeenNthCalledWith(
           1,
-          `/users/${firstId}/public`
+          `/users/${firstId}/public`,
         );
         expect(mockedApiClient.get).toHaveBeenNthCalledWith(
           2,
-          `/users/${secondId}/public`
+          `/users/${secondId}/public`,
         );
       });
 
@@ -333,7 +332,7 @@ describe("usersService", () => {
         mockedApiClient.get.mockResolvedValueOnce(userWithoutPhoto);
 
         const result = await usersService.getPublicProfile(
-          "user-uuid-consumer-1"
+          "user-uuid-consumer-1",
         );
 
         expect(result.photo_url).toBeNull();
@@ -348,7 +347,7 @@ describe("usersService", () => {
         mockedApiClient.get.mockRejectedValueOnce(notFoundError);
 
         await expect(
-          usersService.getPublicProfile("non-existent-uuid")
+          usersService.getPublicProfile("non-existent-uuid"),
         ).rejects.toThrow("Not Found");
       });
 
@@ -357,7 +356,7 @@ describe("usersService", () => {
         mockedApiClient.get.mockRejectedValueOnce(networkError);
 
         await expect(
-          usersService.getPublicProfile("user-uuid-commerce-1")
+          usersService.getPublicProfile("user-uuid-commerce-1"),
         ).rejects.toThrow("Network Error");
       });
     });

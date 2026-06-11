@@ -181,7 +181,6 @@ const EditProfile = () => {
             )}
           />
         )}
-
       </ScrollView>
 
       <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">

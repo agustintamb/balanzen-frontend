@@ -15,7 +15,9 @@ jest.mock("@/api/client", () => ({
 
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
-const buildNotification = (overrides?: Partial<Notification>): Notification => ({
+const buildNotification = (
+  overrides?: Partial<Notification>,
+): Notification => ({
   id: "notif-uuid-1",
   type: "NEW_RESERVATION",
   title: "Nueva reserva",
@@ -28,10 +30,13 @@ const buildNotification = (overrides?: Partial<Notification>): Notification => (
 });
 
 const buildListResponse = (
-  overrides?: Partial<NotificationListResponse>
+  overrides?: Partial<NotificationListResponse>,
 ): NotificationListResponse => ({
   unread_count: 2,
-  notifications: [buildNotification(), buildNotification({ id: "notif-uuid-2", read: true })],
+  notifications: [
+    buildNotification(),
+    buildNotification({ id: "notif-uuid-2", read: true }),
+  ],
   pagination: { page: 1, limit: 10, total: 2, total_pages: 1 },
   ...overrides,
 });
@@ -122,7 +127,9 @@ describe("notificationsService", () => {
       const error = new Error("Network error");
       mockedApiClient.get.mockRejectedValueOnce(error);
 
-      await expect(notificationsService.list()).rejects.toThrow("Network error");
+      await expect(notificationsService.list()).rejects.toThrow(
+        "Network error",
+      );
     });
 
     it("should return correct unread_count from the response", async () => {
@@ -141,8 +148,14 @@ describe("notificationsService", () => {
         buildNotification({ id: "n3", type: "NEW_MESSAGE" }),
         buildNotification({ id: "n4", type: "PUBLICATION_EXPIRING" }),
         buildNotification({ id: "n5", type: "PUBLICATION_EXPIRED" }),
-        buildNotification({ id: "n6", type: "RESERVATION_CANCELLED_BY_CONSUMER" }),
-        buildNotification({ id: "n7", type: "RESERVATION_CANCELLED_BY_COMMERCE" }),
+        buildNotification({
+          id: "n6",
+          type: "RESERVATION_CANCELLED_BY_CONSUMER",
+        }),
+        buildNotification({
+          id: "n7",
+          type: "RESERVATION_CANCELLED_BY_COMMERCE",
+        }),
       ];
       const response = buildListResponse({
         notifications,
@@ -164,7 +177,7 @@ describe("notificationsService", () => {
 
       expect(mockedApiClient.put).toHaveBeenCalledTimes(1);
       expect(mockedApiClient.put).toHaveBeenCalledWith(
-        "/notifications/notif-uuid-1/read"
+        "/notifications/notif-uuid-1/read",
       );
     });
 
@@ -174,7 +187,7 @@ describe("notificationsService", () => {
       await notificationsService.markRead("notif-uuid-99");
 
       expect(mockedApiClient.put).toHaveBeenCalledWith(
-        "/notifications/notif-uuid-99/read"
+        "/notifications/notif-uuid-99/read",
       );
     });
 
@@ -191,7 +204,7 @@ describe("notificationsService", () => {
       mockedApiClient.put.mockRejectedValueOnce(error);
 
       await expect(notificationsService.markRead("invalid-id")).rejects.toThrow(
-        "Not found"
+        "Not found",
       );
     });
   });
@@ -203,7 +216,9 @@ describe("notificationsService", () => {
       await notificationsService.markAllRead();
 
       expect(mockedApiClient.put).toHaveBeenCalledTimes(1);
-      expect(mockedApiClient.put).toHaveBeenCalledWith("/notifications/read-all");
+      expect(mockedApiClient.put).toHaveBeenCalledWith(
+        "/notifications/read-all",
+      );
     });
 
     it("should resolve to void on success", async () => {
@@ -219,10 +234,12 @@ describe("notificationsService", () => {
 
       await notificationsService.markAllRead();
 
-      expect(mockedApiClient.put).toHaveBeenCalledWith("/notifications/read-all");
+      expect(mockedApiClient.put).toHaveBeenCalledWith(
+        "/notifications/read-all",
+      );
       expect(mockedApiClient.put).not.toHaveBeenCalledWith(
         "/notifications/read-all",
-        expect.anything()
+        expect.anything(),
       );
     });
 
@@ -231,7 +248,7 @@ describe("notificationsService", () => {
       mockedApiClient.put.mockRejectedValueOnce(error);
 
       await expect(notificationsService.markAllRead()).rejects.toThrow(
-        "Unauthorized"
+        "Unauthorized",
       );
     });
   });

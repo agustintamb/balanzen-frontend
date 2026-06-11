@@ -12,7 +12,7 @@ jest.mock("@/api/client", () => ({
 const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const buildUploadImageResponse = (
-  overrides?: Partial<UploadImageResponse>
+  overrides?: Partial<UploadImageResponse>,
 ): UploadImageResponse => ({
   url: "https://res.cloudinary.com/demo/image/upload/v1/sample.jpg",
   ...overrides,
@@ -45,7 +45,7 @@ describe("uploadsService", () => {
       expect(mockedApiClient.post).toHaveBeenCalledWith(
         "/uploads/image",
         formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
       expect(result).toEqual(response);
     });
@@ -72,7 +72,7 @@ describe("uploadsService", () => {
       const result = await uploadsService.uploadImage(formData);
 
       expect(result.url).toBe(
-        "https://res.cloudinary.com/demo/image/upload/v1/product.png"
+        "https://res.cloudinary.com/demo/image/upload/v1/product.png",
       );
     });
 
@@ -92,7 +92,7 @@ describe("uploadsService", () => {
       mockedApiClient.post.mockRejectedValueOnce(error);
 
       await expect(uploadsService.uploadImage(formData)).rejects.toThrow(
-        "Internal Server Error"
+        "Internal Server Error",
       );
     });
 
@@ -102,7 +102,7 @@ describe("uploadsService", () => {
       mockedApiClient.post.mockRejectedValueOnce(error);
 
       await expect(uploadsService.uploadImage(formData)).rejects.toThrow(
-        "File too large"
+        "File too large",
       );
     });
 
@@ -112,7 +112,7 @@ describe("uploadsService", () => {
       mockedApiClient.post.mockRejectedValueOnce(error);
 
       await expect(uploadsService.uploadImage(formData)).rejects.toThrow(
-        "Unsupported Media Type"
+        "Unsupported Media Type",
       );
     });
   });
@@ -154,20 +154,24 @@ describe("uploadsService", () => {
     });
 
     it("should reject when the image url does not exist", async () => {
-      const url = "https://res.cloudinary.com/demo/image/upload/v1/not-found.jpg";
+      const url =
+        "https://res.cloudinary.com/demo/image/upload/v1/not-found.jpg";
       const error = new Error("Not Found");
       mockedApiClient.delete.mockRejectedValueOnce(error);
 
-      await expect(uploadsService.deleteImage(url)).rejects.toThrow("Not Found");
+      await expect(uploadsService.deleteImage(url)).rejects.toThrow(
+        "Not Found",
+      );
     });
 
     it("should reject when unauthorized to delete the image", async () => {
-      const url = "https://res.cloudinary.com/demo/image/upload/v1/protected.jpg";
+      const url =
+        "https://res.cloudinary.com/demo/image/upload/v1/protected.jpg";
       const error = new Error("Unauthorized");
       mockedApiClient.delete.mockRejectedValueOnce(error);
 
       await expect(uploadsService.deleteImage(url)).rejects.toThrow(
-        "Unauthorized"
+        "Unauthorized",
       );
     });
 

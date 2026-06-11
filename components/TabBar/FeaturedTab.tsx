@@ -2,13 +2,13 @@ import { Pressable, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
 import {
-  type TabItemProps,
   CIRCLE_SHADOW,
   GRADIENT_COLORS,
   GRADIENT_END,
   GRADIENT_START,
   GRADIENT_STYLE,
   labelClass,
+  type TabItemProps,
 } from "./tabBar.utils";
 
 // Tab con botón FAB circular flotante para la acción principal del rol

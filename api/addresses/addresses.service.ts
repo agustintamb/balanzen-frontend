@@ -1,10 +1,10 @@
-import apiClient from "@/api/client";
 import {
   Address,
   AddressInput,
   AddressListResponse,
   AddressSearchResponse,
 } from "@/api/addresses/addresses.types";
+import apiClient from "@/api/client";
 
 export const addressesService = {
   search: (q: string): Promise<AddressSearchResponse> =>

@@ -1,5 +1,4 @@
 import * as SecureStore from "expo-secure-store";
-
 import { setAuthToken } from "@/api/client";
 import type { AuthUser } from "@/stores/auth.store";
 import { persistSession } from "@/utils/auth";

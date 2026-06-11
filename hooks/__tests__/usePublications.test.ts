@@ -1,14 +1,5 @@
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-
 import createWrapper from "@/__test-utils__/createWrapper";
-import {
-  useCreatePublication,
-  useDeletePublication,
-  useMyPublications,
-  usePublication,
-  usePublications,
-  useUpdatePublication,
-} from "@/hooks/usePublications";
 import {
   CreatePublicationBody,
   MyPublicationsFilters,
@@ -17,6 +8,14 @@ import {
   PublicationListResponse,
   UpdatePublicationBody,
 } from "@/api/publications/publications.types";
+import {
+  useCreatePublication,
+  useDeletePublication,
+  useMyPublications,
+  usePublication,
+  usePublications,
+  useUpdatePublication,
+} from "@/hooks/usePublications";
 
 const mockList = jest.fn();
 const mockGetById = jest.fn();
@@ -36,7 +35,9 @@ jest.mock("@/api/publications/publications.service", () => ({
   },
 }));
 
-const buildPublication = (overrides: Partial<Publication> = {}): Publication => ({
+const buildPublication = (
+  overrides: Partial<Publication> = {},
+): Publication => ({
   id: "pub-1",
   title: "Pan integral",
   description: "Pan artesanal de ayer",
@@ -127,7 +128,10 @@ describe("usePublications", () => {
       mockList.mockResolvedValueOnce(emptyResponse);
       const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => usePublications({ search: "nonexistent" }), { wrapper });
+      const { result } = renderHook(
+        () => usePublications({ search: "nonexistent" }),
+        { wrapper },
+      );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(result.current.data?.publications).toHaveLength(0);
@@ -177,7 +181,9 @@ describe("usePublication", () => {
       mockGetById.mockResolvedValueOnce(pub);
       const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => usePublication("pub-abc"), { wrapper });
+      const { result } = renderHook(() => usePublication("pub-abc"), {
+        wrapper,
+      });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(result.current.data).toEqual(pub);
@@ -233,7 +239,9 @@ describe("usePublication", () => {
       mockGetById.mockRejectedValueOnce(notFoundError);
       const { wrapper } = createWrapper();
 
-      const { result } = renderHook(() => usePublication("bad-id"), { wrapper });
+      const { result } = renderHook(() => usePublication("bad-id"), {
+        wrapper,
+      });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
     });
@@ -256,46 +264,66 @@ describe("useMyPublications", () => {
     });
 
     it("should call publicationsService.getMyPublications with no params when invoked without arguments", async () => {
-      mockGetMyPublications.mockResolvedValueOnce(buildPublicationListResponse());
+      mockGetMyPublications.mockResolvedValueOnce(
+        buildPublicationListResponse(),
+      );
       const { wrapper } = createWrapper();
 
       renderHook(() => useMyPublications(), { wrapper });
 
-      await waitFor(() => expect(mockGetMyPublications).toHaveBeenCalledTimes(1));
+      await waitFor(() =>
+        expect(mockGetMyPublications).toHaveBeenCalledTimes(1),
+      );
       expect(mockGetMyPublications).toHaveBeenCalledWith(undefined);
     });
 
     it("should pass status filter to publicationsService.getMyPublications", async () => {
       const filters: MyPublicationsFilters = { status: "ACTIVE" };
-      mockGetMyPublications.mockResolvedValueOnce(buildPublicationListResponse());
+      mockGetMyPublications.mockResolvedValueOnce(
+        buildPublicationListResponse(),
+      );
       const { wrapper } = createWrapper();
 
       renderHook(() => useMyPublications(filters), { wrapper });
 
-      await waitFor(() => expect(mockGetMyPublications).toHaveBeenCalledTimes(1));
+      await waitFor(() =>
+        expect(mockGetMyPublications).toHaveBeenCalledTimes(1),
+      );
       expect(mockGetMyPublications).toHaveBeenCalledWith(filters);
     });
 
     it("should pass pagination params to publicationsService.getMyPublications", async () => {
       const filters: MyPublicationsFilters = { page: 2, limit: 5 };
-      mockGetMyPublications.mockResolvedValueOnce(buildPublicationListResponse());
+      mockGetMyPublications.mockResolvedValueOnce(
+        buildPublicationListResponse(),
+      );
       const { wrapper } = createWrapper();
 
       renderHook(() => useMyPublications(filters), { wrapper });
 
-      await waitFor(() => expect(mockGetMyPublications).toHaveBeenCalledTimes(1));
+      await waitFor(() =>
+        expect(mockGetMyPublications).toHaveBeenCalledTimes(1),
+      );
       expect(mockGetMyPublications).toHaveBeenCalledWith(filters);
     });
 
     it("should use the correct query key including me segment and params", async () => {
       const filters: MyPublicationsFilters = { status: "EXPIRED" };
-      mockGetMyPublications.mockResolvedValueOnce(buildPublicationListResponse());
+      mockGetMyPublications.mockResolvedValueOnce(
+        buildPublicationListResponse(),
+      );
       const { wrapper, queryClient } = createWrapper();
 
       renderHook(() => useMyPublications(filters), { wrapper });
 
-      await waitFor(() => expect(mockGetMyPublications).toHaveBeenCalledTimes(1));
-      const cachedData = queryClient.getQueryData(["publications", "me", filters]);
+      await waitFor(() =>
+        expect(mockGetMyPublications).toHaveBeenCalledTimes(1),
+      );
+      const cachedData = queryClient.getQueryData([
+        "publications",
+        "me",
+        filters,
+      ]);
       expect(cachedData).toBeDefined();
     });
 
@@ -382,12 +410,16 @@ describe("useCreatePublication", () => {
       result.current.mutate(body);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["publications"] });
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: ["publications"],
+      });
     });
 
     it("should handle a donation publication body correctly", async () => {
       const body = buildCreateBody({ original_price: 400, final_price: 0 });
-      mockCreate.mockResolvedValueOnce(buildPublication({ is_donation: true, final_price: 0 }));
+      mockCreate.mockResolvedValueOnce(
+        buildPublication({ is_donation: true, final_price: 0 }),
+      );
       const { wrapper } = createWrapper();
 
       const { result } = renderHook(() => useCreatePublication(), { wrapper });
@@ -436,7 +468,10 @@ describe("useUpdatePublication", () => {
   describe("successful mutation", () => {
     it("should call publicationsService.update with id and body", async () => {
       const body = buildUpdateBody();
-      const updated = buildPublication({ id: "pub-xyz", title: "Pan actualizado" });
+      const updated = buildPublication({
+        id: "pub-xyz",
+        title: "Pan actualizado",
+      });
       mockUpdate.mockResolvedValueOnce(updated);
       const { wrapper } = createWrapper();
 
@@ -461,13 +496,19 @@ describe("useUpdatePublication", () => {
     });
 
     it("should set updated publication data in the cache on success", async () => {
-      const updated = buildPublication({ id: "pub-cache-1", title: "Cached title" });
+      const updated = buildPublication({
+        id: "pub-cache-1",
+        title: "Cached title",
+      });
       mockUpdate.mockResolvedValueOnce(updated);
       const { wrapper, queryClient } = createWrapper();
       const setQueryDataSpy = jest.spyOn(queryClient, "setQueryData");
 
       const { result } = renderHook(() => useUpdatePublication(), { wrapper });
-      result.current.mutate({ id: "pub-cache-1", body: { title: "Cached title" } });
+      result.current.mutate({
+        id: "pub-cache-1",
+        body: { title: "Cached title" },
+      });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(setQueryDataSpy).toHaveBeenCalledWith(
@@ -486,7 +527,9 @@ describe("useUpdatePublication", () => {
       result.current.mutate({ id: "pub-1", body: {} });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["publications", "me"] });
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: ["publications", "me"],
+      });
     });
 
     it("should pass a partial body with only the fields being updated", async () => {
@@ -562,7 +605,9 @@ describe("useDeletePublication", () => {
       result.current.mutate("pub-del-2");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ["publications"] });
+      expect(invalidateSpy).toHaveBeenCalledWith({
+        queryKey: ["publications"],
+      });
     });
 
     it("should correctly pass different id values to publicationsService.delete", async () => {

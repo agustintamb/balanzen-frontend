@@ -1,7 +1,6 @@
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-import React from "react";
-
 import { healthService } from "@/api/health/health.service";
 import { HealthResponse } from "@/api/health/health.types";
 import { useHealth } from "@/hooks/useHealth";
@@ -14,7 +13,9 @@ jest.mock("@/api/health/health.service", () => ({
 
 const mockHealthService = healthService as jest.Mocked<typeof healthService>;
 
-const buildHealthResponse = (overrides?: Partial<HealthResponse>): HealthResponse => ({
+const buildHealthResponse = (
+  overrides?: Partial<HealthResponse>,
+): HealthResponse => ({
   success: true,
   message: "API is running",
   environment: "production",
@@ -82,7 +83,7 @@ describe("useHealth", () => {
 
     expect(mockHealthService.check).toHaveBeenCalledTimes(1);
     expect(mockHealthService.check).toHaveBeenCalledWith(
-      expect.objectContaining({ queryKey: ["health"] })
+      expect.objectContaining({ queryKey: ["health"] }),
     );
   });
 
@@ -193,7 +194,9 @@ describe("useHealth", () => {
     const envs = ["development", "staging", "production"] as const;
 
     for (const environment of envs) {
-      mockHealthService.check.mockResolvedValueOnce(buildHealthResponse({ environment }));
+      mockHealthService.check.mockResolvedValueOnce(
+        buildHealthResponse({ environment }),
+      );
 
       const { result } = renderHook(() => useHealth(), {
         wrapper: createWrapper(),

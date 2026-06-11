@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from "@testing-library/react-native/pure";
-
 import createWrapper from "@/__test-utils__/createWrapper";
 import { uploadsService } from "@/api/uploads/uploads.service";
 import { UploadImageResponse } from "@/api/uploads/uploads.types";
@@ -13,7 +12,6 @@ jest.mock("@/api/uploads/uploads.service", () => ({
 }));
 
 const mockUploadsService = uploadsService as jest.Mocked<typeof uploadsService>;
-
 
 describe("useUploadImage", () => {
   afterEach(() => {
@@ -52,12 +50,14 @@ describe("useUploadImage", () => {
 
     expect(result.current.data).toEqual(mockResponse);
     expect(result.current.data?.url).toBe(
-      "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+      "https://res.cloudinary.com/demo/image/upload/sample.jpg",
     );
   });
 
   it("should call uploadsService.uploadImage with the provided FormData", async () => {
-    const mockResponse: UploadImageResponse = { url: "https://example.com/img.jpg" };
+    const mockResponse: UploadImageResponse = {
+      url: "https://example.com/img.jpg",
+    };
     mockUploadsService.uploadImage.mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useUploadImage(), {
@@ -76,7 +76,7 @@ describe("useUploadImage", () => {
     expect(mockUploadsService.uploadImage).toHaveBeenCalledTimes(1);
     expect(mockUploadsService.uploadImage).toHaveBeenCalledWith(
       formData,
-      expect.objectContaining({ client: expect.anything() })
+      expect.objectContaining({ client: expect.anything() }),
     );
   });
 
@@ -118,7 +118,9 @@ describe("useUploadImage", () => {
   });
 
   it("should support mutateAsync and return the resolved value", async () => {
-    const mockResponse: UploadImageResponse = { url: "https://cdn.example.com/photo.png" };
+    const mockResponse: UploadImageResponse = {
+      url: "https://cdn.example.com/photo.png",
+    };
     mockUploadsService.uploadImage.mockResolvedValueOnce(mockResponse);
 
     const { result } = renderHook(() => useUploadImage(), {
@@ -135,8 +137,12 @@ describe("useUploadImage", () => {
   });
 
   it("should allow multiple sequential mutations", async () => {
-    const firstResponse: UploadImageResponse = { url: "https://cdn.example.com/first.jpg" };
-    const secondResponse: UploadImageResponse = { url: "https://cdn.example.com/second.jpg" };
+    const firstResponse: UploadImageResponse = {
+      url: "https://cdn.example.com/first.jpg",
+    };
+    const secondResponse: UploadImageResponse = {
+      url: "https://cdn.example.com/second.jpg",
+    };
 
     mockUploadsService.uploadImage
       .mockResolvedValueOnce(firstResponse)
@@ -193,13 +199,16 @@ describe("useDeleteImage", () => {
   });
 
   it("should call uploadsService.deleteImage with the provided URL", async () => {
-    mockUploadsService.deleteImage.mockResolvedValueOnce({ message: "Deleted" });
+    mockUploadsService.deleteImage.mockResolvedValueOnce({
+      message: "Deleted",
+    });
 
     const { result } = renderHook(() => useDeleteImage(), {
       wrapper: createWrapper().wrapper,
     });
 
-    const imageUrl = "https://res.cloudinary.com/demo/image/upload/v123/photo.jpg";
+    const imageUrl =
+      "https://res.cloudinary.com/demo/image/upload/v123/photo.jpg";
     result.current.mutate(imageUrl);
 
     await waitFor(() => {
@@ -209,7 +218,7 @@ describe("useDeleteImage", () => {
     expect(mockUploadsService.deleteImage).toHaveBeenCalledTimes(1);
     expect(mockUploadsService.deleteImage).toHaveBeenCalledWith(
       imageUrl,
-      expect.objectContaining({ client: expect.anything() })
+      expect.objectContaining({ client: expect.anything() }),
     );
   });
 
@@ -233,7 +242,9 @@ describe("useDeleteImage", () => {
   });
 
   it("should set isError when delete fails with a network error", async () => {
-    mockUploadsService.deleteImage.mockRejectedValueOnce(new Error("Connection refused"));
+    mockUploadsService.deleteImage.mockRejectedValueOnce(
+      new Error("Connection refused"),
+    );
 
     const { result } = renderHook(() => useDeleteImage(), {
       wrapper: createWrapper().wrapper,
@@ -250,7 +261,9 @@ describe("useDeleteImage", () => {
   });
 
   it("should support mutateAsync and resolve with the message", async () => {
-    mockUploadsService.deleteImage.mockResolvedValueOnce({ message: "Removed" });
+    mockUploadsService.deleteImage.mockResolvedValueOnce({
+      message: "Removed",
+    });
 
     const { result } = renderHook(() => useDeleteImage(), {
       wrapper: createWrapper().wrapper,
@@ -259,14 +272,18 @@ describe("useDeleteImage", () => {
     let response: { message: string } | undefined;
 
     await waitFor(async () => {
-      response = await result.current.mutateAsync("https://cdn.example.com/img.jpg");
+      response = await result.current.mutateAsync(
+        "https://cdn.example.com/img.jpg",
+      );
     });
 
     expect(response).toEqual({ message: "Removed" });
   });
 
   it("should handle deletion of an empty string URL without crashing", async () => {
-    mockUploadsService.deleteImage.mockResolvedValueOnce({ message: "Deleted" });
+    mockUploadsService.deleteImage.mockResolvedValueOnce({
+      message: "Deleted",
+    });
 
     const { result } = renderHook(() => useDeleteImage(), {
       wrapper: createWrapper().wrapper,
@@ -280,7 +297,7 @@ describe("useDeleteImage", () => {
 
     expect(mockUploadsService.deleteImage).toHaveBeenCalledWith(
       "",
-      expect.objectContaining({ client: expect.anything() })
+      expect.objectContaining({ client: expect.anything() }),
     );
   });
 });

@@ -1,5 +1,4 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
-
 import createWrapper from "@/__test-utils__/createWrapper";
 import { favoritesService } from "@/api/favorites/favorites.service";
 import type {
@@ -57,7 +56,7 @@ const buildFavorite = (overrides?: Partial<Favorite>): Favorite => ({
 });
 
 const buildListResponse = (
-  overrides?: Partial<FavoriteListResponse>
+  overrides?: Partial<FavoriteListResponse>,
 ): FavoriteListResponse => ({
   favorites: [buildFavorite()],
   pagination: mockPagination,
@@ -94,7 +93,7 @@ describe("useFavorites", () => {
       renderHook(() => useFavorites(), { wrapper });
 
       await waitFor(() =>
-        expect(mockedFavoritesService.list).toHaveBeenCalledWith(undefined)
+        expect(mockedFavoritesService.list).toHaveBeenCalledWith(undefined),
       );
     });
 
@@ -106,7 +105,7 @@ describe("useFavorites", () => {
       renderHook(() => useFavorites(params), { wrapper });
 
       await waitFor(() =>
-        expect(mockedFavoritesService.list).toHaveBeenCalledWith(params)
+        expect(mockedFavoritesService.list).toHaveBeenCalledWith(params),
       );
     });
 
@@ -118,7 +117,7 @@ describe("useFavorites", () => {
       renderHook(() => useFavorites(params), { wrapper });
 
       await waitFor(() =>
-        expect(queryClient.getQueryState(["favorites", params])).toBeDefined()
+        expect(queryClient.getQueryState(["favorites", params])).toBeDefined(),
       );
     });
 
@@ -137,7 +136,10 @@ describe("useFavorites", () => {
     it("should return empty favorites array when the user has no favorites", async () => {
       const { wrapper } = createWrapper();
       mockedFavoritesService.list.mockResolvedValueOnce(
-        buildListResponse({ favorites: [], pagination: { ...mockPagination, total: 0 } })
+        buildListResponse({
+          favorites: [],
+          pagination: { ...mockPagination, total: 0 },
+        }),
       );
 
       const { result } = renderHook(() => useFavorites(), { wrapper });
@@ -150,7 +152,7 @@ describe("useFavorites", () => {
     it("should start in loading state before data resolves", () => {
       const { wrapper } = createWrapper();
       mockedFavoritesService.list.mockImplementation(
-        () => new Promise(() => undefined)
+        () => new Promise(() => undefined),
       );
 
       const { result } = renderHook(() => useFavorites(), { wrapper });
@@ -161,9 +163,14 @@ describe("useFavorites", () => {
 
     it("should return pagination metadata with the response", async () => {
       const { wrapper } = createWrapper();
-      const pagination: Pagination = { page: 2, limit: 5, total: 15, total_pages: 3 };
+      const pagination: Pagination = {
+        page: 2,
+        limit: 5,
+        total: 15,
+        total_pages: 3,
+      };
       mockedFavoritesService.list.mockResolvedValueOnce(
-        buildListResponse({ pagination })
+        buildListResponse({ pagination }),
       );
 
       const { result } = renderHook(() => useFavorites(), { wrapper });
@@ -184,7 +191,10 @@ describe("useFavorites", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockedFavoritesService.add).toHaveBeenCalledWith("pub-uuid-001", expect.anything());
+      expect(mockedFavoritesService.add).toHaveBeenCalledWith(
+        "pub-uuid-001",
+        expect.anything(),
+      );
     });
 
     it("should call favoritesService.add exactly once per mutate call", async () => {
@@ -254,7 +264,10 @@ describe("useFavorites", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockedFavoritesService.add).toHaveBeenCalledWith("pub-uuid-999", expect.anything());
+      expect(mockedFavoritesService.add).toHaveBeenCalledWith(
+        "pub-uuid-999",
+        expect.anything(),
+      );
     });
   });
 
@@ -268,7 +281,10 @@ describe("useFavorites", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockedFavoritesService.remove).toHaveBeenCalledWith("pub-uuid-001", expect.anything());
+      expect(mockedFavoritesService.remove).toHaveBeenCalledWith(
+        "pub-uuid-001",
+        expect.anything(),
+      );
     });
 
     it("should call favoritesService.remove exactly once per mutate call", async () => {
@@ -298,7 +314,9 @@ describe("useFavorites", () => {
 
     it("should set isError to true when the service rejects with 404", async () => {
       const { wrapper } = createWrapper();
-      mockedFavoritesService.remove.mockRejectedValueOnce(new Error("Not Found"));
+      mockedFavoritesService.remove.mockRejectedValueOnce(
+        new Error("Not Found"),
+      );
 
       const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
       result.current.mutate("nonexistent-pub");
@@ -310,7 +328,9 @@ describe("useFavorites", () => {
 
     it("should not invalidate queries when the remove mutation fails", async () => {
       const { wrapper, queryClient } = createWrapper();
-      mockedFavoritesService.remove.mockRejectedValueOnce(new Error("Unauthorized"));
+      mockedFavoritesService.remove.mockRejectedValueOnce(
+        new Error("Unauthorized"),
+      );
       const invalidateSpy = jest.spyOn(queryClient, "invalidateQueries");
 
       const { result } = renderHook(() => useRemoveFavorite(), { wrapper });
@@ -338,7 +358,10 @@ describe("useFavorites", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-      expect(mockedFavoritesService.remove).toHaveBeenCalledWith("pub-uuid-777", expect.anything());
+      expect(mockedFavoritesService.remove).toHaveBeenCalledWith(
+        "pub-uuid-777",
+        expect.anything(),
+      );
     });
   });
 });

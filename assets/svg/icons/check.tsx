@@ -1,14 +1,14 @@
-import Svg, { Path } from 'react-native-svg'
-import React from 'react'
+import React from "react";
+import Svg, { Path } from "react-native-svg";
 
 type CheckIconProps = {
-  strokeColor?: string
-  strokeWidth?: number
-  size?: number
-}
+  strokeColor?: string;
+  strokeWidth?: number;
+  size?: number;
+};
 
 const CheckIcon: React.FC<CheckIconProps> = ({
-  strokeColor = 'white',
+  strokeColor = "white",
   strokeWidth = 2,
   size = 17,
 }) => (
@@ -21,6 +21,6 @@ const CheckIcon: React.FC<CheckIconProps> = ({
       strokeLinejoin="round"
     />
   </Svg>
-)
+);
 
-export default CheckIcon
+export default CheckIcon;

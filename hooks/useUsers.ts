@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { usersService } from "@/api/users/users.service";
 import { PublicUser, UpdateProfileBody, User } from "@/api/users/users.types";
 

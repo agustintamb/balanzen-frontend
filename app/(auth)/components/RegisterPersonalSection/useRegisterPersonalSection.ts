@@ -1,5 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { router } from "expo-router";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import type { UserRole } from "@/api/users/users.types";
@@ -15,26 +15,36 @@ export const personalRegistrationSchema = z
     firstName: z
       .string()
       .min(2, "Ingresá tu nombre")
-      .refine((v) => NAME_REGEX.test(v), { message: "Solo se permiten letras" }),
+      .refine((v) => NAME_REGEX.test(v), {
+        message: "Solo se permiten letras",
+      }),
     lastName: z
       .string()
       .min(2, "Ingresá tu apellido")
-      .refine((v) => NAME_REGEX.test(v), { message: "Solo se permiten letras" }),
+      .refine((v) => NAME_REGEX.test(v), {
+        message: "Solo se permiten letras",
+      }),
     email: z
       .string()
       .min(1, "Ingresá tu correo")
-      .refine((v) => EMAIL_REGEX.test(v), { message: "Correo electrónico inválido" }),
+      .refine((v) => EMAIL_REGEX.test(v), {
+        message: "Correo electrónico inválido",
+      }),
     password: z.string().min(6, "La contraseña es muy corta"),
     confirmPassword: z.string().min(1, "Confirmá tu contraseña"),
     phone: z
       .string()
       .min(8, "Teléfono inválido")
-      .refine((v) => DIGITS_REGEX.test(v), { message: "Solo se permiten números" }),
+      .refine((v) => DIGITS_REGEX.test(v), {
+        message: "Solo se permiten números",
+      }),
     dni: z
       .string()
       .min(7, "DNI inválido")
       .max(15, "DNI inválido")
-      .refine((v) => DIGITS_REGEX.test(v), { message: "Solo se permiten números" }),
+      .refine((v) => DIGITS_REGEX.test(v), {
+        message: "Solo se permiten números",
+      }),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
@@ -128,4 +138,6 @@ export const useRegisterPersonalSection = (
 
 // Expo Router requires a default export in app/ — this file is a hook, not a screen
 // eslint-disable-next-line import/no-default-export
-export default function _() { return null; }
+export default function _() {
+  return null;
+}
