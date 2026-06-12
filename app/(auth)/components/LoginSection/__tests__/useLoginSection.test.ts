@@ -26,16 +26,10 @@ jest.mock("expo-router", () => ({
   },
 }));
 
-const mockedUseLogin = useLogin as jest.MockedFunction<typeof useLogin>;
-const mockedUseAuthStore = useAuthStore as jest.MockedFunction<
-  typeof useAuthStore
->;
-const mockedPersistSession = persistSession as jest.MockedFunction<
-  typeof persistSession
->;
-const mockedRouterReplace = router.replace as jest.MockedFunction<
-  typeof router.replace
->;
+const mockedUseLogin = jest.mocked(useLogin);
+const mockedUseAuthStore = jest.mocked(useAuthStore);
+const mockedPersistSession = jest.mocked(persistSession);
+const mockedRouterReplace = jest.mocked(router.replace);
 
 const mockSetUser = jest.fn();
 const mockSetAccessToken = jest.fn();
@@ -93,12 +87,12 @@ const setupMocks = (mutateFn = jest.fn(), isPending = false) => {
   mockedUseLogin.mockReturnValue({
     mutate: mutateFn,
     isPending,
-  } as unknown as ReturnType<typeof useLogin>);
+  } as ReturnType<typeof useLogin>);
 
   mockedUseAuthStore.mockReturnValue({
     setUser: mockSetUser,
     setAccessToken: mockSetAccessToken,
-  } as unknown as ReturnType<typeof useAuthStore>);
+  } as ReturnType<typeof useAuthStore>);
 
   mockedPersistSession.mockResolvedValue(undefined);
 };

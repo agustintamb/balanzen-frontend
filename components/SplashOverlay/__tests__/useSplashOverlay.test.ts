@@ -172,7 +172,7 @@ describe("useSplashOverlay", () => {
 
   describe("cleanup", () => {
     it("should clear the timer on unmount before splash duration elapses", () => {
-      const clearTimeoutSpy = jest.spyOn(global, "clearTimeout");
+      const clearTimeoutSpy = jest.spyOn(globalThis, "clearTimeout");
 
       const { unmount } = renderHook(() => useSplashOverlay());
 

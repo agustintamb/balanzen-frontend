@@ -26,14 +26,7 @@ jest.mock("@/api/addresses/addresses.service", () => ({
   },
 }));
 
-const mockService = addressesService as {
-  search: jest.MockedFunction<typeof addressesService.search>;
-  list: jest.MockedFunction<typeof addressesService.list>;
-  create: jest.MockedFunction<typeof addressesService.create>;
-  update: jest.MockedFunction<typeof addressesService.update>;
-  delete: jest.MockedFunction<typeof addressesService.delete>;
-  select: jest.MockedFunction<typeof addressesService.select>;
-};
+const mockService = jest.mocked(addressesService);
 
 const buildAddress = (overrides: Partial<Address> = {}): Address => ({
   id: "addr-uuid-123",

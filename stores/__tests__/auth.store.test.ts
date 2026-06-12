@@ -4,7 +4,7 @@ import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 const buildAuthUser = (overrides: Partial<AuthUser> = {}): AuthUser => ({
   id: "user-123",
   email: "test@example.com",
-  role: "CONSUMIDOR" as UserRole,
+  role: "CONSUMIDOR",
   first_name: "Juan",
   last_name: "Perez",
   has_address: false,

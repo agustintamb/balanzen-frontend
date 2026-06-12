@@ -27,6 +27,15 @@ const mockUseUIStore = useUIStore as jest.Mocked<typeof useUIStore>;
 
 const ChildComponent = () => <Text testID="child">child content</Text>;
 
+const MutationTrigger = ({ mutationFn }: { mutationFn: jest.Mock }) => {
+  const { mutate } = useMutation({ mutationFn });
+  return (
+    <Text testID="trigger" onPress={() => mutate(undefined)}>
+      trigger
+    </Text>
+  );
+};
+
 const buildTestQueryClient = () =>
   new QueryClient({
     mutationCache: new MutationCache({ onError: handleMutationError }),
@@ -101,21 +110,9 @@ describe("QueryProvider", () => {
         .fn()
         .mockRejectedValue(new Error("Red caída"));
 
-      const MutationTrigger = () => {
-        const { mutate } = useMutation({
-          mutationFn: failingMutation,
-        });
-
-        return (
-          <Text testID="trigger" onPress={() => mutate(undefined)}>
-            trigger
-          </Text>
-        );
-      };
-
       const { getByTestId } = render(
         <QueryClientProvider client={testClient}>
-          <MutationTrigger />
+          <MutationTrigger mutationFn={failingMutation} />
         </QueryClientProvider>,
       );
 
@@ -133,21 +130,9 @@ describe("QueryProvider", () => {
 
       const failingMutation = jest.fn().mockRejectedValue("plain string error");
 
-      const MutationTrigger = () => {
-        const { mutate } = useMutation({
-          mutationFn: failingMutation,
-        });
-
-        return (
-          <Text testID="trigger" onPress={() => mutate(undefined)}>
-            trigger
-          </Text>
-        );
-      };
-
       const { getByTestId } = render(
         <QueryClientProvider client={testClient}>
-          <MutationTrigger />
+          <MutationTrigger mutationFn={failingMutation} />
         </QueryClientProvider>,
       );
 
@@ -169,18 +154,9 @@ describe("QueryProvider", () => {
         .fn()
         .mockRejectedValue(new Error("Algo salió mal"));
 
-      const MutationTrigger = () => {
-        const { mutate } = useMutation({ mutationFn: failingMutation });
-        return (
-          <Text testID="trigger" onPress={() => mutate(undefined)}>
-            trigger
-          </Text>
-        );
-      };
-
       const { getByTestId } = render(
         <QueryClientProvider client={testClient}>
-          <MutationTrigger />
+          <MutationTrigger mutationFn={failingMutation} />
         </QueryClientProvider>,
       );
 
@@ -200,18 +176,9 @@ describe("QueryProvider", () => {
         .fn()
         .mockRejectedValue(new Error("Único error"));
 
-      const MutationTrigger = () => {
-        const { mutate } = useMutation({ mutationFn: failingMutation });
-        return (
-          <Text testID="trigger" onPress={() => mutate(undefined)}>
-            trigger
-          </Text>
-        );
-      };
-
       const { getByTestId } = render(
         <QueryClientProvider client={testClient}>
-          <MutationTrigger />
+          <MutationTrigger mutationFn={failingMutation} />
         </QueryClientProvider>,
       );
 
@@ -228,18 +195,9 @@ describe("QueryProvider", () => {
 
       const successMutation = jest.fn().mockResolvedValue({ ok: true });
 
-      const MutationTrigger = () => {
-        const { mutate } = useMutation({ mutationFn: successMutation });
-        return (
-          <Text testID="trigger" onPress={() => mutate(undefined)}>
-            trigger
-          </Text>
-        );
-      };
-
       const { getByTestId } = render(
         <QueryClientProvider client={testClient}>
-          <MutationTrigger />
+          <MutationTrigger mutationFn={successMutation} />
         </QueryClientProvider>,
       );
 

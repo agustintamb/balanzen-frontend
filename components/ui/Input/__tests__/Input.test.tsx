@@ -1,10 +1,7 @@
 import React, { createRef } from "react";
-import { TextInput } from "react-native";
+import { TextInput, TouchableOpacity } from "react-native";
 import { fireEvent, render } from "@testing-library/react-native";
 import Input from "@/components/ui/Input";
-
-const { TouchableOpacity } =
-  require("react-native") as typeof import("react-native");
 
 afterEach(() => {
   jest.clearAllMocks();

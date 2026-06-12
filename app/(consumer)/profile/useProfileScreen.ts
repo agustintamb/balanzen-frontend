@@ -58,7 +58,7 @@ export const useProfileScreen = () => {
     setAuthToken(null);
     clear();
     queryClient.clear();
-    router.replace("/(auth)" as never);
+    router.replace("/(auth)");
   };
 
   return {

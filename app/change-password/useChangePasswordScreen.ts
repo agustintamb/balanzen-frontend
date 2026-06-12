@@ -12,7 +12,7 @@ const schema = z
       .string()
       .min(8, "Mínimo 8 caracteres")
       .regex(/[a-zA-Z]/, "Debe incluir letras")
-      .regex(/[0-9]/, "Debe incluir números"),
+      .regex(/\d/, "Debe incluir números"),
     confirm_password: z.string().min(1, "Requerido"),
   })
   .refine((data) => data.new_password === data.confirm_password, {
