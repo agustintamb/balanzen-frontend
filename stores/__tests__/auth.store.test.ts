@@ -1,4 +1,3 @@
-import type { UserRole } from "@/api/users/users.types";
 import { useAuthStore, type AuthUser } from "@/stores/auth.store";
 
 const buildAuthUser = (overrides: Partial<AuthUser> = {}): AuthUser => ({
