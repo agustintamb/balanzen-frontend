@@ -84,15 +84,17 @@ const buildMutateFn = (
   );
 
 const setupMocks = (mutateFn = jest.fn(), isPending = false) => {
-  mockedUseLogin.mockReturnValue({
+  const loginMock = {
     mutate: mutateFn,
     isPending,
-  } as ReturnType<typeof useLogin>);
+  } as unknown as ReturnType<typeof useLogin>;
+  mockedUseLogin.mockReturnValue(loginMock);
 
-  mockedUseAuthStore.mockReturnValue({
+  const authStoreMock = {
     setUser: mockSetUser,
     setAccessToken: mockSetAccessToken,
-  } as ReturnType<typeof useAuthStore>);
+  } as unknown as ReturnType<typeof useAuthStore>;
+  mockedUseAuthStore.mockReturnValue(authStoreMock);
 
   mockedPersistSession.mockResolvedValue(undefined);
 };

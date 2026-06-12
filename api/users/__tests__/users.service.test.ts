@@ -282,11 +282,12 @@ describe("usersService", () => {
         const result = await usersService.getPublicProfile(userId);
 
         expect(result).toEqual(mockPublicUserCommerce);
-        const commerceResult = result as PublicUserCommerce;
-        expect(commerceResult.business_name).toBe("Panadería El Trigo");
-        expect(commerceResult.selected_address.formatted_address).toBe(
-          "Av. Corrientes 1234, Buenos Aires",
-        );
+        expect(result).toMatchObject({
+          business_name: "Panadería El Trigo",
+          selected_address: expect.objectContaining({
+            formatted_address: "Av. Corrientes 1234, Buenos Aires",
+          }),
+        });
       });
 
       it("should return consumer public profile data", async () => {
@@ -296,9 +297,8 @@ describe("usersService", () => {
         const result = await usersService.getPublicProfile(userId);
 
         expect(result).toEqual(mockPublicUserConsumer);
-        const consumerResult = result as PublicUserConsumer;
-        expect(consumerResult.id).toBe("user-uuid-consumer-1");
-        expect(consumerResult.photo_url).toBe(
+        expect(result.id).toBe("user-uuid-consumer-1");
+        expect(result.photo_url).toBe(
           "https://res.cloudinary.com/demo/image/upload/sample.jpg",
         );
       });
