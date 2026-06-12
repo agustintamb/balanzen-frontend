@@ -7,7 +7,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
+import {
+  KeyboardAwareScrollView,
+  KeyboardAvoidingView,
+} from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Controller } from "react-hook-form";
@@ -111,157 +114,159 @@ const EditProfile = () => {
         </Modal>
       )}
 
-      <KeyboardAwareScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingTop: 24,
-          paddingBottom: 16,
-          gap: 16,
-        }}
-        className="bg-surface"
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        bottomOffset={16}
-      >
-        {isCommerce && (
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <KeyboardAwareScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingTop: 24,
+            paddingBottom: 16,
+            gap: 16,
+          }}
+          className="bg-surface"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
+          {isCommerce && (
+            <Controller
+              control={control}
+              name="business_name"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Input
+                  ref={businessNameRef}
+                  label="Nombre del comercio"
+                  value={value ?? ""}
+                  onChangeText={onChange}
+                  placeholder="Tu comercio"
+                  autoCapitalize="words"
+                  leftIcon={<Icon name="briefcase" size={18} color="muted" />}
+                  error={error?.message}
+                  returnKeyType="next"
+                  onSubmitEditing={() => firstNameRef.current?.focus()}
+                  testID="input-business-name"
+                />
+              )}
+            />
+          )}
+
           <Controller
             control={control}
-            name="business_name"
+            name="first_name"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <Input
-                ref={businessNameRef}
-                label="Nombre del comercio"
-                value={value ?? ""}
+                ref={isCommerce ? firstNameRef : undefined}
+                label="Nombre"
+                value={value}
                 onChangeText={onChange}
-                placeholder="Tu comercio"
+                placeholder="Tu nombre"
                 autoCapitalize="words"
-                leftIcon={<Icon name="briefcase" size={18} color="muted" />}
+                leftIcon={<Icon name="user" size={18} color="muted" />}
                 error={error?.message}
                 returnKeyType="next"
-                onSubmitEditing={() => firstNameRef.current?.focus()}
-                testID="input-business-name"
+                onSubmitEditing={() => lastNameRef.current?.focus()}
+                testID="input-first-name"
               />
             )}
           />
-        )}
 
-        <Controller
-          control={control}
-          name="first_name"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input
-              ref={isCommerce ? firstNameRef : undefined}
-              label="Nombre"
-              value={value}
-              onChangeText={onChange}
-              placeholder="Tu nombre"
-              autoCapitalize="words"
-              leftIcon={<Icon name="user" size={18} color="muted" />}
-              error={error?.message}
-              returnKeyType="next"
-              onSubmitEditing={() => lastNameRef.current?.focus()}
-              testID="input-first-name"
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="last_name"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input
-              ref={lastNameRef}
-              label="Apellido"
-              value={value}
-              onChangeText={onChange}
-              placeholder="Tu apellido"
-              autoCapitalize="words"
-              leftIcon={<Icon name="user" size={18} color="muted" />}
-              error={error?.message}
-              returnKeyType="next"
-              onSubmitEditing={() => emailRef.current?.focus()}
-              testID="input-last-name"
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input
-              ref={emailRef}
-              label="Email"
-              value={value}
-              onChangeText={onChange}
-              placeholder="correo@ejemplo.com"
-              type="email"
-              leftIcon={<Icon name="mail" size={18} color="muted" />}
-              error={error?.message}
-              returnKeyType="next"
-              onSubmitEditing={() => phoneRef.current?.focus()}
-              testID="input-email"
-            />
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="phone"
-          render={({ field: { onChange, value }, fieldState: { error } }) => (
-            <Input
-              ref={phoneRef}
-              label="Teléfono"
-              value={value}
-              onChangeText={(text) => onChange(text.replace(/\D/g, ""))}
-              placeholder="1155667788"
-              type="phone"
-              leftIcon={<Icon name="phone" size={18} color="muted" />}
-              error={error?.message}
-              returnKeyType={isCommerce ? "next" : "done"}
-              onSubmitEditing={
-                isCommerce ? () => descriptionRef.current?.focus() : undefined
-              }
-              testID="input-phone"
-            />
-          )}
-        />
-
-        {isCommerce && (
           <Controller
             control={control}
-            name="description"
+            name="last_name"
             render={({ field: { onChange, value }, fieldState: { error } }) => (
               <Input
-                ref={descriptionRef}
-                label="Descripción"
-                value={value ?? ""}
+                ref={lastNameRef}
+                label="Apellido"
+                value={value}
                 onChangeText={onChange}
-                placeholder="Contá algo sobre tu negocio…"
-                leftIcon={<Icon name="file-text" size={18} color="muted" />}
-                multiline
-                numberOfLines={5}
+                placeholder="Tu apellido"
+                autoCapitalize="words"
+                leftIcon={<Icon name="user" size={18} color="muted" />}
                 error={error?.message}
-                testID="input-description"
+                returnKeyType="next"
+                onSubmitEditing={() => emailRef.current?.focus()}
+                testID="input-last-name"
               />
             )}
           />
-        )}
-      </KeyboardAwareScrollView>
 
-      <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
-        <View className="px-4 pt-3 pb-2">
-          <Button
-            onPress={handleSave}
-            disabled={!canSave}
-            loading={isSubmitting}
-            testID="btn-save-profile"
-          >
-            Guardar
-          </Button>
-        </View>
-      </SafeAreaView>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Input
+                ref={emailRef}
+                label="Email"
+                value={value}
+                onChangeText={onChange}
+                placeholder="correo@ejemplo.com"
+                type="email"
+                leftIcon={<Icon name="mail" size={18} color="muted" />}
+                error={error?.message}
+                returnKeyType="next"
+                onSubmitEditing={() => phoneRef.current?.focus()}
+                testID="input-email"
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="phone"
+            render={({ field: { onChange, value }, fieldState: { error } }) => (
+              <Input
+                ref={phoneRef}
+                label="Teléfono"
+                value={value}
+                onChangeText={(text) => onChange(text.replace(/\D/g, ""))}
+                placeholder="1155667788"
+                type="phone"
+                leftIcon={<Icon name="phone" size={18} color="muted" />}
+                error={error?.message}
+                returnKeyType={isCommerce ? "next" : "done"}
+                onSubmitEditing={
+                  isCommerce ? () => descriptionRef.current?.focus() : undefined
+                }
+                testID="input-phone"
+              />
+            )}
+          />
+
+          {isCommerce && (
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <Input
+                  ref={descriptionRef}
+                  label="Descripción"
+                  value={value ?? ""}
+                  onChangeText={onChange}
+                  placeholder="Contá algo sobre tu negocio…"
+                  leftIcon={<Icon name="file-text" size={18} color="muted" />}
+                  multiline
+                  numberOfLines={5}
+                  error={error?.message}
+                  testID="input-description"
+                />
+              )}
+            />
+          )}
+        </KeyboardAwareScrollView>
+
+        <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
+          <View className="px-4 pt-3 pb-2">
+            <Button
+              onPress={handleSave}
+              disabled={!canSave}
+              loading={isSubmitting}
+              testID="btn-save-profile"
+            >
+              Guardar
+            </Button>
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </>
   );
 };
