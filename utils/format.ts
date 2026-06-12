@@ -8,9 +8,7 @@ export const formatCurrency = (n: number): string =>
     .replace("ARS", "$");
 
 export const formatPrice = (n: number): string =>
-  `$${Math.round(n)
-    .toString()
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
+  `$${new Intl.NumberFormat("es-AR", { maximumFractionDigits: 0 }).format(Math.round(n))}`;
 
 export const formatExpiry = (dateStr: string): string => {
   const today = new Date();

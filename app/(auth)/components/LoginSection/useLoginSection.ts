@@ -55,12 +55,12 @@ export const useLoginSection = () => {
           );
           if (response.user.has_address) {
             router.replace(
-              (response.user.role === "COMERCIO"
+              response.user.role === "COMERCIO"
                 ? "/(commerce)/home"
-                : "/(consumer)/home") as never,
+                : "/(consumer)/home",
             );
           } else {
-            router.replace("/(onboarding)/address" as never);
+            router.replace("/(onboarding)/address");
           }
         },
       },

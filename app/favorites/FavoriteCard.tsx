@@ -36,6 +36,31 @@ const FavoriteCard = React.memo(({ item, onRemove }: FavoriteCardProps) => {
     : null;
   const isDonation = publication.is_donation ?? false;
 
+  let badge: React.ReactNode = null;
+  if (isDonation) {
+    badge = (
+      <View className="absolute top-2 left-2 bg-primary rounded-full px-2 py-0.5">
+        <Text
+          className="text-white font-sans-semibold"
+          style={{ fontSize: 10 }}
+        >
+          DONACIÓN
+        </Text>
+      </View>
+    );
+  } else if (publication.discount_pct > 0) {
+    badge = (
+      <View className="absolute top-2 left-2 bg-error rounded-full px-2 py-0.5">
+        <Text
+          className="text-white font-sans-semibold"
+          style={{ fontSize: 10 }}
+        >
+          -{publication.discount_pct}%
+        </Text>
+      </View>
+    );
+  }
+
   return (
     <View
       className="bg-white rounded-2xl mx-4 mb-3 flex-row overflow-hidden"
@@ -57,25 +82,7 @@ const FavoriteCard = React.memo(({ item, onRemove }: FavoriteCardProps) => {
           </View>
         )}
 
-        {isDonation ? (
-          <View className="absolute top-2 left-2 bg-primary rounded-full px-2 py-0.5">
-            <Text
-              className="text-white font-sans-semibold"
-              style={{ fontSize: 10 }}
-            >
-              DONACIÓN
-            </Text>
-          </View>
-        ) : publication.discount_pct > 0 ? (
-          <View className="absolute top-2 left-2 bg-error rounded-full px-2 py-0.5">
-            <Text
-              className="text-white font-sans-semibold"
-              style={{ fontSize: 10 }}
-            >
-              -{publication.discount_pct}%
-            </Text>
-          </View>
-        ) : null}
+        {badge}
       </View>
 
       <View className="flex-1 px-3 pt-3 pb-3" style={{ gap: 3 }}>

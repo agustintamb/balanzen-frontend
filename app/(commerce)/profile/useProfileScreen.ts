@@ -54,7 +54,7 @@ export const useProfileScreen = () => {
   };
 
   const handleMetrics = () => {
-    safePush("/metrics" as never);
+    safePush("/metrics");
   };
 
   const handleLogout = async () => {
@@ -63,7 +63,7 @@ export const useProfileScreen = () => {
     setAuthToken(null);
     clear();
     queryClient.clear();
-    router.replace("/(auth)" as never);
+    router.replace("/(auth)");
   };
 
   return {

@@ -7,7 +7,6 @@ import CheckIcon from "../check";
 jest.mock(
   "react-native-svg",
   () => {
-    const React = require("react");
     const { View: RNView } = require("react-native");
 
     const Svg = ({ children, testID, ...props }: any) => (

@@ -82,7 +82,7 @@ export const useRegisterCommerceSection = () => {
             setUser,
           );
           clear();
-          router.replace("/(onboarding)/address" as never);
+          router.replace("/(onboarding)/address");
         },
       },
     );

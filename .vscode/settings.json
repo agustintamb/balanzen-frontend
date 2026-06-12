@@ -24,5 +24,9 @@
   },
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "agustintamb",
+    "projectKey": "agustintamb_balanzen-frontend"
   }
 }

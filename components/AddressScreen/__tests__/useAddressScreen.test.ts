@@ -810,7 +810,7 @@ describe("useAddressScreen", () => {
       const { result } = renderHook(() => useAddressScreen());
 
       await act(async () => {
-        void result.current.handleUseCurrentLocation();
+        result.current.handleUseCurrentLocation();
         // Let permission + getLastKnownPosition microtasks resolve
         await Promise.resolve();
         await Promise.resolve();
@@ -843,7 +843,7 @@ describe("useAddressScreen", () => {
       // (and the subsequent setPermissionDenied call) happens inside act().
       // getLastKnownPositionAsync never resolves, so isGettingLocation stays true.
       await act(async () => {
-        void result.current.handleUseCurrentLocation();
+        result.current.handleUseCurrentLocation();
         await Promise.resolve();
       });
 
@@ -851,7 +851,7 @@ describe("useAddressScreen", () => {
 
       // Second call while first is pending — should be a no-op
       await act(async () => {
-        void result.current.handleUseCurrentLocation();
+        result.current.handleUseCurrentLocation();
         await Promise.resolve();
       });
 

@@ -16,7 +16,7 @@ jest.mock("@/api/client", () => ({
   delete: jest.fn(),
 }));
 
-const mockedApiClient = apiClient as jest.Mocked<typeof apiClient>;
+const mockedApiClient = jest.mocked(apiClient);
 
 const mockAddressSummary = {
   id: "addr-uuid-1234",

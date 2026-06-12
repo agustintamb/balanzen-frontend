@@ -117,7 +117,7 @@ export const useRegisterPersonalSection = (
               setAccessToken,
               setUser,
             );
-            router.replace("/(onboarding)/address" as never);
+            router.replace("/(onboarding)/address");
           },
         },
       );
