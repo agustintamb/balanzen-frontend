@@ -146,9 +146,7 @@ describe("useLoginSection", () => {
       });
 
       await act(async () => {
-        await result.current.onSubmit({
-          nativeEvent: {},
-        } as never);
+        await result.current.onSubmit();
       });
 
       expect(mutateFn).toHaveBeenCalledWith(
@@ -169,7 +167,7 @@ describe("useLoginSection", () => {
       });
 
       await act(async () => {
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mutateFn).toHaveBeenCalledTimes(1);
@@ -186,7 +184,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       await waitFor(() => {
@@ -217,7 +215,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       await waitFor(() => {
@@ -234,7 +232,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "commerce@example.com";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       await waitFor(() => {
@@ -255,7 +253,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       await waitFor(() => {
@@ -278,7 +276,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "commerce@example.com";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       await waitFor(() => {
@@ -304,7 +302,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       await waitFor(() => {
@@ -333,7 +331,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "wrongpassword";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mockedPersistSession).not.toHaveBeenCalled();
@@ -351,7 +349,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "wrongpassword";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mockedRouterReplace).not.toHaveBeenCalled();
@@ -368,7 +366,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mutateFn).not.toHaveBeenCalled();
@@ -383,7 +381,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "jane@example.com";
         result.current.control._formValues.password = "";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mutateFn).not.toHaveBeenCalled();
@@ -398,7 +396,7 @@ describe("useLoginSection", () => {
       await act(async () => {
         result.current.control._formValues.email = "not-an-email";
         result.current.control._formValues.password = "secret123";
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mutateFn).not.toHaveBeenCalled();
@@ -411,7 +409,7 @@ describe("useLoginSection", () => {
       const { result } = renderHook(() => useLoginSection());
 
       await act(async () => {
-        await result.current.onSubmit({} as never);
+        await result.current.onSubmit();
       });
 
       expect(mutateFn).not.toHaveBeenCalled();
