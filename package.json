@@ -9,9 +9,9 @@
     "build:prod": "cross-env APP_ENV=production eas build --platform android --profile production",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch",
+    "test": "cross-env TZ=UTC jest",
+    "test:coverage": "cross-env TZ=UTC jest --coverage",
+    "test:watch": "cross-env TZ=UTC jest --watch",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."
@@ -25,6 +25,23 @@
       "text",
       "html",
       "lcov"
+    ],
+    "collectCoverageFrom": [
+      "app/**/*.{ts,tsx}",
+      "api/**/*.{ts,tsx}",
+      "components/**/*.{ts,tsx}",
+      "hooks/**/*.{ts,tsx}",
+      "stores/**/*.{ts,tsx}",
+      "utils/**/*.{ts,tsx}",
+      "providers/**/*.{ts,tsx}",
+      "config/**/*.{ts,tsx}",
+      "!**/__tests__/**",
+      "!**/*.test.{ts,tsx}",
+      "!**/*.spec.{ts,tsx}",
+      "!__test-utils__/**",
+      "!types/**",
+      "!**/*.types.ts",
+      "!app/notifications/index.tsx"
     ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|nativewind|tailwindcss|lottie-react-native|react-native-keyboard-controller)"

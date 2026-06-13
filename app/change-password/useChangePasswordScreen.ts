@@ -5,7 +5,7 @@ import { z } from "zod";
 import { useChangePassword } from "@/hooks/useAuth";
 import { useToast } from "@/stores/ui.store";
 
-const schema = z
+export const changePasswordSchema = z
   .object({
     current_password: z.string().min(1, "Requerido"),
     new_password: z
@@ -20,7 +20,7 @@ const schema = z
     path: ["confirm_password"],
   });
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<typeof changePasswordSchema>;
 
 export const useChangePasswordScreen = () => {
   const router = useRouter();
@@ -32,7 +32,7 @@ export const useChangePasswordScreen = () => {
     handleSubmit,
     formState: { isValid, isSubmitting },
   } = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(changePasswordSchema),
     mode: "onChange",
     defaultValues: {
       current_password: "",

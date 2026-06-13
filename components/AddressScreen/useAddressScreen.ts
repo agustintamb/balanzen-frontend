@@ -250,9 +250,7 @@ export const useAddressScreen = () => {
       router.back();
     } else {
       router.replace(
-        user?.role === "COMERCIO"
-          ? "/(commerce)/home"
-          : "/(consumer)/home",
+        user?.role === "COMERCIO" ? "/(commerce)/home" : "/(consumer)/home",
       );
     }
   };
@@ -270,9 +268,7 @@ export const useAddressScreen = () => {
           router.back();
         } else {
           router.replace(
-            user?.role === "COMERCIO"
-              ? "/(commerce)/home"
-              : "/(consumer)/home",
+            user?.role === "COMERCIO" ? "/(commerce)/home" : "/(consumer)/home",
           );
         }
       },

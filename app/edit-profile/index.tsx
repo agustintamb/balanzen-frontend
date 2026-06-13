@@ -8,8 +8,8 @@ import {
   View,
 } from "react-native";
 import {
-  KeyboardAwareScrollView,
   KeyboardAvoidingView,
+  KeyboardAwareScrollView,
 } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -132,7 +132,10 @@ const EditProfile = () => {
             <Controller
               control={control}
               name="business_name"
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
                 <Input
                   ref={businessNameRef}
                   label="Nombre del comercio"
@@ -236,7 +239,10 @@ const EditProfile = () => {
             <Controller
               control={control}
               name="description"
-              render={({ field: { onChange, value }, fieldState: { error } }) => (
+              render={({
+                field: { onChange, value },
+                fieldState: { error },
+              }) => (
                 <Input
                   ref={descriptionRef}
                   label="Descripción"
@@ -254,7 +260,10 @@ const EditProfile = () => {
           )}
         </KeyboardAwareScrollView>
 
-        <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
+        <SafeAreaView
+          edges={["bottom", "left", "right"]}
+          className="bg-surface"
+        >
           <View className="px-4 pt-3 pb-2">
             <Button
               onPress={handleSave}

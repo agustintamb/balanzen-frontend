@@ -12,9 +12,9 @@ export const formatPrice = (n: number): string =>
 
 export const formatExpiry = (dateStr: string): string => {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   const expiry = new Date(dateStr);
-  expiry.setHours(0, 0, 0, 0);
+  expiry.setUTCHours(0, 0, 0, 0);
   const diffDays = Math.round((expiry.getTime() - today.getTime()) / 86400000);
   if (diffDays < 0) return "Vencido";
   if (diffDays === 0) return "Vence hoy";
