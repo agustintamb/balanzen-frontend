@@ -39,9 +39,9 @@ describe("env.ts branch coverage", () => {
   });
 
   it("uses apiLocalDeviceUrl when provided (covers line 8)", () => {
-    mockExtra.apiLocalDeviceUrl = "http://192.168.1.5:3001/api/v1";
+    mockExtra.apiLocalDeviceUrl = "https://192.168.1.5:3001/api/v1";
     const result = require("../env").default;
-    expect(result.API_URL).toBe("http://192.168.1.5:3001/api/v1");
+    expect(result.API_URL).toBe("https://192.168.1.5:3001/api/v1");
   });
 
   it("uses localhost URL when Platform.OS is not android (covers line 10)", () => {
