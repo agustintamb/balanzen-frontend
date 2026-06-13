@@ -1,7 +1,7 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import {
-  KeyboardAwareScrollView,
   KeyboardAvoidingView,
+  KeyboardAwareScrollView,
 } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -103,7 +103,10 @@ const ChangePassword = () => {
           </View>
         </KeyboardAwareScrollView>
 
-        <SafeAreaView edges={["bottom", "left", "right"]} className="bg-surface">
+        <SafeAreaView
+          edges={["bottom", "left", "right"]}
+          className="bg-surface"
+        >
           <View className="px-4 pt-3 pb-2">
             <Button
               onPress={handleSave}
