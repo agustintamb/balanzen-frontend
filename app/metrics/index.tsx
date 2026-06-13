@@ -1,6 +1,5 @@
 import {
   ActivityIndicator,
-  RefreshControl,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -8,6 +7,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import MetricCard from "./MetricCard";
 import { useMetricsScreen } from "./useMetricsScreen";
@@ -38,10 +38,9 @@ const MetricsScreen = () => {
         className="flex-1 bg-surface"
         contentContainerClassName="px-4 pt-8 pb-10"
         refreshControl={
-          <RefreshControl
+          <AppRefreshControl
             refreshing={isLoading}
             onRefresh={refetch}
-            colors={["#639922"]}
           />
         }
       >

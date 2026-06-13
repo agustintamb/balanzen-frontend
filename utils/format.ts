@@ -22,6 +22,56 @@ export const formatExpiry = (dateStr: string): string => {
   return `Vence en ${diffDays} días`;
 };
 
+const DAYS_ES = [
+  "Domingo",
+  "Lunes",
+  "Martes",
+  "Miércoles",
+  "Jueves",
+  "Viernes",
+  "Sábado",
+];
+
+const MONTHS_SHORT_ES = [
+  "Ene",
+  "Feb",
+  "Mar",
+  "Abr",
+  "May",
+  "Jun",
+  "Jul",
+  "Ago",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dic",
+];
+
+const isSameDay = (a: Date, b: Date): boolean =>
+  a.getFullYear() === b.getFullYear() &&
+  a.getMonth() === b.getMonth() &&
+  a.getDate() === b.getDate();
+
+/** Formats a timestamp as "Hoy, 14:30", "Ayer, 10:15", or "Lunes 7 Abr, 18:00". */
+export const formatRelativeDate = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const hh = date.getHours().toString().padStart(2, "0");
+  const mm = date.getMinutes().toString().padStart(2, "0");
+  const time = `${hh}:${mm}`;
+
+  if (isSameDay(date, now)) return `Hoy, ${time}`;
+
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  if (isSameDay(date, yesterday)) return `Ayer, ${time}`;
+
+  const dayName = DAYS_ES[date.getDay()];
+  const day = date.getDate();
+  const month = MONTHS_SHORT_ES[date.getMonth()];
+  return `${dayName} ${day} ${month}, ${time}`;
+};
+
 export const formatTimeAgo = (isoDate: string): string => {
   const diff = Date.now() - new Date(isoDate).getTime();
   const minutes = Math.floor(diff / 60000);

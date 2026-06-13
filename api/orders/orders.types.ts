@@ -29,10 +29,14 @@ export interface Order {
   commerce: OrderCommerce;
   status: OrderStatus;
   created_at: string;
+  updated_at?: string;
+  unread_count: number;
 }
 
 export interface OrderFilters extends PaginationParams {
   status?: OrderStatus;
+  date_from?: string;
+  date_to?: string;
 }
 
 export interface OrderListResponse {

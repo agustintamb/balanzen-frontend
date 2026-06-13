@@ -15,7 +15,7 @@ const MetricCard = ({ icon, value, label, variant }: MetricCardProps) => {
   return (
     <View
       className={cn(
-        "flex-1 rounded-2xl p-4 gap-1",
+        "flex-1 rounded-2xl p-4 gap-1 items-center",
         isGreen ? "bg-primary-light" : "bg-warning-light",
       )}
     >
@@ -24,24 +24,16 @@ const MetricCard = ({ icon, value, label, variant }: MetricCardProps) => {
         size={18}
         variant="soft"
         color={isGreen ? "primary" : "warning"}
-        containerSize={36}
       />
       <Text
         className={cn(
-          "font-sans-bold text-4xl mt-1",
+          "font-sans-bold text-lg",
           isGreen ? "text-primary-dark" : "text-warning",
         )}
       >
         {value}
       </Text>
-      <Text
-        className={cn(
-          "font-sans text-xs",
-          isGreen ? "text-primary-medium" : "text-warning",
-        )}
-      >
-        {label}
-      </Text>
+      <Text className="font-sans text-xs text-gray-500">{label}</Text>
     </View>
   );
 };
