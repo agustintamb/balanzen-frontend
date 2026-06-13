@@ -47,7 +47,7 @@ jest.mock("@/utils/cloudinary", () => ({
 
 jest.mock("@/utils/validation", () => ({
   DIGITS_REGEX: /^\d+$/,
-  EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  EMAIL_REGEX: /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/,
   NAME_REGEX: /^[a-zA-Z\s]+$/,
 }));
 
