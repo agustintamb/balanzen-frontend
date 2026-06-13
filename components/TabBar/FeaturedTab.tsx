@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Feather } from "@expo/vector-icons";
+import Icon from "@/components/ui/Icon";
 import {
   CIRCLE_SHADOW,
   GRADIENT_COLORS,
@@ -29,8 +29,7 @@ const FeaturedTab = ({ config, isFocused, onPress, testID }: TabItemProps) => (
         end={GRADIENT_END}
         style={GRADIENT_STYLE}
       >
-        {/* Feather directo: Icon no expone color blanco (inverso) */}
-        <Feather name={config.icon} size={30} color="#FFFFFF" />
+        <Icon name={config.icon} size={30} color="white" />
       </LinearGradient>
     </View>
     <Text className={labelClass(isFocused)}>{config.label}</Text>

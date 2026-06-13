@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  RefreshControl,
   Text,
   TouchableOpacity,
   View,
@@ -11,6 +10,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import type { Notification } from "@/api/notifications/notifications.types";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import NotificationItem from "./NotificationItem";
 import NotificationsEmptyState from "./NotificationsEmptyState";
@@ -60,12 +60,7 @@ const NotificationsScreen = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
         refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-            tintColor="#639922"
-            colors={["#639922"]}
-          />
+          <AppRefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       />
     );

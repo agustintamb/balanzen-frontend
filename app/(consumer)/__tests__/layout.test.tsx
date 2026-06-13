@@ -2,16 +2,15 @@ import React from "react";
 import { render } from "@testing-library/react-native";
 import ConsumerLayout from "../_layout";
 
-jest.mock("expo-router", () => {
-  function MockTabs({ tabBar }: any) {
-    if (tabBar) tabBar({});
-    return null;
-  }
-  MockTabs.Screen = function MockTabsScreen() {
-    return null;
-  };
-  return { Tabs: MockTabs };
-});
+function MockTabs({ tabBar }: any) {
+  if (tabBar) tabBar({});
+  return null;
+}
+(MockTabs as any).Screen = function MockTabsScreen() {
+  return null;
+};
+
+jest.mock("expo-router", () => ({ Tabs: MockTabs }));
 jest.mock("@/components/TabBar", () => () => null);
 
 describe("ConsumerLayout", () => {

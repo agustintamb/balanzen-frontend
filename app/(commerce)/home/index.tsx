@@ -8,7 +8,7 @@ import {
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import type { Order } from "@/api/orders/orders.types";
+import type { Publication } from "@/api/publications/publications.types";
 import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import FilterChipBar from "@/components/ui/FilterChipBar";
 import FilterSheet, {
@@ -19,49 +19,49 @@ import FilterSheet, {
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
-import OrderCard from "@/components/ui/OrderCard";
+import ProductCard from "@/components/ui/ProductCard";
+import HomeErrorBody from "./components/HomeErrorBody";
+import HomeHeader from "./components/HomeHeader";
+import HomeListEmpty from "./components/HomeListEmpty";
+import MetricCard from "./components/MetricCard";
 import {
   DATE_FILTERS,
   FILTERS,
   SORT_FILTERS,
-  useConsumerOrdersScreen,
-} from "./useConsumerOrdersScreen";
+  useCommerceHomeScreen,
+} from "./useCommerceHomeScreen";
 
 const ItemSeparator = () => <View className="h-3" />;
 
-const renderItem = ({ item }: ListRenderItemInfo<Order>) => (
-  <OrderCard order={item} hasUnreadMessages={item.unread_count > 0} />
+const renderItem = ({ item }: ListRenderItemInfo<Publication>) => (
+  <ProductCard
+    publication={item}
+    hasUnreadMessages={(item.unread_count ?? 0) > 0}
+    showDate={false}
+    showExpiryWarning
+  />
 );
-
-const getEmptyText = (
-  activeFilter: string,
-  dateFilter: string,
-  search: string,
-): string => {
-  if (search) return "No hay pedidos que coincidan con tu búsqueda.";
-  if (dateFilter !== "all") return "No tenés pedidos en ese período.";
-  if (activeFilter === "RESERVED") return "No tenés pedidos activos.";
-  if (activeFilter === "DELIVERED") return "No tenés pedidos entregados.";
-  if (activeFilter === "CANCELLED") return "No tenés pedidos cancelados.";
-  return "Todavía no tenés pedidos.";
-};
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
-const ConsumerOrders = () => {
+const CommerceHome = () => {
   const {
-    orders,
+    businessName,
+    unreadCount,
+    activeReservations,
+    expiringSoonCount,
+    publications,
+    search,
     isLoading,
     isError,
     isRefetching,
     activeFilter,
-    dateFilter,
     hasActiveFilters,
     isFilterSheetVisible,
     pendingDateFilter,
     pendingSort,
-    search,
-    onSearchChange,
+    handleRefetch,
+    handleBell,
     handleFilterChange,
     handleOpenFilterSheet,
     handleCloseFilterSheet,
@@ -69,25 +69,23 @@ const ConsumerOrders = () => {
     handleResetFilters,
     handlePendingDateChange,
     handlePendingSortChange,
-    handleRefetch,
-  } = useConsumerOrdersScreen();
+    onSearchChange,
+  } = useCommerceHomeScreen();
 
-  if (isError && orders.length === 0) {
+  if (isError && publications.length === 0) {
     return (
       <>
         <StatusBar style="dark" />
         <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
           <View className="px-5 pt-5 pb-4">
-            <Text className="font-sans-bold text-2xl text-primary-dark">
-              Mis pedidos
-            </Text>
+            <HomeHeader
+              businessName={businessName}
+              unreadCount={unreadCount}
+              onBellPress={handleBell}
+            />
           </View>
         </SafeAreaView>
-        <View className="flex-1 bg-surface items-center justify-center">
-          <Text className="font-sans text-base text-gray-400">
-            No se pudieron cargar los pedidos.
-          </Text>
-        </View>
+        <HomeErrorBody onRetry={handleRefetch} />
       </>
     );
   }
@@ -98,19 +96,33 @@ const ConsumerOrders = () => {
 
       <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
         <View className="px-5 pt-5 pb-4">
-          <Text className="font-sans-bold text-2xl text-primary-dark">
-            Mis pedidos
-          </Text>
-          {!isLoading && (
-            <Text className="font-sans text-xs text-gray-400 mt-0.5">
-              {orders.length}{" "}
-              {orders.length === 1 ? "pedido en total" : "pedidos en total"}
-            </Text>
-          )}
+          <HomeHeader
+            businessName={businessName}
+            unreadCount={unreadCount}
+            onBellPress={handleBell}
+          />
+          <View className="flex-row gap-3 mt-5">
+            <MetricCard
+              icon="shopping-bag"
+              value={activeReservations}
+              label="Reservas activas"
+              variant="green"
+            />
+            <MetricCard
+              icon="clock"
+              value={expiringSoonCount}
+              label="Vencen pronto"
+              variant="orange"
+            />
+          </View>
         </View>
       </SafeAreaView>
 
       <View className="flex-1 bg-surface">
+        <Text className="font-sans-bold text-lg text-primary-dark px-5 pt-5 pb-1">
+          Mis publicaciones
+        </Text>
+
         <FilterChipBar
           filters={FILTERS}
           activeFilter={activeFilter}
@@ -122,7 +134,7 @@ const ConsumerOrders = () => {
             <Input
               value={search}
               onChangeText={onSearchChange}
-              placeholder="Buscar pedidos..."
+              placeholder="Buscar publicaciones..."
               leftIcon={<Icon name="search" size={18} color="muted" />}
               autoCapitalize="none"
               clearable
@@ -137,18 +149,19 @@ const ConsumerOrders = () => {
           />
         </View>
 
+        {!isLoading && (
+          <Text className="font-sans text-xs text-gray-400 px-5 pt-1 pb-3">
+            {publications.length}{" "}
+            {publications.length === 1 ? "publicación" : "publicaciones"}
+          </Text>
+        )}
+
         <FlatList
-          data={orders}
+          data={publications}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           ListEmptyComponent={
-            isLoading ? null : (
-              <View className="items-center justify-center pt-20 px-6">
-                <Text className="font-sans text-base text-gray-400 text-center">
-                  {getEmptyText(activeFilter, dateFilter, search)}
-                </Text>
-              </View>
-            )
+            isLoading ? null : <HomeListEmpty filter={activeFilter} />
           }
           ListFooterComponent={
             isLoading ? (
@@ -167,6 +180,7 @@ const ConsumerOrders = () => {
               onRefresh={handleRefetch}
             />
           }
+          testID="publications-list"
         />
       </View>
 
@@ -196,4 +210,4 @@ const ConsumerOrders = () => {
   );
 };
 
-export default ConsumerOrders;
+export default CommerceHome;

@@ -6,7 +6,7 @@ import {
   View,
   type TextInputProps,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import Icon from "@/components/ui/Icon";
 import { cn } from "@/utils/cn";
 
 type InputType = "text" | "email" | "password" | "number" | "phone";
@@ -26,6 +26,7 @@ export interface InputProps {
   returnKeyType?: TextInputProps["returnKeyType"];
   onSubmitEditing?: () => void;
   autoCapitalize?: TextInputProps["autoCapitalize"];
+  clearable?: boolean;
   className?: string;
   testID?: string;
 }
@@ -59,6 +60,7 @@ const Input = React.forwardRef<TextInput, InputProps>(
       returnKeyType,
       onSubmitEditing,
       autoCapitalize,
+      clearable = false,
       className,
       testID,
     },
@@ -124,11 +126,19 @@ const Input = React.forwardRef<TextInput, InputProps>(
               onPress={() => setIsPasswordVisible((v) => !v)}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <Feather
+              <Icon
                 name={isPasswordVisible ? "eye" : "eye-off"}
                 size={20}
-                color="#9CA3AF"
+                color="muted"
               />
+            </TouchableOpacity>
+          )}
+          {clearable && !!value && (
+            <TouchableOpacity
+              onPress={() => onChangeText("")}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Icon name="x" size={18} color="muted" />
             </TouchableOpacity>
           )}
         </View>

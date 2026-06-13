@@ -1,6 +1,6 @@
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import type { Favorite } from "@/api/favorites/favorites.types";
 import Icon from "@/components/ui/Icon";
 import { buildCardImageUrl } from "@/utils/cloudinary";
@@ -102,7 +102,7 @@ const FavoriteCard = React.memo(({ item, onRemove }: FavoriteCardProps) => {
             className="flex-row items-center flex-1 min-w-0"
             style={{ gap: 3 }}
           >
-            <Feather name="map-pin" size={11} color="#639922" />
+            <Icon name="map-pin" size={11} color="primary" />
             <Text
               className="font-sans text-xs text-gray-400 flex-1"
               numberOfLines={1}
@@ -115,7 +115,7 @@ const FavoriteCard = React.memo(({ item, onRemove }: FavoriteCardProps) => {
               className="flex-row items-center"
               style={{ gap: 3, flexShrink: 0 }}
             >
-              <Feather name="clock" size={11} color="#9CA3AF" />
+              <Icon name="clock" size={11} color="muted" />
               <Text className="font-sans text-xs text-gray-400">
                 {formatExpiry(publication.expiry_date)}
               </Text>

@@ -12,7 +12,9 @@ export type IconColor =
   | "error"
   | "warning"
   | "neutral"
-  | "muted";
+  | "muted"
+  | "dark"
+  | "white";
 
 export interface IconProps {
   name: IconName;
@@ -36,6 +38,8 @@ const BG_CLASSES: Record<
     warning: "bg-warning-light",
     neutral: "bg-gray-100",
     muted: "bg-gray-100",
+    dark: "bg-gray-100",
+    white: "bg-white",
   },
   filled: {
     primary: "bg-primary",
@@ -44,6 +48,8 @@ const BG_CLASSES: Record<
     warning: "bg-warning",
     neutral: "bg-gray-500",
     muted: "bg-gray-300",
+    dark: "bg-gray-900",
+    white: "bg-white",
   },
   outline: {
     primary: "border border-primary bg-transparent",
@@ -52,6 +58,8 @@ const BG_CLASSES: Record<
     warning: "border border-warning bg-transparent",
     neutral: "border border-gray-300 bg-transparent",
     muted: "border border-gray-200 bg-transparent",
+    dark: "border border-gray-900 bg-transparent",
+    white: "border border-white bg-transparent",
   },
 };
 
@@ -64,6 +72,8 @@ const ICON_COLORS: Record<IconVariant, Record<IconColor, string>> = {
     warning: "#BA7517",
     neutral: "#6B7280",
     muted: "#9CA3AF",
+    dark: "#111827",
+    white: "#FFFFFF",
   },
   soft: {
     primary: "#639922",
@@ -72,6 +82,8 @@ const ICON_COLORS: Record<IconVariant, Record<IconColor, string>> = {
     warning: "#BA7517",
     neutral: "#6B7280",
     muted: "#9CA3AF",
+    dark: "#111827",
+    white: "#FFFFFF",
   },
   filled: {
     primary: "#FFFFFF",
@@ -80,6 +92,8 @@ const ICON_COLORS: Record<IconVariant, Record<IconColor, string>> = {
     warning: "#FFFFFF",
     neutral: "#FFFFFF",
     muted: "#FFFFFF",
+    dark: "#FFFFFF",
+    white: "#111827",
   },
   outline: {
     primary: "#639922",
@@ -88,6 +102,8 @@ const ICON_COLORS: Record<IconVariant, Record<IconColor, string>> = {
     warning: "#BA7517",
     neutral: "#6B7280",
     muted: "#9CA3AF",
+    dark: "#111827",
+    white: "#FFFFFF",
   },
 };
 

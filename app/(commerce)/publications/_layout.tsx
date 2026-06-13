@@ -1,12 +1,7 @@
 import { Stack } from "expo-router";
 
 const PublicationsLayout = () => (
-  <Stack
-    screenOptions={{
-      headerShown: false,
-      contentStyle: { backgroundColor: "#F1EFE8" },
-    }}
-  />
+  <Stack screenOptions={{ headerShown: false }} />
 );
 
 export default PublicationsLayout;

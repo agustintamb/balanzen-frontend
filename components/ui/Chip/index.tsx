@@ -3,7 +3,7 @@ import { tv } from "tailwind-variants";
 
 export interface ChipProps {
   label: string;
-  variant?: "primary" | "warning" | "error" | "neutral";
+  variant?: "primary" | "warning" | "error" | "neutral" | "info";
   size?: "sm" | "md" | "lg";
   showDot?: boolean;
   className?: string;
@@ -37,6 +37,11 @@ const chip = tv({
         container: "bg-gray-100",
         dot: "bg-gray-400",
         label: "text-gray-600",
+      },
+      info: {
+        container: "bg-blue-50",
+        dot: "bg-blue-500",
+        label: "text-blue-600",
       },
     },
     size: {
