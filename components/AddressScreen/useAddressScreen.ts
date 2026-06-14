@@ -1,19 +1,20 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BackHandler } from "react-native";
 import { router } from "expo-router";
-import * as Location from "expo-location";
 import type { AddressInput } from "@/api/addresses/addresses.types";
 import {
   useAddresses,
   useAddressSearch,
   useCreateAddress,
-  useDeleteAddress,
   useSelectAddress,
 } from "@/hooks/useAddresses";
 import { useAuthStore } from "@/stores/auth.store";
 import { useToast } from "@/stores/ui.store";
 import { buildAddressFromCoords } from "@/utils/address";
 import type { Region } from "./AddressMap";
+import { useAddressDeletion } from "./hooks/useAddressDeletion";
+import { useAddressSelection } from "./hooks/useAddressSelection";
+import { useLocationRequest } from "./hooks/useLocationRequest";
 
 // list  → "Mis Direcciones" (listado)
 // add   → "Ingresá tu dirección" (buscador + GPS)
@@ -27,16 +28,6 @@ const DEFAULT_REGION: Region = {
   longitudeDelta: 0.01,
 };
 
-const LOCATION_TIMEOUT_MS = 7000;
-
-const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
-  let id: ReturnType<typeof setTimeout>;
-  const timeout = new Promise<T>((_, reject) => {
-    id = setTimeout(() => reject(new Error("Tiempo de espera agotado")), ms);
-  });
-  return Promise.race([promise, timeout]).finally(() => clearTimeout(id));
-};
-
 export const useAddressScreen = () => {
   const [mode, setMode] = useState<AddressMode>("list");
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,26 +38,33 @@ export const useAddressScreen = () => {
   const [region, setRegion] = useState<Region>(DEFAULT_REGION);
   const [isReverseGeocoding, setIsReverseGeocoding] = useState(false);
 
-  // GPS — se solicita solo al presionar el botón, no al entrar a la pantalla
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [permissionDenied, setPermissionDenied] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
-
-  // Selección local (se persiste al presionar Continuar)
-  const [localSelectedId, setLocalSelectedId] = useState<string | null>(null);
-
-  // Eliminación: id del address a eliminar (null = sheet cerrado)
-  const [deletingAddressId, setDeletingAddressId] = useState<string | null>(
-    null,
-  );
-
   const { setHasAddress, setHasSelectedAddress, user } = useAuthStore();
   const { showSuccess } = useToast();
   const { data: addresses = [], isLoading: isLoadingAddresses } =
     useAddresses();
   const { mutate: createAddress, isPending: isSaving } = useCreateAddress();
   const { mutate: selectAddress, isPending: isSelecting } = useSelectAddress();
-  const { mutate: deleteAddress, isPending: isDeleting } = useDeleteAddress();
+
+  const {
+    isGettingLocation,
+    permissionDenied,
+    locationError,
+    handleUseCurrentLocation,
+  } = useLocationRequest();
+  const {
+    localSelectedId,
+    setLocalSelectedId,
+    sortedAddresses,
+    handlePressAddress,
+    canContinue,
+  } = useAddressSelection(addresses);
+  const {
+    deletingAddressId,
+    isDeleting,
+    handleLongPressAddress,
+    handleDeleteCancel,
+    handleDeleteConfirm,
+  } = useAddressDeletion();
 
   // ─── Inicialización ────────────────────────────────────────────────────────
 
@@ -78,7 +76,6 @@ export const useAddressScreen = () => {
   }, [isLoadingAddresses]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Pre-seleccionar la dirección activa del backend al cargar.
-  // Si no hay ninguna activa pero solo existe una, seleccionarla automáticamente.
   useEffect(() => {
     if (localSelectedId === null) {
       const active = addresses.find((a) => a.is_selected);
@@ -88,7 +85,7 @@ export const useAddressScreen = () => {
         setLocalSelectedId(addresses[0].id);
       }
     }
-  }, [addresses, localSelectedId]);
+  }, [addresses, localSelectedId, setLocalSelectedId]);
 
   // ─── Back handler ──────────────────────────────────────────────────────────
 
@@ -104,9 +101,8 @@ export const useAddressScreen = () => {
           setMode("list");
           return true;
         }
-        return true; // onboarding sin direcciones: bloquear salida
+        return true;
       }
-      // list: bloquear si no hay ninguna guardada
       if (addresses.length === 0) return true;
       return false;
     });
@@ -125,55 +121,15 @@ export const useAddressScreen = () => {
 
   // ─── Handlers — buscador / GPS ─────────────────────────────────────────────
 
-  // La ubicación se solicita solo al presionar el botón — sin pre-fetch al montar.
-  const handleUseCurrentLocation = async () => {
-    if (isGettingLocation) return;
-    setIsGettingLocation(true);
-    setLocationError(null);
-    try {
-      const { status, canAskAgain } =
-        await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        setPermissionDenied(true);
-        if (!canAskAgain) {
-          setLocationError(
-            "El permiso de ubicación fue denegado. Habilitalo en Configuración → Privacidad → Ubicación.",
-          );
-        }
-        return;
-      }
-      setPermissionDenied(false);
-
-      let location = await Location.getLastKnownPositionAsync({
-        maxAge: 300_000,
-        requiredAccuracy: 1000,
-      });
-      if (!location) {
-        location = await withTimeout(
-          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
-          LOCATION_TIMEOUT_MS,
-        );
-      }
-      const { latitude, longitude } = location.coords;
-      const address = await buildAddressFromCoords(latitude, longitude);
+  const handleUseCurrentLocationWrapper = useCallback(async () => {
+    await handleUseCurrentLocation((address, newRegion) => {
       setPendingAddress(address);
-      setRegion({
-        latitude,
-        longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
-      });
+      setRegion(newRegion);
       setMode("map");
-    } catch {
-      setLocationError(
-        "No pudimos obtener tu ubicación. Intentá buscar manualmente.",
-      );
-    } finally {
-      setIsGettingLocation(false);
-    }
-  };
+    });
+  }, [handleUseCurrentLocation]);
 
-  const handleSelectSearchResult = (result: AddressInput) => {
+  const handleSelectSearchResult = useCallback((result: AddressInput) => {
     setPendingAddress(result);
     setRegion({
       latitude: result.lat,
@@ -183,11 +139,11 @@ export const useAddressScreen = () => {
     });
     setSearchQuery("");
     setMode("map");
-  };
+  }, []);
 
   // ─── Handlers — mapa ──────────────────────────────────────────────────────
 
-  const handleRegionChangeComplete = async (newRegion: Region) => {
+  const handleRegionChangeComplete = useCallback(async (newRegion: Region) => {
     setRegion(newRegion);
     setIsReverseGeocoding(true);
     try {
@@ -199,9 +155,9 @@ export const useAddressScreen = () => {
     } finally {
       setIsReverseGeocoding(false);
     }
-  };
+  }, []);
 
-  const handleConfirmAddress = () => {
+  const handleConfirmAddress = useCallback(() => {
     if (!pendingAddress) return;
     createAddress(pendingAddress, {
       onSuccess: (newAddress) => {
@@ -210,38 +166,7 @@ export const useAddressScreen = () => {
         setMode("list");
       },
     });
-  };
-
-  // ─── Handlers — lista ─────────────────────────────────────────────────────
-
-  // Presionar → selecciona la dirección
-  const handlePressAddress = (id: string) => {
-    setLocalSelectedId(id);
-  };
-
-  // Long press → abre confirmación de eliminación (solo si no está seleccionada)
-  const handleLongPressAddress = (id: string) => {
-    if (id === localSelectedId) return;
-    setDeletingAddressId(id);
-  };
-
-  const handleDeleteCancel = () => setDeletingAddressId(null);
-
-  const handleDeleteConfirm = () => {
-    if (!deletingAddressId) return;
-    deleteAddress(deletingAddressId, {
-      onSuccess: () => setDeletingAddressId(null),
-    });
-  };
-
-  // ─── Helpers ──────────────────────────────────────────────────────────────
-
-  const savedSelectedId = addresses.find((a) => a.is_selected)?.id ?? null;
-
-  const sortedAddresses = [...addresses].sort((a, b) => {
-    if (a.is_selected === b.is_selected) return 0;
-    return a.is_selected ? -1 : 1;
-  });
+  }, [pendingAddress, createAddress, setLocalSelectedId]);
 
   // ─── Handlers — volver ────────────────────────────────────────────────────
 
@@ -257,7 +182,7 @@ export const useAddressScreen = () => {
 
   // ─── Handlers — continuar ─────────────────────────────────────────────────
 
-  const handleContinue = () => {
+  const handleContinue = useCallback(() => {
     if (!localSelectedId) return;
     selectAddress(localSelectedId, {
       onSuccess: () => {
@@ -273,7 +198,19 @@ export const useAddressScreen = () => {
         }
       },
     });
-  };
+  }, [
+    localSelectedId,
+    selectAddress,
+    setHasAddress,
+    setHasSelectedAddress,
+    showSuccess,
+    user?.role,
+  ]);
+
+  const handleLongPressAddressWrapper = useCallback(
+    (id: string) => handleLongPressAddress(id, localSelectedId),
+    [handleLongPressAddress, localSelectedId],
+  );
 
   return {
     mode,
@@ -292,15 +229,12 @@ export const useAddressScreen = () => {
     addresses: sortedAddresses,
     isLoadingAddresses,
     localSelectedId,
-    canContinue:
-      sortedAddresses.length > 0 &&
-      !!localSelectedId &&
-      localSelectedId !== savedSelectedId,
+    canContinue,
     // Eliminación
     deletingAddressId,
     isDeleting,
     handlePressAddress,
-    handleLongPressAddress,
+    handleLongPressAddress: handleLongPressAddressWrapper,
     handleDeleteCancel,
     handleDeleteConfirm,
     // Mapa
@@ -309,7 +243,7 @@ export const useAddressScreen = () => {
     isReverseGeocoding,
     isSaving,
     // Handlers
-    handleUseCurrentLocation,
+    handleUseCurrentLocation: handleUseCurrentLocationWrapper,
     handleSelectSearchResult,
     handleRegionChangeComplete,
     handleConfirmAddress,

@@ -2,6 +2,7 @@ import {
   formatCurrency,
   formatExpiry,
   formatPrice,
+  formatRelativeDate,
   formatTimeAgo,
 } from "@/utils/format";
 
@@ -122,5 +123,47 @@ describe("formatTimeAgo", () => {
     expect(result.length).toBeGreaterThan(0);
     expect(result).not.toContain("Hace");
     expect(result).not.toBe("Ayer");
+  });
+});
+
+describe("formatRelativeDate", () => {
+  const FIXED_NOW = new Date("2026-06-13T14:30:00.000Z");
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(FIXED_NOW);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("returns 'Hoy, HH:MM' for a timestamp on the same day", () => {
+    // Same local day as FIXED_NOW
+    const sameDay = new Date("2026-06-13T08:00:00.000Z").toISOString();
+    const result = formatRelativeDate(sameDay);
+    expect(result).toMatch(/^Hoy, \d{2}:\d{2}$/);
+  });
+
+  it("returns 'Ayer, HH:MM' for a timestamp on the previous day", () => {
+    const yesterday = new Date("2026-06-12T10:00:00.000Z").toISOString();
+    const result = formatRelativeDate(yesterday);
+    expect(result).toMatch(/^Ayer, \d{2}:\d{2}$/);
+  });
+
+  it("returns day name and date for older timestamps", () => {
+    const old = new Date("2026-06-01T10:00:00.000Z").toISOString();
+    const result = formatRelativeDate(old);
+    // Should not start with Hoy or Ayer
+    expect(result).not.toMatch(/^Hoy/);
+    expect(result).not.toMatch(/^Ayer/);
+    // Should contain a comma separating date and time
+    expect(result).toContain(",");
+  });
+
+  it("formats time as HH:MM with zero-padded hours and minutes", () => {
+    const date = new Date("2026-06-13T03:05:00.000Z").toISOString();
+    const result = formatRelativeDate(date);
+    expect(result).toMatch(/\d{2}:\d{2}$/);
   });
 });

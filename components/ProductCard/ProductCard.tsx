@@ -4,9 +4,9 @@ import Chip from "@/components/ui/Chip";
 import Icon from "@/components/ui/Icon";
 import { buildCardImageUrl } from "@/utils/cloudinary";
 import {
-  formatCreatedAt,
   formatPrice,
   getExpiryWarning,
+  getPublicationDateLabel,
   STATUS_CHIP_VARIANT,
   STATUS_LABEL,
 } from "./utils";
@@ -53,6 +53,7 @@ const ProductCard = ({
     status,
     commerce,
     created_at,
+    updated_at,
     expiry_date,
   } = publication;
 
@@ -136,7 +137,7 @@ const ProductCard = ({
             )}
             {showDate ? (
               <Text className="font-sans text-xs text-gray-400">
-                {formatCreatedAt(created_at)}
+                {getPublicationDateLabel(status, created_at, updated_at)}
               </Text>
             ) : expiryWarning ? (
               <Text

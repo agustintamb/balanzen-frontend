@@ -45,3 +45,20 @@ export const getExpiryWarning = (
 };
 
 export const formatCreatedAt = formatRelativeDate;
+
+export const getPublicationDateLabel = (
+  status: PublicationStatus,
+  created_at: string,
+  updated_at: string | undefined,
+): string => {
+  const resolvedDate = updated_at ?? created_at;
+  if (status === "RESERVED")
+    return `Reservada ${formatRelativeDate(resolvedDate)}`;
+  if (status === "DELIVERED")
+    return `Entregada ${formatRelativeDate(resolvedDate)}`;
+  if (status === "CANCELLED")
+    return `Cancelada ${formatRelativeDate(resolvedDate)}`;
+  if (status === "EXPIRED")
+    return `Expirada ${formatRelativeDate(resolvedDate)}`;
+  return `Creada ${formatRelativeDate(created_at)}`;
+};
