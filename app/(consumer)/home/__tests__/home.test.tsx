@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react-native";
 import { useCategories } from "@/hooks/useCategories";
 import { useNotifications } from "@/hooks/useNotifications";
-import { usePublications } from "@/hooks/usePublications";
+import { usePublicationsInfinite } from "@/hooks/usePublications";
 // ─── Imports after mocks ──────────────────────────────────────────────────────
 
 import { useCurrentUser } from "@/hooks/useUsers";
@@ -22,7 +22,9 @@ jest.mock("react-native-keyboard-controller", () => ({
 jest.mock("@/hooks/useUsers", () => ({ useCurrentUser: jest.fn() }));
 jest.mock("@/hooks/useNotifications", () => ({ useNotifications: jest.fn() }));
 jest.mock("@/hooks/useCategories", () => ({ useCategories: jest.fn() }));
-jest.mock("@/hooks/usePublications", () => ({ usePublications: jest.fn() }));
+jest.mock("@/hooks/usePublications", () => ({
+  usePublicationsInfinite: jest.fn(),
+}));
 
 jest.mock("@react-navigation/native", () => ({
   useFocusEffect: jest.fn(),
@@ -117,7 +119,14 @@ const mockHooks = ({
     data: {
       first_name: firstName,
       selected_address: hasLatLng
-        ? { lat: -34.6, lng: -58.4, formatted_address: "Corrientes 1234" }
+        ? {
+            lat: -34.6,
+            lng: -58.4,
+            formatted_address: "Corrientes 1234",
+            street: "Corrientes",
+            number: "1234",
+            city: "CABA",
+          }
         : null,
     },
   });
@@ -125,20 +134,27 @@ const mockHooks = ({
     data: { unread_count: unreadCount, notifications: [] },
   });
   (useCategories as jest.Mock).mockReturnValue({ data: categories });
-  (usePublications as jest.Mock).mockReturnValue({
+  (usePublicationsInfinite as jest.Mock).mockReturnValue({
     data: {
-      publications,
-      pagination: {
-        page: 1,
-        limit: 20,
-        total: publications.length,
-        total_pages: 1,
-      },
+      pages: [
+        {
+          publications,
+          pagination: {
+            page: 1,
+            limit: 10,
+            total: publications.length,
+            total_pages: 1,
+          },
+        },
+      ],
     },
     isLoading,
     isError,
     refetch: jest.fn(),
     isRefetching: false,
+    fetchNextPage: jest.fn(),
+    hasNextPage: false,
+    isFetchingNextPage: false,
   });
 };
 

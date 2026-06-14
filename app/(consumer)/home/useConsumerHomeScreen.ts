@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { useCategories } from "@/hooks/useCategories";
 import { useNotifications } from "@/hooks/useNotifications";
-import { usePublications } from "@/hooks/usePublications";
+import { usePublicationsInfinite } from "@/hooks/usePublications";
 import { useCurrentUser } from "@/hooks/useUsers";
 import type {
   CategoryFilterKey,
@@ -123,7 +123,21 @@ export const useConsumerHomeScreen = () => {
     isError,
     refetch,
     isRefetching,
-  } = usePublications(filters);
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = usePublicationsInfinite(filters);
+
+  // El backend ya excluye donaciones del filtro "Descuento" (donation=false),
+  // así que solo aplanamos las páginas.
+  const publications =
+    publicationsData?.pages.flatMap((page) => page.publications) ?? [];
+  // Total real de la query (de la metadata de paginación), no el cargado.
+  const totalCount = publicationsData?.pages[0]?.pagination.total ?? 0;
+
+  const handleEndReached = () => {
+    if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+  };
 
   const hasActiveFilters =
     activePubType !== "all" ||
@@ -132,15 +146,20 @@ export const useConsumerHomeScreen = () => {
 
   return {
     firstName: user?.first_name ?? "",
-    selectedAddress: user?.selected_address?.formatted_address ?? null,
+    // Dirección acortada (calle número, ciudad), igual que en el perfil.
+    selectedAddress: user?.selected_address
+      ? `${user.selected_address.street} ${user.selected_address.number}, ${user.selected_address.city}`
+      : null,
     unreadCount: notifications?.unread_count ?? 0,
     categoryFilters,
-    publications: publicationsData?.publications ?? [],
+    publications,
+    totalCount,
     selectedCategory,
     search,
     isLoading,
     isError,
     isRefetching,
+    isFetchingNextPage,
     hasLatLng,
     hasActiveFilters,
     isFilterSheetVisible,
@@ -151,6 +170,7 @@ export const useConsumerHomeScreen = () => {
     handleCategoryChange,
     handleBell,
     handleRefetch: refetch,
+    handleEndReached,
     handleOpenFilterSheet,
     handleCloseFilterSheet,
     handleApplyFilters,

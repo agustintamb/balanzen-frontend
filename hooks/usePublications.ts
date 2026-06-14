@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { publicationsService } from "@/api/publications/publications.service";
 import {
   CreatePublicationBody,
@@ -13,6 +18,23 @@ export const usePublications = (params?: PublicationFilters) =>
   useQuery<PublicationListResponse, Error>({
     queryKey: ["publications", params],
     queryFn: () => publicationsService.list(params),
+    staleTime: 1000 * 60 * 2,
+  });
+
+/**
+ * Listado paginado con scroll infinito. Acumula páginas (limit del backend)
+ * a medida que el usuario llega al final de la lista.
+ */
+export const usePublicationsInfinite = (params?: PublicationFilters) =>
+  useInfiniteQuery<PublicationListResponse, Error>({
+    queryKey: ["publications", "infinite", params],
+    queryFn: ({ pageParam }) =>
+      publicationsService.list({ ...params, page: pageParam as number }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      const { page, total_pages } = lastPage.pagination;
+      return page < total_pages ? page + 1 : undefined;
+    },
     staleTime: 1000 * 60 * 2,
   });
 

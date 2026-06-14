@@ -1,5 +1,6 @@
 import type { Category } from "@/api/categories/categories.types";
 import type { FilterOption } from "@/components/FilterChipBar";
+import { PAGE_SIZE } from "./constants";
 import type {
   CategoryFilterKey,
   MaxRadiusFilter,
@@ -10,6 +11,7 @@ import type {
 const SORT_ORDER_MAP: Record<SortByFilter, "asc" | "desc"> = {
   created_at: "desc",
   discount_pct: "desc",
+  // Ascendente: las que vencen antes (fecha más próxima) aparecen primero.
   expiry_date: "asc",
   distance: "asc",
 };
@@ -61,10 +63,16 @@ export const buildPublicationFilters = ({
     activeSortBy === "distance" && !hasLatLng ? "created_at" : activeSortBy;
 
   return {
+    limit: PAGE_SIZE,
     ...(activeSearch ? { search: activeSearch } : {}),
     ...(selectedCategory === "all" ? {} : { category_id: selectedCategory }),
     ...(activePubType === "donation" ? { donation: true } : {}),
-    ...(activePubType === "discount" ? { min_discount: 1 } : {}),
+    // donation: false → el backend excluye donaciones (tienen 100% de descuento
+    // por detrás), así que el filtro "Descuento" no las mezcla ni en resultados
+    // ni en pagination.total.
+    ...(activePubType === "discount"
+      ? { min_discount: 1, donation: false }
+      : {}),
     ...(activeMaxRadius !== "any" && hasLatLng
       ? { radius_km: Number.parseInt(activeMaxRadius, 10) }
       : {}),

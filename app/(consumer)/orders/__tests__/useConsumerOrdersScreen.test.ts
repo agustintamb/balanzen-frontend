@@ -6,6 +6,10 @@ import { useOrders } from "@/hooks/useOrders";
 
 jest.useFakeTimers();
 
+jest.mock("@react-navigation/native", () => ({
+  useFocusEffect: jest.fn(),
+}));
+
 jest.mock("@/hooks/useOrders", () => ({
   useOrders: jest.fn(),
 }));

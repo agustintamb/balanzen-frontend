@@ -3,10 +3,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import FeaturedTab from "./FeaturedTab";
 import RegularTab from "./RegularTab";
-import { FEATURED_ROUTES, ROUTE_CONFIG } from "./tabBar.utils";
+import {
+  FEATURED_ROUTES,
+  HIDDEN_TAB_BAR_ROUTES,
+  ROUTE_CONFIG,
+} from "./tabBar.utils";
 
 const TabBar = ({ state, navigation }: BottomTabBarProps) => {
   const { bottom } = useSafeAreaInsets();
+
+  const focusedRouteName = state.routes[state.index]?.name;
+  if (focusedRouteName && HIDDEN_TAB_BAR_ROUTES.has(focusedRouteName)) {
+    return null;
+  }
 
   return (
     <View

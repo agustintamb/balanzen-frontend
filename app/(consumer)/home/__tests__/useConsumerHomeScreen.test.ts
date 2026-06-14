@@ -4,7 +4,7 @@ import useConsumerHomeDefaultExport, {
 } from "@/app/(consumer)/home/useConsumerHomeScreen";
 import { useCategories } from "@/hooks/useCategories";
 import { useNotifications } from "@/hooks/useNotifications";
-import { usePublications } from "@/hooks/usePublications";
+import { usePublicationsInfinite } from "@/hooks/usePublications";
 import { useCurrentUser } from "@/hooks/useUsers";
 import * as navigation from "@/utils/navigation";
 
@@ -27,7 +27,7 @@ jest.mock("@/hooks/useCategories", () => ({
 }));
 
 jest.mock("@/hooks/usePublications", () => ({
-  usePublications: jest.fn(),
+  usePublicationsInfinite: jest.fn(),
 }));
 
 jest.mock("@/utils/navigation", () => ({
@@ -68,7 +68,10 @@ const setupMocks = () => {
       selected_address: {
         lat: -34.6,
         lng: -58.4,
-        formatted_address: "Av. Corrientes 1234",
+        formatted_address: "Av. Corrientes 1234, CABA, Buenos Aires",
+        street: "Av. Corrientes",
+        number: "1234",
+        city: "CABA",
       },
     },
   });
@@ -78,12 +81,22 @@ const setupMocks = () => {
   (useCategories as jest.Mock).mockReturnValue({
     data: [{ id: "cat-1", name: "Comida" }],
   });
-  (usePublications as jest.Mock).mockReturnValue({
-    data: { publications: [buildPub()], pagination: { total: 1 } },
+  (usePublicationsInfinite as jest.Mock).mockReturnValue({
+    data: {
+      pages: [
+        {
+          publications: [buildPub()],
+          pagination: { page: 1, limit: 20, total: 1, total_pages: 1 },
+        },
+      ],
+    },
     isLoading: false,
     isError: false,
     refetch: jest.fn(),
     isRefetching: false,
+    fetchNextPage: jest.fn(),
+    hasNextPage: false,
+    isFetchingNextPage: false,
   });
 };
 
@@ -105,9 +118,9 @@ describe("useConsumerHomeScreen", () => {
       expect(result.current.firstName).toBe("");
     });
 
-    it("returns selected address formatted", () => {
+    it("returns selected address shortened (street number, city)", () => {
       const { result } = renderHook(() => useConsumerHomeScreen());
-      expect(result.current.selectedAddress).toBe("Av. Corrientes 1234");
+      expect(result.current.selectedAddress).toBe("Av. Corrientes 1234, CABA");
     });
 
     it("returns null selectedAddress when user has no selected_address", () => {
@@ -153,12 +166,15 @@ describe("useConsumerHomeScreen", () => {
     });
 
     it("returns empty publications array when publications data is undefined", () => {
-      (usePublications as jest.Mock).mockReturnValue({
+      (usePublicationsInfinite as jest.Mock).mockReturnValue({
         data: undefined,
         isLoading: false,
         isError: false,
         refetch: jest.fn(),
         isRefetching: false,
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
       });
       const { result } = renderHook(() => useConsumerHomeScreen());
       expect(result.current.publications).toHaveLength(0);

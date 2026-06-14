@@ -1,6 +1,9 @@
 import type { FilterOption } from "@/components/FilterChipBar";
 import type { MaxRadiusFilter, PubTypeFilter, SortByFilter } from "./types";
 
+/** Publicaciones por página en el scroll infinito del home. */
+export const PAGE_SIZE = 10;
+
 export const PUB_TYPE_FILTERS: FilterOption<PubTypeFilter>[] = [
   { key: "all", label: "Todo" },
   { key: "discount", label: "Descuento" },
