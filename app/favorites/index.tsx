@@ -10,8 +10,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import type { Favorite } from "@/api/favorites/favorites.types";
-import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import ActionSheet from "@/components/ui/ActionSheet";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import FavoriteCard from "./FavoriteCard";
 import FavoritesEmptyState from "./FavoritesEmptyState";
@@ -57,10 +57,7 @@ const FavoritesScreen = () => {
         contentContainerStyle={{ paddingTop: 16, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <AppRefreshControl
-            refreshing={isRefetching}
-            onRefresh={refetch}
-          />
+          <AppRefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }
       />
     );

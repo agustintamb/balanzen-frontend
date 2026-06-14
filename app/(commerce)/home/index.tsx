@@ -9,18 +9,18 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import type { Publication } from "@/api/publications/publications.types";
-import AppRefreshControl from "@/components/ui/AppRefreshControl";
-import FilterChipBar from "@/components/ui/FilterChipBar";
+import FilterChipBar from "@/components/FilterChipBar";
 import FilterSheet, {
   FilterOptionChips,
   FilterOptionList,
   FilterSection,
-} from "@/components/ui/FilterSheet";
+} from "@/components/FilterSheet";
+import HomeErrorBody from "@/components/HomeErrorBody";
+import ProductCard from "@/components/ProductCard";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
-import ProductCard from "@/components/ui/ProductCard";
-import HomeErrorBody from "./components/HomeErrorBody";
 import HomeHeader from "./components/HomeHeader";
 import HomeListEmpty from "./components/HomeListEmpty";
 import MetricCard from "./components/MetricCard";
@@ -105,13 +105,13 @@ const CommerceHome = () => {
             <MetricCard
               icon="shopping-bag"
               value={activeReservations}
-              label="Reservas activas"
+              label={activeReservations === 1 ? "Reserva" : "Reservas activas"}
               variant="green"
             />
             <MetricCard
               icon="clock"
               value={expiringSoonCount}
-              label="Vencen pronto"
+              label={expiringSoonCount === 1 ? "Vence pronto" : "Vencen pronto"}
               variant="orange"
             />
           </View>

@@ -1,7 +1,7 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import Icon from "@/components/ui/Icon";
 import type { Publication } from "@/api/publications/publications.types";
 import Chip from "@/components/ui/Chip";
+import Icon from "@/components/ui/Icon";
 import { buildCardImageUrl } from "@/utils/cloudinary";
 import {
   formatCreatedAt,
@@ -58,7 +58,9 @@ const ProductCard = ({
 
   const imageUrl = photos[0] ? buildCardImageUrl(photos[0]) : null;
   const hasDiscount = !is_donation && discount_pct > 0;
-  const expiryWarning = showExpiryWarning ? getExpiryWarning(expiry_date) : null;
+  const expiryWarning = showExpiryWarning
+    ? getExpiryWarning(expiry_date)
+    : null;
 
   return (
     <TouchableOpacity

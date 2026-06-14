@@ -2,7 +2,6 @@ import {
   ActivityIndicator,
   FlatList,
   Text,
-  TouchableOpacity,
   View,
   type ListRenderItemInfo,
 } from "react-native";
@@ -10,17 +9,20 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import type { Publication } from "@/api/publications/publications.types";
-import AppRefreshControl from "@/components/ui/AppRefreshControl";
-import ConsumerPublicationCard from "@/components/ui/ConsumerPublicationCard";
-import FilterChipBar from "@/components/ui/FilterChipBar";
+import ConsumerPublicationCard from "@/components/ConsumerPublicationCard";
+import FilterChipBar from "@/components/FilterChipBar";
 import FilterSheet, {
   FilterOptionChips,
   FilterOptionList,
   FilterSection,
-} from "@/components/ui/FilterSheet";
+} from "@/components/FilterSheet";
+import HomeErrorBody from "@/components/HomeErrorBody";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
+import ConsumerHomeHeader from "./components/ConsumerHomeHeader";
+import HomeListEmpty from "./components/HomeListEmpty";
 import {
   MAX_RADIUS_FILTERS,
   PUB_TYPE_FILTERS,
@@ -33,64 +35,6 @@ const ItemSeparator = () => <View className="h-3" />;
 const renderItem = ({ item }: ListRenderItemInfo<Publication>) => (
   <ConsumerPublicationCard publication={item} />
 );
-
-// ─── Header ───────────────────────────────────────────────────────────────────
-
-interface HeaderProps {
-  firstName: string;
-  selectedAddress: string | null;
-  unreadCount: number;
-  onBellPress: () => void;
-}
-
-const Header = ({
-  firstName,
-  selectedAddress,
-  unreadCount,
-  onBellPress,
-}: HeaderProps) => (
-  <View>
-    {selectedAddress && (
-      <View className="flex-row items-center gap-1 mb-1.5">
-        <Icon name="map-pin" size={11} color="primary" />
-        <Text
-          className="font-sans text-xs text-gray-400 flex-1"
-          numberOfLines={1}
-        >
-          {selectedAddress}
-        </Text>
-      </View>
-    )}
-    <View className="flex-row items-center justify-between">
-      <Text
-        className="flex-1 mr-4 font-sans-bold text-xl text-gray-900"
-        numberOfLines={1}
-      >
-        {firstName ? `¡Hola, ${firstName}! 👋` : "BalanZen"}
-      </Text>
-      <TouchableOpacity
-        onPress={onBellPress}
-        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        testID="btn-notifications"
-      >
-        <View
-          className="bg-gray-100 items-center justify-center"
-          style={{ width: 44, height: 44, borderRadius: 22 }}
-        >
-          <Icon name="bell" size={20} color="dark" />
-          {unreadCount > 0 && (
-            <View
-              className="absolute bg-error rounded-full border-2 border-white"
-              style={{ width: 10, height: 10, top: 10, right: 10 }}
-            />
-          )}
-        </View>
-      </TouchableOpacity>
-    </View>
-  </View>
-);
-
-// ─── Screen ───────────────────────────────────────────────────────────────────
 
 const ConsumerHome = () => {
   const {
@@ -129,7 +73,7 @@ const ConsumerHome = () => {
         <StatusBar style="dark" />
         <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
           <View className="px-5 pt-5 pb-4">
-            <Header
+            <ConsumerHomeHeader
               firstName={firstName}
               selectedAddress={selectedAddress}
               unreadCount={unreadCount}
@@ -137,11 +81,7 @@ const ConsumerHome = () => {
             />
           </View>
         </SafeAreaView>
-        <View className="flex-1 bg-surface items-center justify-center">
-          <Text className="font-sans text-base text-gray-400">
-            No se pudieron cargar las publicaciones.
-          </Text>
-        </View>
+        <HomeErrorBody onRetry={handleRefetch} />
       </>
     );
   }
@@ -152,7 +92,7 @@ const ConsumerHome = () => {
 
       <SafeAreaView edges={["top", "left", "right"]} className="bg-white">
         <View className="px-5 pt-5 pb-4">
-          <Header
+          <ConsumerHomeHeader
             firstName={firstName}
             selectedAddress={selectedAddress}
             unreadCount={unreadCount}
@@ -203,15 +143,7 @@ const ConsumerHome = () => {
           data={publications}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
-          ListEmptyComponent={
-            isLoading ? null : (
-              <View className="items-center justify-center pt-20 px-6">
-                <Text className="font-sans text-base text-gray-400 text-center">
-                  No hay publicaciones disponibles.
-                </Text>
-              </View>
-            )
-          }
+          ListEmptyComponent={<HomeListEmpty isLoading={isLoading} />}
           ListFooterComponent={
             isLoading ? (
               <View className="py-10 items-center">

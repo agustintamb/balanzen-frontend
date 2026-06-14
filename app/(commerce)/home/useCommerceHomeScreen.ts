@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { PublicationStatus } from "@/api/publications/publications.types";
-import type { FilterOption } from "@/components/ui/FilterChipBar";
+import type { FilterOption } from "@/components/FilterChipBar";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useOrders } from "@/hooks/useOrders";
 import { useMyPublications } from "@/hooks/usePublications";

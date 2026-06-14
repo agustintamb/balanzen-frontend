@@ -9,17 +9,17 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import type { Order } from "@/api/orders/orders.types";
-import AppRefreshControl from "@/components/ui/AppRefreshControl";
-import FilterChipBar from "@/components/ui/FilterChipBar";
+import FilterChipBar from "@/components/FilterChipBar";
 import FilterSheet, {
   FilterOptionChips,
   FilterOptionList,
   FilterSection,
-} from "@/components/ui/FilterSheet";
+} from "@/components/FilterSheet";
+import OrderCard from "@/components/OrderCard";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
-import OrderCard from "@/components/ui/OrderCard";
 import {
   DATE_FILTERS,
   FILTERS,

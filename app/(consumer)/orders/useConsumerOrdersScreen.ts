@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { OrderStatus } from "@/api/orders/orders.types";
-import type { FilterOption } from "@/components/ui/FilterChipBar";
+import type { FilterOption } from "@/components/FilterChipBar";
 import { useOrders } from "@/hooks/useOrders";
 
 export type ConsumerOrderFilter = "all" | OrderStatus;
