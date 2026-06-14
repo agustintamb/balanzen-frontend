@@ -30,6 +30,7 @@ export interface Publication {
   commerce: PublicationCommerce;
   distance_km?: number;
   created_at: string;
+  updated_at?: string;
   /** Unread messages from the consumer on the active order. Only present on /publications/me responses. */
   unread_count?: number;
 }

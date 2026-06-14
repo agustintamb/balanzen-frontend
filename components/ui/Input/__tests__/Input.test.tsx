@@ -502,6 +502,47 @@ describe("Input", () => {
     });
   });
 
+  describe("clearable prop", () => {
+    it("shows a clear button when clearable=true and value is non-empty", () => {
+      const onChangeText = jest.fn();
+      const { UNSAFE_getAllByType } = render(
+        <Input
+          value="some text"
+          onChangeText={onChangeText}
+          clearable
+          placeholder="Clearable"
+        />,
+      );
+      expect(UNSAFE_getAllByType(TouchableOpacity)).toHaveLength(1);
+    });
+
+    it("does not show a clear button when clearable=true but value is empty", () => {
+      const { UNSAFE_queryAllByType } = render(
+        <Input
+          value=""
+          onChangeText={jest.fn()}
+          clearable
+          placeholder="Clearable"
+        />,
+      );
+      expect(UNSAFE_queryAllByType(TouchableOpacity)).toHaveLength(0);
+    });
+
+    it("calls onChangeText with empty string when clear button is pressed", () => {
+      const onChangeText = jest.fn();
+      const { UNSAFE_getByType } = render(
+        <Input
+          value="some text"
+          onChangeText={onChangeText}
+          clearable
+          placeholder="Clearable"
+        />,
+      );
+      fireEvent.press(UNSAFE_getByType(TouchableOpacity));
+      expect(onChangeText).toHaveBeenCalledWith("");
+    });
+  });
+
   describe("focus and blur styling", () => {
     it("should not throw when the TextInput receives focus", () => {
       // Arrange

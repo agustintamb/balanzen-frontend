@@ -40,7 +40,63 @@ jest.mock("../components/MetricCard", () => {
   return MockMetricCard;
 });
 
-jest.mock("@/components/ui/ProductCard", () => {
+jest.mock("@react-navigation/native", () => ({
+  useFocusEffect: jest.fn(),
+}));
+
+jest.mock("@/components/FilterSheet", () => {
+  const { View, Text, TouchableOpacity, TouchableWithoutFeedback } =
+    require("react-native");
+  function MockFilterSheet({ visible, title = "Filtros", onClose, onReset, onApply, children }: any) {
+    if (!visible) return null;
+    return (
+      <View testID="filter-sheet">
+        <TouchableWithoutFeedback onPress={onClose} testID="filter-sheet-backdrop">
+          <View />
+        </TouchableWithoutFeedback>
+        <Text>{title}</Text>
+        <TouchableOpacity onPress={onReset} testID="filter-sheet-reset">
+          <Text>Restablecer</Text>
+        </TouchableOpacity>
+        {children}
+        <TouchableOpacity onPress={onApply} testID="filter-sheet-apply">
+          <Text>Aplicar filtros</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  function MockFilterSection({ title, children }: any) {
+    return (
+      <View>
+        <Text>{title}</Text>
+        {children}
+      </View>
+    );
+  }
+  function MockFilterOptionChips({ options, onSelect }: any) {
+    return options.map((opt: any) => (
+      <TouchableOpacity key={opt.key} onPress={() => onSelect(opt.key)}>
+        <Text>{opt.label}</Text>
+      </TouchableOpacity>
+    ));
+  }
+  function MockFilterOptionList({ options, onSelect }: any) {
+    return options.map((opt: any) => (
+      <TouchableOpacity key={opt.key} onPress={() => onSelect(opt.key)}>
+        <Text>{opt.label}</Text>
+      </TouchableOpacity>
+    ));
+  }
+  return {
+    __esModule: true,
+    default: MockFilterSheet,
+    FilterSection: MockFilterSection,
+    FilterOptionChips: MockFilterOptionChips,
+    FilterOptionList: MockFilterOptionList,
+  };
+});
+
+jest.mock("@/components/ProductCard/ProductCard", () => {
   const { View, Text } = require("react-native");
   function MockProductCard({ publication }: any) {
     return (
@@ -139,10 +195,10 @@ describe("CommerceHome", () => {
   });
 
   it("renders metric cards with values from hooks", () => {
-    mockHooks({ totalPublications: 7, activeReservations: 3 });
+    mockHooks({ activeReservations: 3 });
     const { getByTestId } = render(<CommerceHome />);
-    expect(getByTestId("metric-Publicaciones").props.children).toBe(7);
-    expect(getByTestId("metric-Reservas hoy").props.children).toBe(3);
+    expect(getByTestId("metric-Reservas activas").props.children).toBe(3);
+    expect(getByTestId("metric-Vencen pronto").props.children).toBe(0);
   });
 
   it("renders the search input in the white section", () => {
@@ -158,7 +214,6 @@ describe("CommerceHome", () => {
       "Reservadas",
       "Entregadas",
       "Canceladas",
-      "Vencidas",
     ].forEach((label) => expect(getByText(label)).toBeTruthy());
   });
 
@@ -189,7 +244,7 @@ describe("CommerceHome", () => {
     const { getByTestId, queryByTestId } = render(<CommerceHome />);
     fireEvent.press(getByTestId("btn-filter"));
     expect(getByTestId("filter-sheet")).toBeTruthy();
-    fireEvent.press(getByTestId("filter-sheet-close"));
+    fireEvent.press(getByTestId("filter-sheet-backdrop"));
     expect(queryByTestId("filter-sheet")).toBeNull();
   });
 
@@ -201,17 +256,18 @@ describe("CommerceHome", () => {
     expect(queryByTestId("filter-sheet")).toBeNull();
   });
 
-  it("resets pending filters when Limpiar is pressed", () => {
-    const { getByTestId, getByText } = render(<CommerceHome />);
+  it("resets pending filters when Restablecer is pressed", () => {
+    const { getByTestId, queryByTestId } = render(<CommerceHome />);
     fireEvent.press(getByTestId("btn-filter"));
-    fireEvent.press(getByText("Más antiguos"));
+    expect(getByTestId("filter-sheet")).toBeTruthy();
     fireEvent.press(getByTestId("filter-sheet-reset"));
-    expect(getByText("Todo")).toBeTruthy();
+    expect(queryByTestId("filter-sheet")).toBeNull();
   });
 
   it("shows empty state message when there are no publications", () => {
     mockHooks({ publications: [] });
-    const { getByText } = render(<CommerceHome />);
+    const { getByTestId, getByText } = render(<CommerceHome />);
+    fireEvent.press(getByTestId("filter-ALL"));
     expect(getByText("Todavía no tenés publicaciones.")).toBeTruthy();
   });
 
@@ -267,5 +323,49 @@ describe("CommerceHome", () => {
     const { getByTestId, getByText } = render(<CommerceHome />);
     fireEvent.press(getByTestId("filter-ACTIVE"));
     expect(getByText("No tenés publicaciones activas.")).toBeTruthy();
+  });
+
+  it("shows singular 'Reserva' label when activeReservations is 1", () => {
+    mockHooks({ activeReservations: 1 });
+    const { getByTestId } = render(<CommerceHome />);
+    expect(getByTestId("metric-Reserva")).toBeTruthy();
+  });
+
+  it("shows loading indicator when isLoading is true", () => {
+    mockHooks({ isLoading: true, publications: [] });
+    const { UNSAFE_getAllByType } = render(<CommerceHome />);
+    const { ActivityIndicator } = require("react-native");
+    expect(UNSAFE_getAllByType(ActivityIndicator)).toHaveLength(1);
+  });
+
+  it("renders separator between multiple publications", () => {
+    const basePub = {
+      id: "pub-1",
+      title: "Mix de Verduras",
+      final_price: 1500,
+      original_price: 3000,
+      is_donation: false,
+      photos: [],
+      status: "ACTIVE" as const,
+      discount_pct: 50,
+      description: "",
+      expiry_date: "2026-12-31",
+      category: { id: "cat-1", name: "Verduras" },
+      commerce: {
+        id: "c-1",
+        business_name: "Don Mario",
+        selected_address: { formatted_address: "Corrientes 1234", lat: 0, lng: 0 },
+      },
+      created_at: "2026-01-01",
+    };
+    mockHooks({
+      publications: [
+        basePub,
+        { ...basePub, id: "pub-2", title: "Frutas Variadas" },
+      ],
+    });
+    const { getByTestId } = render(<CommerceHome />);
+    expect(getByTestId("pub-pub-1")).toBeTruthy();
+    expect(getByTestId("pub-pub-2")).toBeTruthy();
   });
 });

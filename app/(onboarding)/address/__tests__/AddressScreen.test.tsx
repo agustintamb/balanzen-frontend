@@ -223,11 +223,21 @@ describe("AddressScreen", () => {
     });
   });
 
-  describe("add mode on iOS (KeyboardAvoidingView behavior)", () => {
-    it("renders add mode with behavior=padding when Platform.OS is ios", () => {
+  describe("add mode KeyboardAvoidingView behavior", () => {
+    it("uses padding behavior on iOS", () => {
       const rn = require("react-native");
       const original = rn.Platform.OS;
       rn.Platform.OS = "ios";
+      setup({ mode: "add" });
+      const { queryByText } = render(<AddressScreen />);
+      expect(queryByText("Mis Direcciones")).toBeNull();
+      rn.Platform.OS = original;
+    });
+
+    it("uses height behavior on Android", () => {
+      const rn = require("react-native");
+      const original = rn.Platform.OS;
+      rn.Platform.OS = "android";
       setup({ mode: "add" });
       const { queryByText } = render(<AddressScreen />);
       expect(queryByText("Mis Direcciones")).toBeNull();

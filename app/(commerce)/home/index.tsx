@@ -37,7 +37,7 @@ const renderItem = ({ item }: ListRenderItemInfo<Publication>) => (
   <ProductCard
     publication={item}
     hasUnreadMessages={(item.unread_count ?? 0) > 0}
-    showDate={false}
+    showDate
     showExpiryWarning
   />
 );
