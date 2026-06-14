@@ -38,10 +38,7 @@ const MetricsScreen = () => {
         className="flex-1 bg-surface"
         contentContainerClassName="px-4 pt-8 pb-10"
         refreshControl={
-          <AppRefreshControl
-            refreshing={isLoading}
-            onRefresh={refetch}
-          />
+          <AppRefreshControl refreshing={isLoading} onRefresh={refetch} />
         }
       >
         <Text className="font-sans-bold text-xs text-gray-400 uppercase tracking-widest mb-4 ml-1">

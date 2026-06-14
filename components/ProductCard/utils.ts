@@ -1,3 +1,26 @@
+import type { PublicationStatus } from "@/api/publications/publications.types";
+import type { ChipProps } from "@/components/ui/Chip";
+import { formatRelativeDate } from "@/utils/format";
+
+export const STATUS_LABEL: Record<PublicationStatus, string> = {
+  ACTIVE: "Activa",
+  RESERVED: "Reservada",
+  DELIVERED: "Entregada",
+  CANCELLED: "Cancelada",
+  EXPIRED: "Vencida",
+};
+
+export const STATUS_CHIP_VARIANT: Record<
+  PublicationStatus,
+  ChipProps["variant"]
+> = {
+  ACTIVE: "primary",
+  RESERVED: "warning",
+  DELIVERED: "info",
+  CANCELLED: "error",
+  EXPIRED: "error",
+};
+
 export const formatPrice = (price: number): string =>
   `$${price.toLocaleString("es-AR")}`;
 
@@ -17,8 +40,8 @@ export const getExpiryWarning = (
   today.setHours(0, 0, 0, 0);
   const expiryDay = new Date(expiry);
   expiryDay.setHours(0, 0, 0, 0);
-  const days = Math.round(
-    (expiryDay.getTime() - today.getTime()) / 86_400_000,
-  );
+  const days = Math.round((expiryDay.getTime() - today.getTime()) / 86_400_000);
   return { label: `Vence en ${days} días`, level: "info" };
 };
+
+export const formatCreatedAt = formatRelativeDate;

@@ -1,5 +1,12 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
+import { useMetricsSummary } from "@/hooks/useMetrics";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useOrders } from "@/hooks/useOrders";
+import { useMyPublications } from "@/hooks/usePublications";
+// ─── Imports after mocks ──────────────────────────────────────────────────────
+import { useCurrentUser } from "@/hooks/useUsers";
+import { safePush } from "@/utils/navigation";
 import CommerceHome from "../index";
 
 // ─── Navigation & env ────────────────────────────────────────────────────────
@@ -8,6 +15,9 @@ jest.mock("expo-status-bar", () => ({ StatusBar: () => null }));
 jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: ({ children }: any) => children,
   useSafeAreaInsets: () => ({ bottom: 0 }),
+}));
+jest.mock("react-native-keyboard-controller", () => ({
+  KeyboardAvoidingView: ({ children }: any) => children,
 }));
 
 // ─── Hook mocks ───────────────────────────────────────────────────────────────
@@ -49,14 +59,6 @@ jest.mock("@/components/ui/Icon", () => {
   }
   return MockIcon;
 });
-
-// ─── Imports after mocks ──────────────────────────────────────────────────────
-import { useCurrentUser } from "@/hooks/useUsers";
-import { useNotifications } from "@/hooks/useNotifications";
-import { useMetricsSummary } from "@/hooks/useMetrics";
-import { useOrders } from "@/hooks/useOrders";
-import { useMyPublications } from "@/hooks/usePublications";
-import { safePush } from "@/utils/navigation";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const mockHooks = ({
@@ -150,9 +152,14 @@ describe("CommerceHome", () => {
 
   it("renders all status filter chips", () => {
     const { getByText } = render(<CommerceHome />);
-    ["Todas", "Activas", "Reservadas", "Entregadas", "Canceladas", "Vencidas"].forEach(
-      (label) => expect(getByText(label)).toBeTruthy(),
-    );
+    [
+      "Todas",
+      "Activas",
+      "Reservadas",
+      "Entregadas",
+      "Canceladas",
+      "Vencidas",
+    ].forEach((label) => expect(getByText(label)).toBeTruthy());
   });
 
   it("renders the filter button", () => {

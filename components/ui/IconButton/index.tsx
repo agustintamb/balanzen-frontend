@@ -38,7 +38,11 @@ const IconButton = ({
       }}
     >
       <View style={rotate ? { transform: [{ rotate }] } : undefined}>
-        <Icon name={iconName} size={iconSize} color={active ? "white" : "neutral"} />
+        <Icon
+          name={iconName}
+          size={iconSize}
+          color={active ? "white" : "neutral"}
+        />
       </View>
     </View>
   </TouchableOpacity>

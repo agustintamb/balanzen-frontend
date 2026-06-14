@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { FilterOption } from "@/components/ui/FilterChipBar";
+import type { FilterOption } from "@/components/FilterChipBar";
 import { useCategories } from "@/hooks/useCategories";
 import { useNotifications } from "@/hooks/useNotifications";
 import { usePublications } from "@/hooks/usePublications";

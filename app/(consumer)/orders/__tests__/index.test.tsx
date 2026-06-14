@@ -1,5 +1,6 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react-native";
+import { fireEvent, render } from "@testing-library/react-native";
+import { useOrders } from "@/hooks/useOrders";
 import ConsumerOrders from "../index";
 
 jest.mock("expo-status-bar", () => ({ StatusBar: () => null }));
@@ -20,8 +21,6 @@ jest.mock("@/components/ui/OrderCard", () => {
   }
   return MockOrderCard;
 });
-
-import { useOrders } from "@/hooks/useOrders";
 
 const mockUseOrders = ({
   orders = [] as any[],
@@ -97,7 +96,9 @@ describe("ConsumerOrders", () => {
   });
 
   it("applies filters and closes the sheet when Aplicar is pressed", () => {
-    const { getByTestId, getByText, queryByTestId } = render(<ConsumerOrders />);
+    const { getByTestId, getByText, queryByTestId } = render(
+      <ConsumerOrders />,
+    );
     fireEvent.press(getByTestId("btn-filter"));
     fireEvent.press(getByText("Hoy"));
     fireEvent.press(getByTestId("filter-sheet-apply"));

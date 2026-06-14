@@ -1,6 +1,13 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react-native";
-import ConsumerHome from "../home";
+import { useCategories } from "@/hooks/useCategories";
+import { useNotifications } from "@/hooks/useNotifications";
+import { usePublications } from "@/hooks/usePublications";
+// ─── Imports after mocks ──────────────────────────────────────────────────────
+
+import { useCurrentUser } from "@/hooks/useUsers";
+import { safePush } from "@/utils/navigation";
+import ConsumerHome from "../index";
 
 jest.mock("@/utils/navigation", () => ({ safePush: jest.fn() }));
 jest.mock("expo-status-bar", () => ({ StatusBar: () => null }));
@@ -8,31 +15,26 @@ jest.mock("react-native-safe-area-context", () => ({
   SafeAreaView: ({ children }: any) => children,
   useSafeAreaInsets: () => ({ bottom: 0 }),
 }));
+jest.mock("react-native-keyboard-controller", () => ({
+  KeyboardAvoidingView: ({ children }: any) => children,
+}));
 
 jest.mock("@/hooks/useUsers", () => ({ useCurrentUser: jest.fn() }));
 jest.mock("@/hooks/useNotifications", () => ({ useNotifications: jest.fn() }));
 jest.mock("@/hooks/useCategories", () => ({ useCategories: jest.fn() }));
 jest.mock("@/hooks/usePublications", () => ({ usePublications: jest.fn() }));
 
-jest.mock("@/components/ui/ProductCard", () => {
+jest.mock("@/components/ui/ConsumerPublicationCard", () => {
   const { View, Text } = require("react-native");
-  function MockProductCard({ publication }: any) {
+  function MockConsumerPublicationCard({ publication }: any) {
     return (
       <View>
         <Text testID={`pub-${publication.id}`}>{publication.title}</Text>
       </View>
     );
   }
-  return MockProductCard;
+  return MockConsumerPublicationCard;
 });
-
-// ─── Imports after mocks ──────────────────────────────────────────────────────
-
-import { useCurrentUser } from "@/hooks/useUsers";
-import { useNotifications } from "@/hooks/useNotifications";
-import { useCategories } from "@/hooks/useCategories";
-import { usePublications } from "@/hooks/usePublications";
-import { safePush } from "@/utils/navigation";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -199,6 +201,8 @@ describe("ConsumerHome", () => {
   it("shows error state when fetch fails and list is empty", () => {
     mockHooks({ isError: true, publications: [] });
     const { getByText } = render(<ConsumerHome />);
-    expect(getByText("No se pudieron cargar las publicaciones.")).toBeTruthy();
+    expect(
+      getByText("No pudimos cargar los datos. Revisá tu conexión."),
+    ).toBeTruthy();
   });
 });
