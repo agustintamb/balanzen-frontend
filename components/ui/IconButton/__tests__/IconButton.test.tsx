@@ -29,7 +29,12 @@ describe("IconButton", () => {
   it("renders with custom size without crashing", () => {
     expect(() =>
       render(
-        <IconButton iconName="bell" onPress={jest.fn()} size={50} iconSize={24} />,
+        <IconButton
+          iconName="bell"
+          onPress={jest.fn()}
+          size={50}
+          iconSize={24}
+        />,
       ),
     ).not.toThrow();
   });
@@ -37,11 +42,7 @@ describe("IconButton", () => {
   it("renders with rotate prop without crashing", () => {
     expect(() =>
       render(
-        <IconButton
-          iconName="sliders"
-          onPress={jest.fn()}
-          rotate="-90deg"
-        />,
+        <IconButton iconName="sliders" onPress={jest.fn()} rotate="-90deg" />,
       ),
     ).not.toThrow();
   });

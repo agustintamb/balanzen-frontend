@@ -1,12 +1,12 @@
 import { act, renderHook } from "@testing-library/react-native";
+import useCommerceHomeDefaultExport, {
+  useCommerceHomeScreen,
+} from "@/app/(commerce)/home/useCommerceHomeScreen";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useOrders } from "@/hooks/useOrders";
 import { useMyPublications } from "@/hooks/usePublications";
 import { useCurrentUser } from "@/hooks/useUsers";
 import * as navigation from "@/utils/navigation";
-import useCommerceHomeDefaultExport, {
-  useCommerceHomeScreen,
-} from "@/app/(commerce)/home/useCommerceHomeScreen";
 
 jest.useFakeTimers();
 
@@ -49,7 +49,11 @@ const buildPub = (overrides = {}) => ({
   commerce: {
     id: "com-1",
     business_name: "La Parrilla",
-    selected_address: { formatted_address: "Av. Corrientes 1234", lat: -34, lng: -58 },
+    selected_address: {
+      formatted_address: "Av. Corrientes 1234",
+      lat: -34,
+      lng: -58,
+    },
   },
   created_at: "2026-06-01T10:00:00.000Z",
   ...overrides,
@@ -194,10 +198,18 @@ describe("useCommerceHomeScreen", () => {
 
     it("handleResetFilters resets all filters to defaults and closes sheet", () => {
       const { result } = renderHook(() => useCommerceHomeScreen());
-      act(() => { result.current.handlePendingDateChange("week"); });
-      act(() => { result.current.handlePendingSortChange("oldest"); });
-      act(() => { result.current.handleApplyFilters(); });
-      act(() => { result.current.handleResetFilters(); });
+      act(() => {
+        result.current.handlePendingDateChange("week");
+      });
+      act(() => {
+        result.current.handlePendingSortChange("oldest");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
+      act(() => {
+        result.current.handleResetFilters();
+      });
       expect(result.current.dateFilter).toBe("all");
       expect(result.current.activeSort).toBe("recent");
       expect(result.current.isFilterSheetVisible).toBe(false);
@@ -205,16 +217,26 @@ describe("useCommerceHomeScreen", () => {
 
     it("hasActiveFilters is true when dateFilter is not 'all'", () => {
       const { result } = renderHook(() => useCommerceHomeScreen());
-      act(() => { result.current.handleOpenFilterSheet(); });
-      act(() => { result.current.handlePendingDateChange("today"); });
-      act(() => { result.current.handleApplyFilters(); });
+      act(() => {
+        result.current.handleOpenFilterSheet();
+      });
+      act(() => {
+        result.current.handlePendingDateChange("today");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
       expect(result.current.hasActiveFilters).toBe(true);
     });
 
     it("hasActiveFilters is true when activeSort is not 'recent'", () => {
       const { result } = renderHook(() => useCommerceHomeScreen());
-      act(() => { result.current.handlePendingSortChange("oldest"); });
-      act(() => { result.current.handleApplyFilters(); });
+      act(() => {
+        result.current.handlePendingSortChange("oldest");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
       expect(result.current.hasActiveFilters).toBe(true);
     });
   });
@@ -258,11 +280,9 @@ describe("useCommerceHomeScreen", () => {
     it("resets state to defaults when focus callback fires", () => {
       let capturedCb: (() => void) | null = null;
       const { useFocusEffect } = require("@react-navigation/native");
-      (useFocusEffect as jest.Mock).mockImplementationOnce(
-        (cb: () => void) => {
-          capturedCb = cb;
-        },
-      );
+      (useFocusEffect as jest.Mock).mockImplementationOnce((cb: () => void) => {
+        capturedCb = cb;
+      });
 
       const { result } = renderHook(() => useCommerceHomeScreen());
 

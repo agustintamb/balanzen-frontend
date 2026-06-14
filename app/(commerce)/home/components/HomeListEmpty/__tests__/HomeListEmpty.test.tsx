@@ -20,7 +20,9 @@ describe("HomeListEmpty", () => {
 
   it("renders message for CANCELLED filter", () => {
     const { getByText } = render(<HomeListEmpty filter="CANCELLED" />);
-    expect(getByText("No tenés publicaciones canceladas ni vencidas.")).toBeTruthy();
+    expect(
+      getByText("No tenés publicaciones canceladas ni vencidas."),
+    ).toBeTruthy();
   });
 
   it("renders message for EXPIRED filter", () => {

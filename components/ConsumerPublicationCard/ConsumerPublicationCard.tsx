@@ -177,7 +177,7 @@ const ConsumerPublicationCard = ({
         </View>
         {/* ── Dirección ─────────────────────────────────
             px-3 (no mx-3) para que el border-t abarque
-            todo el ancho de la card sin desalinearse. */}
+            el ancho completo de la card sin desalinearse. */}
         <View className="flex-row items-center gap-1.5 px-3 pt-2 pb-2.5 border-t border-surface-dark">
           <Icon name="map-pin" size={11} color="muted" />
           <Text

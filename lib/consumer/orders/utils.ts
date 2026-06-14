@@ -9,7 +9,7 @@ export const buildOrderFilterParams = (
 ) => {
   const dateRange = getDateRange(dateFilter);
   return {
-    ...(activeFilter !== "all" ? { status: activeFilter } : {}),
+    ...(activeFilter === "all" ? {} : { status: activeFilter }),
     ...dateRange,
   };
 };

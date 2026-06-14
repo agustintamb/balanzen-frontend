@@ -111,7 +111,11 @@ describe("sortAndSearchOrders", () => {
           photos: [],
         },
       });
-      const result = sortAndSearchOrders([older, newer, mid], "oldest", "pizza");
+      const result = sortAndSearchOrders(
+        [older, newer, mid],
+        "oldest",
+        "pizza",
+      );
       expect(result).toHaveLength(2);
       expect(result[0].id).toBe("order-mid");
       expect(result[1].id).toBe("order-new");

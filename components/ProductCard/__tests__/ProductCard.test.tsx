@@ -119,7 +119,13 @@ describe("ProductCard", () => {
       expiry_date: new Date(FIXED_NOW.getTime() + 2 * 3_600_000).toISOString(),
     });
     expect(() =>
-      render(<ProductCard publication={expiringSoon} showExpiryWarning={true} showDate={false} />),
+      render(
+        <ProductCard
+          publication={expiringSoon}
+          showExpiryWarning={true}
+          showDate={false}
+        />,
+      ),
     ).not.toThrow();
   });
 
@@ -134,16 +140,26 @@ describe("ProductCard", () => {
     const expiry = new Date(FIXED_NOW.getTime() + 36 * 3_600_000).toISOString();
     const pub = buildPub({ expiry_date: expiry });
     const { getByText } = render(
-      <ProductCard publication={pub} showExpiryWarning={true} showDate={false} />,
+      <ProductCard
+        publication={pub}
+        showExpiryWarning={true}
+        showDate={false}
+      />,
     );
     expect(getByText("Vence mañana")).toBeTruthy();
   });
 
   it("shows info text when expiry is more than 48 hours away", () => {
-    const expiry = new Date(FIXED_NOW.getTime() + 7 * 24 * 3_600_000).toISOString();
+    const expiry = new Date(
+      FIXED_NOW.getTime() + 7 * 24 * 3_600_000,
+    ).toISOString();
     const pub = buildPub({ expiry_date: expiry });
     const { getByText } = render(
-      <ProductCard publication={pub} showExpiryWarning={true} showDate={false} />,
+      <ProductCard
+        publication={pub}
+        showExpiryWarning={true}
+        showDate={false}
+      />,
     );
     expect(getByText(/Vence en \d+ días/)).toBeTruthy();
   });

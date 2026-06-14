@@ -45,13 +45,27 @@ jest.mock("@react-navigation/native", () => ({
 }));
 
 jest.mock("@/components/FilterSheet", () => {
-  const { View, Text, TouchableOpacity, TouchableWithoutFeedback } =
-    require("react-native");
-  function MockFilterSheet({ visible, title = "Filtros", onClose, onReset, onApply, children }: any) {
+  const {
+    View,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+  } = require("react-native");
+  function MockFilterSheet({
+    visible,
+    title = "Filtros",
+    onClose,
+    onReset,
+    onApply,
+    children,
+  }: any) {
     if (!visible) return null;
     return (
       <View testID="filter-sheet">
-        <TouchableWithoutFeedback onPress={onClose} testID="filter-sheet-backdrop">
+        <TouchableWithoutFeedback
+          onPress={onClose}
+          testID="filter-sheet-backdrop"
+        >
           <View />
         </TouchableWithoutFeedback>
         <Text>{title}</Text>
@@ -73,14 +87,7 @@ jest.mock("@/components/FilterSheet", () => {
       </View>
     );
   }
-  function MockFilterOptionChips({ options, onSelect }: any) {
-    return options.map((opt: any) => (
-      <TouchableOpacity key={opt.key} onPress={() => onSelect(opt.key)}>
-        <Text>{opt.label}</Text>
-      </TouchableOpacity>
-    ));
-  }
-  function MockFilterOptionList({ options, onSelect }: any) {
+  function MockFilterOptions({ options, onSelect }: any) {
     return options.map((opt: any) => (
       <TouchableOpacity key={opt.key} onPress={() => onSelect(opt.key)}>
         <Text>{opt.label}</Text>
@@ -91,8 +98,8 @@ jest.mock("@/components/FilterSheet", () => {
     __esModule: true,
     default: MockFilterSheet,
     FilterSection: MockFilterSection,
-    FilterOptionChips: MockFilterOptionChips,
-    FilterOptionList: MockFilterOptionList,
+    FilterOptionChips: MockFilterOptions,
+    FilterOptionList: MockFilterOptions,
   };
 });
 
@@ -208,13 +215,9 @@ describe("CommerceHome", () => {
 
   it("renders all status filter chips", () => {
     const { getByText } = render(<CommerceHome />);
-    [
-      "Todas",
-      "Activas",
-      "Reservadas",
-      "Entregadas",
-      "Canceladas",
-    ].forEach((label) => expect(getByText(label)).toBeTruthy());
+    ["Todas", "Activas", "Reservadas", "Entregadas", "Canceladas"].forEach(
+      (label) => expect(getByText(label)).toBeTruthy(),
+    );
   });
 
   it("renders the filter button", () => {
@@ -354,7 +357,11 @@ describe("CommerceHome", () => {
       commerce: {
         id: "c-1",
         business_name: "Don Mario",
-        selected_address: { formatted_address: "Corrientes 1234", lat: 0, lng: 0 },
+        selected_address: {
+          formatted_address: "Corrientes 1234",
+          lat: 0,
+          lng: 0,
+        },
       },
       created_at: "2026-01-01",
     };

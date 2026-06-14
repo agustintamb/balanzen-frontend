@@ -4,11 +4,6 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useOrders } from "@/hooks/useOrders";
 import { useMyPublications } from "@/hooks/usePublications";
 import { useCurrentUser } from "@/hooks/useUsers";
-import {
-  DATE_FILTERS,
-  FILTERS,
-  SORT_FILTERS,
-} from "@/lib/commerce/home/constants";
 import type {
   CommerceSortOption,
   DateRangeFilter,
@@ -24,7 +19,11 @@ import {
 } from "@/utils/publications";
 
 export type { CommerceSortOption, DateRangeFilter, FilterKey };
-export { FILTERS, DATE_FILTERS, SORT_FILTERS };
+export {
+  DATE_FILTERS,
+  FILTERS,
+  SORT_FILTERS,
+} from "@/lib/commerce/home/constants";
 
 export default function _() {
   return null;

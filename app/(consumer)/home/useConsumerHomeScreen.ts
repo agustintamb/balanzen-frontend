@@ -4,11 +4,6 @@ import { useCategories } from "@/hooks/useCategories";
 import { useNotifications } from "@/hooks/useNotifications";
 import { usePublications } from "@/hooks/usePublications";
 import { useCurrentUser } from "@/hooks/useUsers";
-import {
-  MAX_RADIUS_FILTERS,
-  PUB_TYPE_FILTERS,
-  SORT_FILTERS,
-} from "@/lib/consumer/home/constants";
 import type {
   CategoryFilterKey,
   MaxRadiusFilter,
@@ -22,7 +17,11 @@ import {
 import { safePush } from "@/utils/navigation";
 
 export type { CategoryFilterKey, MaxRadiusFilter, PubTypeFilter, SortByFilter };
-export { MAX_RADIUS_FILTERS, PUB_TYPE_FILTERS, SORT_FILTERS };
+export {
+  MAX_RADIUS_FILTERS,
+  PUB_TYPE_FILTERS,
+  SORT_FILTERS,
+} from "@/lib/consumer/home/constants";
 
 export default function _() {
   return null;
@@ -107,7 +106,7 @@ export const useConsumerHomeScreen = () => {
 
   const categoryFilters = buildCategoryFilters(categories);
 
-  const filters = buildPublicationFilters(
+  const filters = buildPublicationFilters({
     activeSearch,
     selectedCategory,
     activePubType,
@@ -116,7 +115,7 @@ export const useConsumerHomeScreen = () => {
     hasLatLng,
     lat,
     lng,
-  );
+  });
 
   const {
     data: publicationsData,

@@ -33,9 +33,9 @@ jest.mock("@/app/(commerce)/home/useCommerceHomeScreen", () => ({
   ],
 }));
 
-const { useCommerceHomeScreen } = require(
-  "@/app/(commerce)/home/useCommerceHomeScreen",
-);
+const {
+  useCommerceHomeScreen,
+} = require("@/app/(commerce)/home/useCommerceHomeScreen");
 
 const buildDefaultHookReturn = (overrides = {}) => ({
   businessName: "Mi Comercio",

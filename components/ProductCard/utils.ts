@@ -44,7 +44,7 @@ export const getExpiryWarning = (
   return { label: `Vence en ${days} días`, level: "info" };
 };
 
-export const formatCreatedAt = formatRelativeDate;
+export { formatRelativeDate as formatCreatedAt } from "@/utils/format";
 
 export const getPublicationDateLabel = (
   status: PublicationStatus,

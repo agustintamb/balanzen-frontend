@@ -72,7 +72,10 @@ describe("filterPublications", () => {
   });
 
   it("returns only CANCELLED and EXPIRED when activeFilter is 'CANCELLED'", () => {
-    const result = filterPublications([active, cancelled, expired], "CANCELLED");
+    const result = filterPublications(
+      [active, cancelled, expired],
+      "CANCELLED",
+    );
     expect(result).toHaveLength(2);
     expect(result.map((p) => p.id)).toContain("cancelled");
     expect(result.map((p) => p.id)).toContain("expired");

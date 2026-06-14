@@ -8,8 +8,6 @@ const FILTERS = [
   { key: "cancelled", label: "Cancelados" },
 ] as const;
 
-type Key = (typeof FILTERS)[number]["key"];
-
 describe("FilterChipBar", () => {
   it("renders all filter labels", () => {
     const { getByText } = render(
@@ -42,7 +40,7 @@ describe("FilterChipBar", () => {
       render(
         <FilterChipBar
           filters={FILTERS}
-          activeFilter={"active" as Key}
+          activeFilter="active"
           onFilterChange={jest.fn()}
         />,
       ),

@@ -1,8 +1,8 @@
 import { act, renderHook } from "@testing-library/react-native";
-import { useOrders } from "@/hooks/useOrders";
 import useConsumerOrdersDefaultExport, {
   useConsumerOrdersScreen,
 } from "@/app/(consumer)/orders/useConsumerOrdersScreen";
+import { useOrders } from "@/hooks/useOrders";
 
 jest.useFakeTimers();
 
@@ -12,7 +12,12 @@ jest.mock("@/hooks/useOrders", () => ({
 
 const buildOrder = (overrides = {}) => ({
   id: "order-1",
-  publication: { id: "pub-1", title: "Empanadas", final_price: 800, photos: [] },
+  publication: {
+    id: "pub-1",
+    title: "Empanadas",
+    final_price: 800,
+    photos: [],
+  },
   consumer: { id: "c1", first_name: "Ana", last_name: "Pérez" },
   commerce: {
     id: "com-1",
@@ -96,19 +101,33 @@ describe("useConsumerOrdersScreen", () => {
 
     it("handleApplyFilters applies pending filters", () => {
       const { result } = renderHook(() => useConsumerOrdersScreen());
-      act(() => { result.current.handleOpenFilterSheet(); });
-      act(() => { result.current.handlePendingDateChange("today"); });
-      act(() => { result.current.handleApplyFilters(); });
+      act(() => {
+        result.current.handleOpenFilterSheet();
+      });
+      act(() => {
+        result.current.handlePendingDateChange("today");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
       expect(result.current.dateFilter).toBe("today");
       expect(result.current.isFilterSheetVisible).toBe(false);
     });
 
     it("handleResetFilters resets all filters", () => {
       const { result } = renderHook(() => useConsumerOrdersScreen());
-      act(() => { result.current.handlePendingDateChange("week"); });
-      act(() => { result.current.handlePendingSortChange("oldest"); });
-      act(() => { result.current.handleApplyFilters(); });
-      act(() => { result.current.handleResetFilters(); });
+      act(() => {
+        result.current.handlePendingDateChange("week");
+      });
+      act(() => {
+        result.current.handlePendingSortChange("oldest");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
+      act(() => {
+        result.current.handleResetFilters();
+      });
       expect(result.current.dateFilter).toBe("all");
       expect(result.current.activeSort).toBe("recent");
       expect(result.current.isFilterSheetVisible).toBe(false);
@@ -116,8 +135,12 @@ describe("useConsumerOrdersScreen", () => {
 
     it("hasActiveFilters is true when sort is not 'recent'", () => {
       const { result } = renderHook(() => useConsumerOrdersScreen());
-      act(() => { result.current.handlePendingSortChange("oldest"); });
-      act(() => { result.current.handleApplyFilters(); });
+      act(() => {
+        result.current.handlePendingSortChange("oldest");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
       expect(result.current.hasActiveFilters).toBe(true);
     });
   });

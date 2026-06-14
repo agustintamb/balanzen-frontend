@@ -168,11 +168,7 @@ describe("FilterOptionList", () => {
   it("calls onSelect with the correct key when an item is pressed", () => {
     const onSelect = jest.fn();
     const { getByText } = render(
-      <FilterOptionList
-        options={OPTIONS}
-        selected="all"
-        onSelect={onSelect}
-      />,
+      <FilterOptionList options={OPTIONS} selected="all" onSelect={onSelect} />,
     );
     fireEvent.press(getByText("Hoy"));
     expect(onSelect).toHaveBeenCalledWith("today");
