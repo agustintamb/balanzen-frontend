@@ -16,11 +16,15 @@ export interface TabItemProps {
 export const ROUTE_CONFIG: Record<string, TabConfig> = {
   home: { label: "Inicio", icon: "home" },
   orders: { label: "Mis pedidos", icon: "package" },
-  publications: { label: "Publicar", icon: "plus" },
+  publish: { label: "Publicar", icon: "plus" },
   profile: { label: "Perfil", icon: "user" },
 };
 
-export const FEATURED_ROUTES = new Set(["orders", "publications"]);
+export const FEATURED_ROUTES = new Set(["orders", "publish"]);
+
+// Rutas que ocupan la pantalla completa: el tab bar se oculta mientras están
+// activas (ej. el flujo de crear publicación).
+export const HIDDEN_TAB_BAR_ROUTES = new Set(["publish"]);
 
 export const GRADIENT_COLORS: [string, string] = ["#78B82B", "#4A8314"];
 export const GRADIENT_START = { x: 0.2, y: 0 };

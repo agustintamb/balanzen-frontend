@@ -43,11 +43,13 @@ const ConsumerHome = () => {
     unreadCount,
     categoryFilters,
     publications,
+    totalCount,
     selectedCategory,
     search,
     isLoading,
     isError,
     isRefetching,
+    isFetchingNextPage,
     hasLatLng,
     hasActiveFilters,
     isFilterSheetVisible,
@@ -58,6 +60,7 @@ const ConsumerHome = () => {
     handleCategoryChange,
     handleBell,
     handleRefetch,
+    handleEndReached,
     handleOpenFilterSheet,
     handleCloseFilterSheet,
     handleApplyFilters,
@@ -134,8 +137,7 @@ const ConsumerHome = () => {
 
         {!isLoading && (
           <Text className="font-sans text-xs text-gray-400 px-5 pt-1 pb-3">
-            {publications.length}{" "}
-            {publications.length === 1 ? "publicación" : "publicaciones"}
+            {totalCount} {totalCount === 1 ? "publicación" : "publicaciones"}
           </Text>
         )}
 
@@ -145,7 +147,7 @@ const ConsumerHome = () => {
           renderItem={renderItem}
           ListEmptyComponent={<HomeListEmpty isLoading={isLoading} />}
           ListFooterComponent={
-            isLoading ? (
+            isLoading || isFetchingNextPage ? (
               <View className="py-10 items-center">
                 <ActivityIndicator size="large" color="#639922" />
               </View>
@@ -155,6 +157,8 @@ const ConsumerHome = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 8, paddingBottom: 32 }}
           style={{ flex: 1 }}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.4}
           refreshControl={
             <AppRefreshControl
               refreshing={isRefetching}

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { useOrders } from "@/hooks/useOrders";
 import type {
   ConsumerOrderFilter,
@@ -60,6 +61,21 @@ export const useConsumerOrdersScreen = () => {
   };
 
   // ─── Effects ──────────────────────────────────────────────────────────────
+  // Al volver a la pantalla, resetear filtros/búsqueda a sus valores por
+  // defecto (mismo comportamiento que el home).
+  useFocusEffect(
+    useCallback(() => {
+      setActiveFilter("RESERVED");
+      setDateFilter("all");
+      setActiveSort("recent");
+      setIsFilterSheetVisible(false);
+      setPendingDateFilter("all");
+      setPendingSort("recent");
+      setSearch("");
+      setActiveSearch("");
+    }, []),
+  );
+
   useEffect(() => {
     const timer = setTimeout(() => setActiveSearch(search), 500);
     return () => clearTimeout(timer);

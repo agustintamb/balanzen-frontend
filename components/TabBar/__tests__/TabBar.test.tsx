@@ -99,7 +99,7 @@ const CONSUMER_ROUTES: RouteStub[] = [
 
 const COMMERCE_ROUTES: RouteStub[] = [
   { key: "home-1", name: "home" },
-  { key: "publications-1", name: "publications" },
+  { key: "publish-1", name: "publish" },
   { key: "profile-1", name: "profile" },
 ];
 
@@ -155,13 +155,13 @@ describe("TabBar", () => {
       );
     });
 
-    it("should render FeaturedTab for the publications route", () => {
+    it("should render FeaturedTab for the publish route", () => {
       // Arrange / Act
       const { getByTestId } = render(
         <TabBar {...buildTabBarProps(COMMERCE_ROUTES)} />,
       );
       // Assert
-      expect(getByTestId("tab-publications").props.accessibilityLabel).toBe(
+      expect(getByTestId("tab-publish").props.accessibilityLabel).toBe(
         "featured-Publicar",
       );
     });

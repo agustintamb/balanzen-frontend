@@ -14,7 +14,7 @@ const CommerceLayout = () => (
     backBehavior="firstRoute"
   >
     <Tabs.Screen name="home" />
-    <Tabs.Screen name="publications" />
+    <Tabs.Screen name="publish" />
     <Tabs.Screen name="profile" />
   </Tabs>
 );

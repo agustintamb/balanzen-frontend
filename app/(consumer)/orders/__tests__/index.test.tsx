@@ -12,6 +12,9 @@ jest.mock("react-native-keyboard-controller", () => ({
   KeyboardAvoidingView: ({ children }: any) => children,
 }));
 jest.mock("@/hooks/useOrders", () => ({ useOrders: jest.fn() }));
+jest.mock("@react-navigation/native", () => ({
+  useFocusEffect: jest.fn(),
+}));
 
 jest.mock("@/components/FilterSheet", () => {
   const {
