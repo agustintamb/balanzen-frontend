@@ -36,26 +36,37 @@ export const buildCategoryFilters = (
   ];
 };
 
-export const buildPublicationFilters = (
-  activeSearch: string,
-  selectedCategory: CategoryFilterKey,
-  activePubType: PubTypeFilter,
-  activeMaxRadius: MaxRadiusFilter,
-  activeSortBy: SortByFilter,
-  hasLatLng: boolean,
-  lat: number | null | undefined,
-  lng: number | null | undefined,
-) => {
+export interface PublicationFiltersArgs {
+  activeSearch: string;
+  selectedCategory: CategoryFilterKey;
+  activePubType: PubTypeFilter;
+  activeMaxRadius: MaxRadiusFilter;
+  activeSortBy: SortByFilter;
+  hasLatLng: boolean;
+  lat: number | null | undefined;
+  lng: number | null | undefined;
+}
+
+export const buildPublicationFilters = ({
+  activeSearch,
+  selectedCategory,
+  activePubType,
+  activeMaxRadius,
+  activeSortBy,
+  hasLatLng,
+  lat,
+  lng,
+}: PublicationFiltersArgs) => {
   const effectiveSortBy =
     activeSortBy === "distance" && !hasLatLng ? "created_at" : activeSortBy;
 
   return {
     ...(activeSearch ? { search: activeSearch } : {}),
-    ...(selectedCategory !== "all" ? { category_id: selectedCategory } : {}),
+    ...(selectedCategory === "all" ? {} : { category_id: selectedCategory }),
     ...(activePubType === "donation" ? { donation: true } : {}),
     ...(activePubType === "discount" ? { min_discount: 1 } : {}),
     ...(activeMaxRadius !== "any" && hasLatLng
-      ? { radius_km: parseInt(activeMaxRadius) }
+      ? { radius_km: Number.parseInt(activeMaxRadius, 10) }
       : {}),
     ...(hasLatLng && lat != null && lng != null ? { lat, lng } : {}),
     sort_by: effectiveSortBy,

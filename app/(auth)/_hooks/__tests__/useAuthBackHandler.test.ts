@@ -1,5 +1,5 @@
-import { renderHook } from "@testing-library/react-native";
 import { BackHandler } from "react-native";
+import { renderHook } from "@testing-library/react-native";
 import useAuthBackHandlerDefaultExport, {
   useAuthBackHandler,
 } from "../useAuthBackHandler";

@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
 import { useOrders } from "@/hooks/useOrders";
-import {
-  DATE_FILTERS,
-  FILTERS,
-  SORT_FILTERS,
-} from "@/lib/consumer/orders/constants";
 import type {
   ConsumerOrderFilter,
   DateRangeFilter,
@@ -16,7 +11,11 @@ import {
 } from "@/lib/consumer/orders/utils";
 
 export type { ConsumerOrderFilter, DateRangeFilter, OrderSortOption };
-export { FILTERS, DATE_FILTERS, SORT_FILTERS };
+export {
+  DATE_FILTERS,
+  FILTERS,
+  SORT_FILTERS,
+} from "@/lib/consumer/orders/constants";
 
 export default function _() {
   return null;

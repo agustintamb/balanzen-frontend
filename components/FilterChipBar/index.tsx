@@ -16,7 +16,7 @@ function FilterChipBar<T extends string>({
   filters,
   activeFilter,
   onFilterChange,
-}: FilterChipBarProps<T>) {
+}: Readonly<FilterChipBarProps<T>>) {
   return (
     <ScrollView
       horizontal

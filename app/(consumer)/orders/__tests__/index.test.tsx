@@ -14,13 +14,27 @@ jest.mock("react-native-keyboard-controller", () => ({
 jest.mock("@/hooks/useOrders", () => ({ useOrders: jest.fn() }));
 
 jest.mock("@/components/FilterSheet", () => {
-  const { View, Text, TouchableOpacity, TouchableWithoutFeedback } =
-    require("react-native");
-  function MockFilterSheet({ visible, title = "Filtros", onClose, onReset, onApply, children }: any) {
+  const {
+    View,
+    Text,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+  } = require("react-native");
+  function MockFilterSheet({
+    visible,
+    title = "Filtros",
+    onClose,
+    onReset,
+    onApply,
+    children,
+  }: any) {
     if (!visible) return null;
     return (
       <View testID="filter-sheet">
-        <TouchableWithoutFeedback onPress={onClose} testID="filter-sheet-backdrop">
+        <TouchableWithoutFeedback
+          onPress={onClose}
+          testID="filter-sheet-backdrop"
+        >
           <View />
         </TouchableWithoutFeedback>
         <Text>{title}</Text>
@@ -42,14 +56,7 @@ jest.mock("@/components/FilterSheet", () => {
       </View>
     );
   }
-  function MockFilterOptionChips({ options, onSelect }: any) {
-    return options.map((opt: any) => (
-      <TouchableOpacity key={opt.key} onPress={() => onSelect(opt.key)}>
-        <Text>{opt.label}</Text>
-      </TouchableOpacity>
-    ));
-  }
-  function MockFilterOptionList({ options, onSelect }: any) {
+  function MockFilterOptions({ options, onSelect }: any) {
     return options.map((opt: any) => (
       <TouchableOpacity key={opt.key} onPress={() => onSelect(opt.key)}>
         <Text>{opt.label}</Text>
@@ -60,8 +67,8 @@ jest.mock("@/components/FilterSheet", () => {
     __esModule: true,
     default: MockFilterSheet,
     FilterSection: MockFilterSection,
-    FilterOptionChips: MockFilterOptionChips,
-    FilterOptionList: MockFilterOptionList,
+    FilterOptionChips: MockFilterOptions,
+    FilterOptionList: MockFilterOptions,
   };
 });
 
@@ -218,7 +225,12 @@ describe("ConsumerOrders", () => {
       status: "RESERVED",
       created_at: "2026-01-01",
       unread_count: 0,
-      publication: { id: "pub-1", title: "Pizza", final_price: 1000, photos: [] },
+      publication: {
+        id: "pub-1",
+        title: "Pizza",
+        final_price: 1000,
+        photos: [],
+      },
       commerce: {
         id: "c-1",
         business_name: "Pizzería",
@@ -262,7 +274,9 @@ describe("ConsumerOrders", () => {
     mockUseOrders({ orders: [] });
     const { getByText, getByPlaceholderText } = render(<ConsumerOrders />);
     fireEvent.changeText(getByPlaceholderText("Buscar pedidos..."), "pizza");
-    expect(getByText("No hay pedidos que coincidan con tu búsqueda.")).toBeTruthy();
+    expect(
+      getByText("No hay pedidos que coincidan con tu búsqueda."),
+    ).toBeTruthy();
   });
 
   it("shows date-filter empty text when date filter is applied", () => {

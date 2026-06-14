@@ -1,12 +1,12 @@
 import { act, renderHook } from "@testing-library/react-native";
+import useConsumerHomeDefaultExport, {
+  useConsumerHomeScreen,
+} from "@/app/(consumer)/home/useConsumerHomeScreen";
 import { useCategories } from "@/hooks/useCategories";
 import { useNotifications } from "@/hooks/useNotifications";
 import { usePublications } from "@/hooks/usePublications";
 import { useCurrentUser } from "@/hooks/useUsers";
 import * as navigation from "@/utils/navigation";
-import useConsumerHomeDefaultExport, {
-  useConsumerHomeScreen,
-} from "@/app/(consumer)/home/useConsumerHomeScreen";
 
 jest.useFakeTimers();
 
@@ -49,7 +49,11 @@ const buildPub = (overrides = {}) => ({
   commerce: {
     id: "com-1",
     business_name: "La Parrilla",
-    selected_address: { formatted_address: "Av. Corrientes 1234", lat: -34, lng: -58 },
+    selected_address: {
+      formatted_address: "Av. Corrientes 1234",
+      lat: -34,
+      lng: -58,
+    },
   },
   created_at: "2026-06-01T10:00:00.000Z",
   ...overrides,
@@ -193,18 +197,30 @@ describe("useConsumerHomeScreen", () => {
 
     it("handleApplyFilters applies pending filters", () => {
       const { result } = renderHook(() => useConsumerHomeScreen());
-      act(() => { result.current.handleOpenFilterSheet(); });
-      act(() => { result.current.handlePendingPubTypeChange("donation"); });
-      act(() => { result.current.handleApplyFilters(); });
+      act(() => {
+        result.current.handleOpenFilterSheet();
+      });
+      act(() => {
+        result.current.handlePendingPubTypeChange("donation");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
       expect(result.current.pendingPubType).toBe("donation");
       expect(result.current.isFilterSheetVisible).toBe(false);
     });
 
     it("handleResetFilters resets all filters", () => {
       const { result } = renderHook(() => useConsumerHomeScreen());
-      act(() => { result.current.handlePendingPubTypeChange("discount"); });
-      act(() => { result.current.handleApplyFilters(); });
-      act(() => { result.current.handleResetFilters(); });
+      act(() => {
+        result.current.handlePendingPubTypeChange("discount");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
+      act(() => {
+        result.current.handleResetFilters();
+      });
       expect(result.current.pendingPubType).toBe("all");
       expect(result.current.pendingMaxRadius).toBe("any");
       expect(result.current.pendingSortBy).toBe("distance");
@@ -213,8 +229,12 @@ describe("useConsumerHomeScreen", () => {
 
     it("hasActiveFilters is true when pubType filter changes from default", () => {
       const { result } = renderHook(() => useConsumerHomeScreen());
-      act(() => { result.current.handlePendingPubTypeChange("donation"); });
-      act(() => { result.current.handleApplyFilters(); });
+      act(() => {
+        result.current.handlePendingPubTypeChange("donation");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
       expect(result.current.hasActiveFilters).toBe(true);
     });
   });
@@ -294,11 +314,9 @@ describe("useConsumerHomeScreen", () => {
     it("resets state to defaults when focus callback fires", () => {
       let capturedCb: (() => void) | null = null;
       const { useFocusEffect } = require("@react-navigation/native");
-      (useFocusEffect as jest.Mock).mockImplementationOnce(
-        (cb: () => void) => {
-          capturedCb = cb;
-        },
-      );
+      (useFocusEffect as jest.Mock).mockImplementationOnce((cb: () => void) => {
+        capturedCb = cb;
+      });
 
       const { result } = renderHook(() => useConsumerHomeScreen());
 

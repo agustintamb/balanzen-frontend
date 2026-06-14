@@ -57,9 +57,7 @@ describe("ConsumerPublicationCard", () => {
 
   it("renders 'Gratis' for donation publications", () => {
     const { getByText } = render(
-      <ConsumerPublicationCard
-        publication={buildPub({ is_donation: true })}
-      />,
+      <ConsumerPublicationCard publication={buildPub({ is_donation: true })} />,
     );
     expect(getByText("Gratis")).toBeTruthy();
   });
@@ -106,9 +104,7 @@ describe("ConsumerPublicationCard", () => {
 
   it("renders distance when distance_km is provided", () => {
     const { getByText } = render(
-      <ConsumerPublicationCard
-        publication={buildPub({ distance_km: 2.5 })}
-      />,
+      <ConsumerPublicationCard publication={buildPub({ distance_km: 2.5 })} />,
     );
     expect(getByText("2.5 km")).toBeTruthy();
   });
@@ -126,25 +122,37 @@ describe("ConsumerPublicationCard", () => {
     });
 
     it("shows urgent badge when expiry is within 24 hours", () => {
-      const expiry = new Date(FIXED_NOW.getTime() + 2 * 3_600_000).toISOString();
+      const expiry = new Date(
+        FIXED_NOW.getTime() + 2 * 3_600_000,
+      ).toISOString();
       const { getByText } = render(
-        <ConsumerPublicationCard publication={buildPub({ expiry_date: expiry })} />,
+        <ConsumerPublicationCard
+          publication={buildPub({ expiry_date: expiry })}
+        />,
       );
       expect(getByText("Vence hoy")).toBeTruthy();
     });
 
     it("shows warning badge when expiry is between 24 and 48 hours", () => {
-      const expiry = new Date(FIXED_NOW.getTime() + 36 * 3_600_000).toISOString();
+      const expiry = new Date(
+        FIXED_NOW.getTime() + 36 * 3_600_000,
+      ).toISOString();
       const { getByText } = render(
-        <ConsumerPublicationCard publication={buildPub({ expiry_date: expiry })} />,
+        <ConsumerPublicationCard
+          publication={buildPub({ expiry_date: expiry })}
+        />,
       );
       expect(getByText("Vence mañana")).toBeTruthy();
     });
 
     it("shows info text (no badge) when expiry is more than 48 hours away", () => {
-      const expiry = new Date(FIXED_NOW.getTime() + 7 * 24 * 3_600_000).toISOString();
+      const expiry = new Date(
+        FIXED_NOW.getTime() + 7 * 24 * 3_600_000,
+      ).toISOString();
       const { getByText } = render(
-        <ConsumerPublicationCard publication={buildPub({ expiry_date: expiry })} />,
+        <ConsumerPublicationCard
+          publication={buildPub({ expiry_date: expiry })}
+        />,
       );
       expect(getByText(/Vence en \d+ días/)).toBeTruthy();
     });

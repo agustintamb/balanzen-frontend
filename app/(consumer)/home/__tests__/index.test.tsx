@@ -32,9 +32,9 @@ jest.mock("@/app/(consumer)/home/useConsumerHomeScreen", () => ({
   ],
 }));
 
-const { useConsumerHomeScreen } = require(
-  "@/app/(consumer)/home/useConsumerHomeScreen",
-);
+const {
+  useConsumerHomeScreen,
+} = require("@/app/(consumer)/home/useConsumerHomeScreen");
 
 const buildDefaultHookReturn = (overrides = {}) => ({
   firstName: "Ana",

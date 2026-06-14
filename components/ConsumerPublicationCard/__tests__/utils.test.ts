@@ -34,7 +34,7 @@ describe("formatDistance", () => {
   });
 
   it("shows exactly 1 decimal for km", () => {
-    expect(formatDistance(1.0)).toBe("1.0 km");
+    expect(formatDistance(1)).toBe("1.0 km");
   });
 
   it("shows exactly 1 decimal for km with long decimal", () => {

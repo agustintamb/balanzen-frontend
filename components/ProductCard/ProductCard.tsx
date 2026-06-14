@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import type { Publication } from "@/api/publications/publications.types";
 import Chip from "@/components/ui/Chip";
@@ -29,6 +30,12 @@ export interface ProductCardProps {
   /** Show a notification dot when there are unread chat messages. */
   hasUnreadMessages?: boolean;
 }
+
+const EXPIRY_WARNING_CLASS = {
+  urgent: "font-sans-medium text-xs text-error",
+  warning: "font-sans-medium text-xs text-warning",
+  info: "font-sans text-xs text-gray-400",
+} as const;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -62,6 +69,21 @@ const ProductCard = ({
   const expiryWarning = showExpiryWarning
     ? getExpiryWarning(expiry_date)
     : null;
+
+  let footerNode: ReactNode = null;
+  if (showDate) {
+    footerNode = (
+      <Text className="font-sans text-xs text-gray-400">
+        {getPublicationDateLabel(status, created_at, updated_at)}
+      </Text>
+    );
+  } else if (expiryWarning) {
+    footerNode = (
+      <Text className={EXPIRY_WARNING_CLASS[expiryWarning.level]}>
+        {expiryWarning.label}
+      </Text>
+    );
+  }
 
   return (
     <TouchableOpacity
@@ -135,23 +157,7 @@ const ProductCard = ({
                 )}
               </View>
             )}
-            {showDate ? (
-              <Text className="font-sans text-xs text-gray-400">
-                {getPublicationDateLabel(status, created_at, updated_at)}
-              </Text>
-            ) : expiryWarning ? (
-              <Text
-                className={
-                  expiryWarning.level === "urgent"
-                    ? "font-sans-medium text-xs text-error"
-                    : expiryWarning.level === "warning"
-                      ? "font-sans-medium text-xs text-warning"
-                      : "font-sans text-xs text-gray-400"
-                }
-              >
-                {expiryWarning.label}
-              </Text>
-            ) : null}
+            {footerNode}
           </View>
         </View>
       </View>

@@ -146,7 +146,7 @@ export function FilterOptionChips<T extends string>({
   options,
   selected,
   onSelect,
-}: FilterOptionChipsProps<T>) {
+}: Readonly<FilterOptionChipsProps<T>>) {
   return (
     <View style={styles.chipsContainer}>
       {options.map(({ key, label }) => (
@@ -182,7 +182,7 @@ export function FilterOptionList<T extends string>({
   options,
   selected,
   onSelect,
-}: FilterOptionListProps<T>) {
+}: Readonly<FilterOptionListProps<T>>) {
   return (
     <View style={styles.listContainer}>
       {options.map(({ key, label }) => {
