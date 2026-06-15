@@ -19,6 +19,7 @@ import SplashOverlay from "@/components/SplashOverlay";
 import Toast from "@/components/ui/Toast";
 import AuthProvider from "@/providers/AuthProvider";
 import QueryProvider from "@/providers/QueryProvider";
+import SocketProvider from "@/providers/SocketProvider";
 
 colorScheme.set("light");
 SystemUI.setBackgroundColorAsync("#F1EFE8");
@@ -56,15 +57,17 @@ export default function RootLayout() {
       <KeyboardProvider>
         <QueryProvider>
           <AuthProvider>
-            <StatusBar style="dark" backgroundColor="transparent" />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: "#F1EFE8" },
-              }}
-            />
-            <SplashOverlay />
-            <Toast />
+            <SocketProvider>
+              <StatusBar style="dark" backgroundColor="transparent" />
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: "#F1EFE8" },
+                }}
+              />
+              <SplashOverlay />
+              <Toast />
+            </SocketProvider>
           </AuthProvider>
         </QueryProvider>
       </KeyboardProvider>

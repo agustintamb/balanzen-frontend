@@ -20,6 +20,7 @@ import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
+import { safePush } from "@/utils/navigation";
 import {
   DATE_FILTERS,
   FILTERS,
@@ -29,8 +30,14 @@ import {
 
 const ItemSeparator = () => <View className="h-3" />;
 
+const handleCardPress = (id: string) => safePush(`/order/${id}`);
+
 const renderItem = ({ item }: ListRenderItemInfo<Order>) => (
-  <OrderCard order={item} hasUnreadMessages={item.unread_count > 0} />
+  <OrderCard
+    order={item}
+    onPress={handleCardPress}
+    hasUnreadMessages={item.unread_count > 0}
+  />
 );
 
 const getEmptyText = (

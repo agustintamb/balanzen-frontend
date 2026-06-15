@@ -3,6 +3,7 @@ import createWrapper from "@/__test-utils__/createWrapper";
 import { ordersService } from "@/api/orders/orders.service";
 import {
   Order,
+  OrderDetail,
   OrderFilters,
   OrderListResponse,
 } from "@/api/orders/orders.types";
@@ -38,6 +39,49 @@ const buildOrder = (overrides: Partial<Order> = {}): Order => ({
     id: "consumer-1",
     first_name: "Juan",
     last_name: "Perez",
+  },
+  commerce: {
+    id: "commerce-1",
+    business_name: "La Panadería",
+    selected_address: { formatted_address: "Av. Corrientes 1234" },
+  },
+  status: "RESERVED",
+  created_at: "2026-05-01T10:00:00Z",
+  ...overrides,
+});
+
+const buildOrderDetail = (
+  overrides: Partial<OrderDetail> = {},
+): OrderDetail => ({
+  id: "order-1",
+  publication: {
+    id: "pub-1",
+    title: "Pan integral",
+    description: "Pan recién horneado",
+    original_price: 500,
+    final_price: 250,
+    discount_pct: 50,
+    expiry_date: "2026-05-02T10:00:00Z",
+    category: { id: "cat-1", name: "Panadería" },
+    photos: ["https://cdn.example.com/photo1.jpg"],
+    status: "RESERVED",
+    is_donation: false,
+    commerce: {
+      id: "commerce-1",
+      business_name: "La Panadería",
+      selected_address: {
+        formatted_address: "Av. Corrientes 1234",
+        lat: -34.6,
+        lng: -58.4,
+      },
+    },
+    created_at: "2026-05-01T10:00:00Z",
+  },
+  consumer: {
+    id: "consumer-1",
+    first_name: "Juan",
+    last_name: "Perez",
+    photo_url: null,
   },
   commerce: {
     id: "commerce-1",
@@ -155,7 +199,7 @@ describe("useOrders", () => {
 
   describe("useOrder(id)", () => {
     it("should return the order when fetched successfully with a valid id", async () => {
-      const order = buildOrder({ id: "order-abc" });
+      const order = buildOrderDetail({ id: "order-abc" });
       mockOrdersService.getById.mockResolvedValueOnce(order);
 
       const { result } = renderHook(() => useOrder("order-abc"), {
@@ -193,7 +237,7 @@ describe("useOrders", () => {
     });
 
     it("should return an order with DELIVERED status correctly", async () => {
-      const order = buildOrder({ id: "order-done", status: "DELIVERED" });
+      const order = buildOrderDetail({ id: "order-done", status: "DELIVERED" });
       mockOrdersService.getById.mockResolvedValueOnce(order);
 
       const { result } = renderHook(() => useOrder("order-done"), {
@@ -206,7 +250,7 @@ describe("useOrders", () => {
     });
 
     it("should return an order with CANCELLED status correctly", async () => {
-      const order = buildOrder({ id: "order-x", status: "CANCELLED" });
+      const order = buildOrderDetail({ id: "order-x", status: "CANCELLED" });
       mockOrdersService.getById.mockResolvedValueOnce(order);
 
       const { result } = renderHook(() => useOrder("order-x"), {
@@ -219,9 +263,9 @@ describe("useOrders", () => {
     });
 
     it("should be in loading state initially before data resolves", async () => {
-      let resolvePromise!: (value: Order) => void;
+      let resolvePromise!: (value: OrderDetail) => void;
       mockOrdersService.getById.mockReturnValueOnce(
-        new Promise<Order>((resolve) => {
+        new Promise<OrderDetail>((resolve) => {
           resolvePromise = resolve;
         }),
       );
@@ -232,7 +276,7 @@ describe("useOrders", () => {
 
       expect(result.current.isPending).toBe(true);
 
-      resolvePromise(buildOrder());
+      resolvePromise(buildOrderDetail());
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
     });
   });

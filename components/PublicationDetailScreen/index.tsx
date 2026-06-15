@@ -1,0 +1,169 @@
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import DetailBody from "@/components/ProductDetail/DetailBody";
+import DetailCounterpartRow from "@/components/ProductDetail/DetailCounterpartRow";
+import DetailHeaderActions from "@/components/ProductDetail/DetailHeaderActions";
+import DetailImageCarousel from "@/components/ProductDetail/DetailImageCarousel";
+import DetailInfoCard from "@/components/ProductDetail/DetailInfoCard";
+import ActionSheet from "@/components/ui/ActionSheet";
+import AppRefreshControl from "@/components/ui/AppRefreshControl";
+import Button from "@/components/ui/Button";
+import Icon from "@/components/ui/Icon";
+import { usePublicationDetailScreen } from "./usePublicationDetailScreen";
+
+const PublicationDetailScreen = () => {
+  const {
+    isLoading,
+    publication,
+    showFavoriteShare,
+    isFavorite,
+    counterpart,
+    infoItems,
+    footerKind,
+    isReserving,
+    isDeleting,
+    isRefetching,
+    reserveVisible,
+    deleteVisible,
+    handleBack,
+    handleRefresh,
+    handleToggleFavorite,
+    handleShare,
+    handleReservePress,
+    handleCloseReserve,
+    confirmReserve,
+    handleDeletePress,
+    handleCloseDelete,
+    confirmDelete,
+    handleEdit,
+  } = usePublicationDetailScreen();
+
+  if (isLoading || !publication) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <StatusBar style="dark" />
+        <ActivityIndicator size="large" color="#639922" />
+      </View>
+    );
+  }
+
+  return (
+    <View className="flex-1 bg-white">
+      <StatusBar style="light" />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={
+          <AppRefreshControl
+            refreshing={isRefetching}
+            onRefresh={handleRefresh}
+          />
+        }
+      >
+        <DetailImageCarousel
+          photos={publication.photos}
+          onBack={handleBack}
+          rightActions={
+            showFavoriteShare ? (
+              <DetailHeaderActions
+                isFavorite={isFavorite}
+                onToggleFavorite={handleToggleFavorite}
+                onShare={handleShare}
+              />
+            ) : undefined
+          }
+        />
+
+        <View className="gap-5 px-5 pt-5">
+          {counterpart && (
+            <DetailCounterpartRow
+              title={counterpart.title}
+              subtitle={counterpart.subtitle}
+              initials={counterpart.initials}
+              leftIcon={counterpart.leftIcon}
+              chatEnabled={counterpart.chatEnabled}
+            />
+          )}
+          <DetailBody publication={publication} />
+          <DetailInfoCard items={infoItems} />
+        </View>
+      </ScrollView>
+
+      {footerKind !== "none" && (
+        <SafeAreaView edges={["bottom", "left", "right"]} className="bg-white">
+          <View className="border-t border-surface-dark px-5 pb-2 pt-3">
+            {footerKind === "reserve" && (
+              <Button
+                onPress={handleReservePress}
+                leftIconName="shopping-bag"
+                testID="btn-reserve"
+              >
+                Reservar ahora
+              </Button>
+            )}
+            {footerKind === "commerce" && (
+              <View className="flex-row items-center gap-3">
+                <TouchableOpacity
+                  onPress={handleDeletePress}
+                  activeOpacity={0.8}
+                  className="flex-row items-center justify-center gap-2 rounded-2xl border border-error px-5 py-4"
+                  testID="btn-delete"
+                >
+                  <Icon name="trash-2" size={18} color="error" />
+                  <Text className="font-sans-semibold text-base text-error">
+                    Eliminar
+                  </Text>
+                </TouchableOpacity>
+                <View className="flex-1">
+                  <Button
+                    onPress={handleEdit}
+                    leftIconName="edit-2"
+                    testID="btn-edit"
+                  >
+                    Editar publicación
+                  </Button>
+                </View>
+              </View>
+            )}
+          </View>
+        </SafeAreaView>
+      )}
+
+      <ActionSheet
+        visible={reserveVisible}
+        iconName="shopping-bag"
+        iconColor="primary"
+        title="Confirmar reserva"
+        message="Estás por reservar este producto. Podrás cancelar antes de retirarlo."
+        confirmLabel="Reservar ahora"
+        confirmVariant="primary"
+        loading={isReserving}
+        onConfirm={confirmReserve}
+        onCancel={handleCloseReserve}
+      />
+
+      <ActionSheet
+        visible={deleteVisible}
+        iconName="alert-triangle"
+        iconColor="error"
+        title="¿Eliminar publicación?"
+        message="Esta acción no se puede deshacer."
+        confirmLabel="Sí, eliminar"
+        confirmVariant="danger"
+        loading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={handleCloseDelete}
+      />
+    </View>
+  );
+};
+
+export default PublicationDetailScreen;

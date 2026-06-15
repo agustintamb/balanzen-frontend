@@ -28,7 +28,10 @@ const ENV = {
 
 const getEnvConfig = () => {
   const appEnv = (Constants.expoConfig?.extra?.appEnv as string) || "local";
-  return ENV[appEnv as keyof typeof ENV] || ENV.local;
+  const config = ENV[appEnv as keyof typeof ENV] || ENV.local;
+  // Host base para WebSocket (socket.io): la API_URL sin el sufijo `/api/v1`.
+  const SOCKET_URL = config.API_URL.replace(/\/api\/v1\/?$/, "");
+  return { ...config, SOCKET_URL };
 };
 
 export default getEnvConfig();

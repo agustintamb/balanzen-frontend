@@ -21,6 +21,7 @@ import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
+import { safePush } from "@/utils/navigation";
 import HomeHeader from "./components/HomeHeader";
 import HomeListEmpty from "./components/HomeListEmpty";
 import MetricCard from "./components/MetricCard";
@@ -33,9 +34,20 @@ import {
 
 const ItemSeparator = () => <View className="h-3" />;
 
+// Si la publicación está reservada, el comercio entra al detalle de la orden
+// (con el consumidor y acciones); si no, al detalle de la publicación.
+const handleCardPress = (publication: Publication) => {
+  if (publication.status === "RESERVED" && publication.order_id) {
+    safePush(`/order/${publication.order_id}`);
+  } else {
+    safePush(`/publication/${publication.id}`);
+  }
+};
+
 const renderItem = ({ item }: ListRenderItemInfo<Publication>) => (
   <ProductCard
     publication={item}
+    onPress={() => handleCardPress(item)}
     hasUnreadMessages={(item.unread_count ?? 0) > 0}
     showDate
     showExpiryWarning

@@ -13,6 +13,10 @@ export interface PublicationCommerce {
   id: string;
   business_name: string;
   selected_address: Pick<AddressInput, "formatted_address" | "lat" | "lng">;
+  /** Datos del dueño/contacto. Opcionales: el backend aún no siempre los expone. */
+  first_name?: string;
+  last_name?: string;
+  phone?: string | null;
 }
 
 export interface Publication {
@@ -33,6 +37,12 @@ export interface Publication {
   updated_at?: string;
   /** Unread messages from the consumer on the active order. Only present on /publications/me responses. */
   unread_count?: number;
+  /**
+   * Id de la reserva activa. Solo presente en `GET /publications/me`: trae el id
+   * de la order cuando `status === "RESERVED"`, y `null` en cualquier otro estado.
+   * Permite al comercio navegar directo al detalle de la orden desde su home.
+   */
+  order_id?: string | null;
 }
 
 export interface PublicationFilters extends PaginationParams {

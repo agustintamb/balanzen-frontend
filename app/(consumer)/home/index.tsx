@@ -21,6 +21,7 @@ import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Icon from "@/components/ui/Icon";
 import IconButton from "@/components/ui/IconButton";
 import Input from "@/components/ui/Input";
+import { safePush } from "@/utils/navigation";
 import ConsumerHomeHeader from "./components/ConsumerHomeHeader";
 import HomeListEmpty from "./components/HomeListEmpty";
 import {
@@ -32,8 +33,10 @@ import {
 
 const ItemSeparator = () => <View className="h-3" />;
 
+const handleCardPress = (id: string) => safePush(`/publication/${id}`);
+
 const renderItem = ({ item }: ListRenderItemInfo<Publication>) => (
-  <ConsumerPublicationCard publication={item} />
+  <ConsumerPublicationCard publication={item} onPress={handleCardPress} />
 );
 
 const ConsumerHome = () => {
