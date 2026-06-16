@@ -9,7 +9,7 @@ import type { PhotoItem, PublishFormValues } from "./types";
 export const parsePrice = (value: string): number => {
   if (!value.trim()) return Number.NaN;
   const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : NaN;
+  return Number.isFinite(parsed) ? parsed : Number.NaN;
 };
 
 /** El paso 1 está completo cuando hay título, descripción, categoría y fecha. */
