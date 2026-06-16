@@ -38,7 +38,7 @@ const PublicationDetailScreen = () => {
     handleEdit,
   } = usePublicationDetailScreen();
 
-  if (isLoading || !publication) {
+  if (isLoading || !publication || !counterpart) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <StatusBar style="dark" />

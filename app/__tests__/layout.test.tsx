@@ -44,6 +44,8 @@ jest.mock("@react-navigation/native", () => ({
 jest.mock("react-native-keyboard-controller", () => ({
   KeyboardProvider: ({ children }: any) => children,
 }));
+jest.mock("@/providers/SocketProvider", () => ({ children }: any) => children);
+jest.mock("@/providers/RealtimeProvider", () => ({ children }: any) => children);
 jest.mock("@/components/SplashOverlay", () => () => null);
 jest.mock("@/components/ui/Toast", () => () => null);
 jest.mock(
