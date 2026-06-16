@@ -53,6 +53,16 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "apiLocalPort": "3001",
+      "apiLocalDeviceUrl": "",
+      "appEnv": "local",
+      "router": {},
+      "eas": {
+        "projectId": "9266f216-c58a-4ae6-9997-323ab3c03c30"
+      }
+    },
+    "owner": "agustintamb"
   }
 }
