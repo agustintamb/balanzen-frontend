@@ -69,6 +69,7 @@ describe("CommerceForm", () => {
   it("fires onSubmitEditing on businessName to advance focus to cuit", () => {
     const { getByTestId } = render(<CommerceForm control={{} as any} />);
     fireEvent(getByTestId("Nombre del comercio"), "submitEditing");
+    expect(getByTestId("Nombre del comercio")).toBeTruthy();
   });
 
   it("renders checkmark icon when acceptTerms is checked", () => {

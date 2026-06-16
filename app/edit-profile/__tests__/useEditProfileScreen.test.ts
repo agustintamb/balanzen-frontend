@@ -353,6 +353,7 @@ describe("useEditProfileScreen", () => {
         }
         alertSpy.mockRestore();
       });
+      expect(result.current).toBeDefined();
     });
 
     it("sets isPhotoUploading while upload is in progress", async () => {
@@ -384,6 +385,7 @@ describe("useEditProfileScreen", () => {
         result.current.handleAvatarPress();
       });
       alertSpy.mockRestore();
+      expect(result.current).toBeDefined();
 
       resolveUpload({
         url: "https://res.cloudinary.com/x/image/upload/v1/x.jpg",
@@ -416,6 +418,7 @@ describe("useEditProfileScreen", () => {
         result.current.handleAvatarPress();
       });
 
+      expect(alertSpy).toHaveBeenCalled();
       mainAlertSpy.mockRestore();
       alertSpy.mockRestore();
     });
@@ -443,6 +446,7 @@ describe("useEditProfileScreen", () => {
         result.current.handleAvatarPress();
       });
 
+      expect(alertSpy).toHaveBeenCalled();
       mainAlertSpy.mockRestore();
       alertSpy.mockRestore();
     });

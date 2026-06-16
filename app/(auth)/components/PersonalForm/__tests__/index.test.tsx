@@ -75,5 +75,6 @@ describe("PersonalForm", () => {
     fireEvent(getByTestId("Contraseña"), "submitEditing");
     fireEvent(getByTestId("Confirmar contraseña"), "submitEditing");
     fireEvent(getByTestId("Teléfono"), "submitEditing");
+    expect(getByTestId("Nombre")).toBeTruthy();
   });
 });

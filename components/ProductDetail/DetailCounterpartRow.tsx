@@ -25,12 +25,12 @@ const DetailCounterpartRow = ({
   onChatPress,
 }: DetailCounterpartRowProps) => (
   <View className="flex-row items-center gap-3 border-b border-surface-dark pb-4">
-    {initials !== undefined ? (
-      <UserAvatar photoUrl={avatarUrl} initials={initials} size={44} />
-    ) : (
+    {initials === undefined ? (
       leftIcon && (
         <Icon name={leftIcon} variant="soft" color="primary" size={20} />
       )
+    ) : (
+      <UserAvatar photoUrl={avatarUrl} initials={initials} size={44} />
     )}
 
     <View className="flex-1">

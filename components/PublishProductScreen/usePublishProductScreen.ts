@@ -50,13 +50,13 @@ const schema = z
     if (data.is_donation) return;
     const final = parsePrice(data.final_price);
     const original = parsePrice(data.original_price);
-    if (!(final > 0))
+    if (final <= 0)
       ctx.addIssue({
         path: ["final_price"],
         code: "custom",
         message: "Ingresá un precio válido",
       });
-    if (!(original > 0))
+    if (original <= 0)
       ctx.addIssue({
         path: ["original_price"],
         code: "custom",
@@ -160,7 +160,8 @@ export const usePublishProductScreen = () => {
         });
 
   const uploadPhoto = async (uri: string) => {
-    const photoId = `${(photoIdRef.current += 1)}`;
+    photoIdRef.current += 1;
+    const photoId = `${photoIdRef.current}`;
     setPhotos((prev) => [
       ...prev,
       { id: photoId, uri, url: null, status: "uploading" },
@@ -233,13 +234,13 @@ export const usePublishProductScreen = () => {
   };
 
   const handleChangeFinalPrice = (text: string) => {
-    const value = text.replace(/[^0-9]/g, "");
+    const value = text.replace(/\D/g, "");
     setValue("final_price", value, { shouldValidate: true });
     maybeEnableDonation(value, getValues("original_price"));
   };
 
   const handleChangeOriginalPrice = (text: string) => {
-    const value = text.replace(/[^0-9]/g, "");
+    const value = text.replace(/\D/g, "");
     setValue("original_price", value, { shouldValidate: true });
     maybeEnableDonation(getValues("final_price"), value);
   };
@@ -288,6 +289,15 @@ export const usePublishProductScreen = () => {
     router.replace("/(commerce)/home");
   };
 
+  let ctaLabel: string;
+  if (isStep1) {
+    ctaLabel = "Continuar";
+  } else if (isEdit) {
+    ctaLabel = "Guardar cambios";
+  } else {
+    ctaLabel = "Publicar producto";
+  }
+
   return {
     headerTitle: isEdit ? "Editar publicación" : "Nueva publicación",
     control,
@@ -300,11 +310,7 @@ export const usePublishProductScreen = () => {
     isUploadingPhotos,
     isSubmitting,
     showSuccess: isSuccessVisible,
-    ctaLabel: isStep1
-      ? "Continuar"
-      : isEdit
-        ? "Guardar cambios"
-        : "Publicar producto",
+    ctaLabel,
     ctaDisabled: isStep1 ? !canContinue : !canPublish || isSubmitting,
     onCtaPress: isStep1 ? handleContinue : handleSubmitPublish,
     handleBack,

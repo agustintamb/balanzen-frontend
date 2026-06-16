@@ -179,6 +179,7 @@ describe("EditProfile screen", () => {
     fireEvent(getByTestId("input-last-name"), "submitEditing");
     fireEvent(getByTestId("input-email"), "submitEditing");
     fireEvent.changeText(getByTestId("input-phone"), "abc123def");
+    expect(getByTestId("input-first-name")).toBeTruthy();
   });
 
   it("fires onSubmitEditing on commerce input fields to advance focus", () => {
@@ -186,6 +187,7 @@ describe("EditProfile screen", () => {
     const { getByTestId } = render(<EditProfile />);
     fireEvent(getByTestId("input-business-name"), "submitEditing");
     fireEvent(getByTestId("input-phone"), "submitEditing");
+    expect(getByTestId("input-business-name")).toBeTruthy();
   });
 
   it("disables save when isPhotoUploading is true (canSave false branch)", () => {

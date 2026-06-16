@@ -12,17 +12,17 @@ interface NewNotificationPayload {
   reference_type?: ReferenceType;
 }
 
-const ORDER_TYPES: NotificationType[] = [
+const ORDER_TYPES = new Set<NotificationType>([
   "NEW_RESERVATION",
   "RESERVATION_CANCELLED_BY_CONSUMER",
   "RESERVATION_CANCELLED_BY_COMMERCE",
   "ORDER_DELIVERED",
-];
+]);
 
-const PUBLICATION_TYPES: NotificationType[] = [
+const PUBLICATION_TYPES = new Set<NotificationType>([
   "PUBLICATION_EXPIRING",
   "PUBLICATION_EXPIRED",
-];
+]);
 
 export const useRealtimeSync = () => {
   const queryClient = useQueryClient();
@@ -33,12 +33,12 @@ export const useRealtimeSync = () => {
     const type = payload?.type;
     if (!type) return;
 
-    if (ORDER_TYPES.includes(type)) {
+    if (ORDER_TYPES.has(type)) {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["publications"] });
     }
 
-    if (PUBLICATION_TYPES.includes(type)) {
+    if (PUBLICATION_TYPES.has(type)) {
       queryClient.invalidateQueries({ queryKey: ["publications"] });
     }
 
