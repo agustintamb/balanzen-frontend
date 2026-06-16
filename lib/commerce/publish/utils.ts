@@ -7,7 +7,7 @@ import type { PhotoItem, PublishFormValues } from "./types";
 
 /** Convierte un string de precio a número, o NaN si no es válido. */
 export const parsePrice = (value: string): number => {
-  if (!value.trim()) return NaN;
+  if (!value.trim()) return Number.NaN;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : NaN;
 };

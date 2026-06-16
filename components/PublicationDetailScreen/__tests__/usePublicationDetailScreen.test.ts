@@ -57,7 +57,7 @@ const buildPublication = (overrides: Partial<Publication> = {}): Publication =>
     },
     created_at: "2026-01-01T00:00:00Z",
     ...overrides,
-  }) as Publication;
+  });
 
 const mockReplace = jest.fn();
 const mockBack = jest.fn();
@@ -244,7 +244,7 @@ describe("usePublicationDetailScreen", () => {
       setup();
       const shareSpy = jest
         .spyOn(Share, "share")
-        .mockResolvedValue({ action: "sharedAction" } as never);
+        .mockResolvedValue({ action: "sharedAction" });
       const { result } = renderHook(() => usePublicationDetailScreen());
       await act(async () => {
         await result.current.handleShare();

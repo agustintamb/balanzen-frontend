@@ -6,7 +6,7 @@ import {
 import type { PublicationFiltersArgs } from "@/lib/consumer/home/utils";
 
 const cat = (id: string, name: string): Category =>
-  ({ id, name }) as Category;
+  ({ id, name });
 
 const baseArgs = (): PublicationFiltersArgs => ({
   activeSearch: "",
@@ -41,13 +41,13 @@ describe("buildCategoryFilters", () => {
       cat("2", "Verduras"),
     ];
     const result = buildCategoryFilters(categories);
-    expect(result[result.length - 1]).toEqual({ key: "3", label: "Otros" });
+    expect(result.at(-1)).toEqual({ key: "3", label: "Otros" });
   });
 
   it("is case-insensitive when detecting Otros", () => {
     const categories = [cat("99", "OTROS"), cat("1", "Frutas")];
     const result = buildCategoryFilters(categories);
-    expect(result[result.length - 1]).toEqual({ key: "99", label: "OTROS" });
+    expect(result.at(-1)).toEqual({ key: "99", label: "OTROS" });
   });
 
   it("preserves relative order of non-Otros categories", () => {

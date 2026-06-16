@@ -76,7 +76,7 @@ const buildOrder = (overrides: Partial<OrderDetail> = {}): OrderDetail =>
     },
     created_at: "2026-01-01T00:00:00Z",
     ...overrides,
-  }) as OrderDetail;
+  });
 
 const mockReplace = jest.fn();
 const mockBack = jest.fn();
@@ -305,7 +305,7 @@ describe("useOrderDetailScreen", () => {
       setup(CONSUMER);
       const shareSpy = jest
         .spyOn(Share, "share")
-        .mockResolvedValue({ action: "sharedAction" } as never);
+        .mockResolvedValue({ action: "sharedAction" });
       const { result } = renderHook(() => useOrderDetailScreen());
       await act(async () => {
         await result.current.handleShare();

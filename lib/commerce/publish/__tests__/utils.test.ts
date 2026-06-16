@@ -22,7 +22,7 @@ const baseValues: PublishFormValues = {
 };
 
 const makeCategory = (id: string, name: string): Category =>
-  ({ id, name } as Category);
+  ({ id, name });
 
 describe("parsePrice", () => {
   it("returns NaN for empty string", () => {
@@ -108,19 +108,19 @@ describe("sortCategories", () => {
   it("places a category named 'Otros' at the end", () => {
     const cats = [makeCategory("1", "Otros"), makeCategory("2", "Frutas")];
     const result = sortCategories(cats);
-    expect(result[result.length - 1].name).toBe("Otros");
+    expect(result.at(-1).name).toBe("Otros");
   });
 
   it("places a category named 'Otro' at the end (singular)", () => {
     const cats = [makeCategory("1", "Otro"), makeCategory("2", "Verduras")];
     const result = sortCategories(cats);
-    expect(result[result.length - 1].name).toBe("Otro");
+    expect(result.at(-1).name).toBe("Otro");
   });
 
   it("is case-insensitive for Otros", () => {
     const cats = [makeCategory("1", "OTROS"), makeCategory("2", "Lácteos")];
     const result = sortCategories(cats);
-    expect(result[result.length - 1].name).toBe("OTROS");
+    expect(result.at(-1).name).toBe("OTROS");
   });
 
   it("preserves relative order of non-Otros categories", () => {
@@ -203,7 +203,7 @@ describe("publicationToFormValues", () => {
       is_donation: true,
       final_price: 0,
       original_price: 0,
-    } as unknown as Publication);
+    });
     expect(values.final_price).toBe("");
     expect(values.original_price).toBe("");
     expect(values.is_donation).toBe(true);
