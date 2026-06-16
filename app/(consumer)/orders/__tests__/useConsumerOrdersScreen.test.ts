@@ -205,6 +205,50 @@ describe("useConsumerOrdersScreen", () => {
     });
   });
 
+  describe("useFocusEffect callback", () => {
+    it("resets filters, sort and search to defaults when focus callback fires", () => {
+      let capturedCb: (() => void) | null = null;
+      const { useFocusEffect } = require("@react-navigation/native");
+      (useFocusEffect as jest.Mock).mockImplementationOnce((cb: () => void) => {
+        capturedCb = cb;
+      });
+
+      const { result } = renderHook(() => useConsumerOrdersScreen());
+
+      act(() => {
+        result.current.handleFilterChange("DELIVERED");
+      });
+      act(() => {
+        result.current.handlePendingDateChange("today");
+        result.current.handlePendingSortChange("oldest");
+      });
+      act(() => {
+        result.current.handleApplyFilters();
+      });
+      act(() => {
+        result.current.onSearchChange("empa");
+      });
+      act(() => {
+        result.current.handleOpenFilterSheet();
+      });
+      expect(result.current.activeFilter).toBe("DELIVERED");
+      expect(result.current.dateFilter).toBe("today");
+      expect(result.current.activeSort).toBe("oldest");
+
+      act(() => {
+        capturedCb?.();
+      });
+
+      expect(result.current.activeFilter).toBe("RESERVED");
+      expect(result.current.dateFilter).toBe("all");
+      expect(result.current.activeSort).toBe("recent");
+      expect(result.current.isFilterSheetVisible ?? false).toBe(false);
+      expect(result.current.pendingDateFilter).toBe("all");
+      expect(result.current.pendingSort).toBe("recent");
+      expect(result.current.search).toBe("");
+    });
+  });
+
   describe("default export", () => {
     it("returns null — Expo Router required dummy export", () => {
       expect(useConsumerOrdersDefaultExport()).toBeNull();

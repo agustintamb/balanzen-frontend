@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TypingBubble matches snapshot 1`] = `
+<View
+  className="mt-2 flex-row items-center gap-1.5 self-start rounded-2xl rounded-bl-md bg-white px-4 py-3.5"
+  testID="typing-bubble"
+>
+  <View
+    collapsable={false}
+    style={
+      {
+        "backgroundColor": "#9CA3AF",
+        "borderRadius": 3.5,
+        "height": 7,
+        "opacity": 0.3,
+        "transform": [
+          {
+            "translateY": 0,
+          },
+        ],
+        "width": 7,
+      }
+    }
+  />
+  <View
+    collapsable={false}
+    style={
+      {
+        "backgroundColor": "#9CA3AF",
+        "borderRadius": 3.5,
+        "height": 7,
+        "opacity": 0.3,
+        "transform": [
+          {
+            "translateY": 0,
+          },
+        ],
+        "width": 7,
+      }
+    }
+  />
+  <View
+    collapsable={false}
+    style={
+      {
+        "backgroundColor": "#9CA3AF",
+        "borderRadius": 3.5,
+        "height": 7,
+        "opacity": 0.3,
+        "transform": [
+          {
+            "translateY": 0,
+          },
+        ],
+        "width": 7,
+      }
+    }
+  />
+</View>
+`;

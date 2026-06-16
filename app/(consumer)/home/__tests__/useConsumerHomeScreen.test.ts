@@ -358,6 +358,101 @@ describe("useConsumerHomeScreen", () => {
     });
   });
 
+  describe("handleEndReached", () => {
+    it("calls fetchNextPage when there is a next page and not already fetching", () => {
+      const fetchNextPage = jest.fn();
+      (usePublicationsInfinite as jest.Mock).mockReturnValue({
+        data: {
+          pages: [
+            {
+              publications: [buildPub()],
+              pagination: { page: 1, limit: 20, total: 40, total_pages: 2 },
+            },
+          ],
+        },
+        isLoading: false,
+        isError: false,
+        refetch: jest.fn(),
+        isRefetching: false,
+        fetchNextPage,
+        hasNextPage: true,
+        isFetchingNextPage: false,
+      });
+      const { result } = renderHook(() => useConsumerHomeScreen());
+      act(() => {
+        result.current.handleEndReached();
+      });
+      expect(fetchNextPage).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not call fetchNextPage when there is no next page", () => {
+      const fetchNextPage = jest.fn();
+      (usePublicationsInfinite as jest.Mock).mockReturnValue({
+        data: {
+          pages: [
+            {
+              publications: [buildPub()],
+              pagination: { page: 1, limit: 20, total: 1, total_pages: 1 },
+            },
+          ],
+        },
+        isLoading: false,
+        isError: false,
+        refetch: jest.fn(),
+        isRefetching: false,
+        fetchNextPage,
+        hasNextPage: false,
+        isFetchingNextPage: false,
+      });
+      const { result } = renderHook(() => useConsumerHomeScreen());
+      act(() => {
+        result.current.handleEndReached();
+      });
+      expect(fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("does not call fetchNextPage while already fetching the next page", () => {
+      const fetchNextPage = jest.fn();
+      (usePublicationsInfinite as jest.Mock).mockReturnValue({
+        data: {
+          pages: [
+            {
+              publications: [buildPub()],
+              pagination: { page: 1, limit: 20, total: 40, total_pages: 2 },
+            },
+          ],
+        },
+        isLoading: false,
+        isError: false,
+        refetch: jest.fn(),
+        isRefetching: false,
+        fetchNextPage,
+        hasNextPage: true,
+        isFetchingNextPage: true,
+      });
+      const { result } = renderHook(() => useConsumerHomeScreen());
+      act(() => {
+        result.current.handleEndReached();
+      });
+      expect(fetchNextPage).not.toHaveBeenCalled();
+    });
+
+    it("returns 0 totalCount when pagination metadata is missing", () => {
+      (usePublicationsInfinite as jest.Mock).mockReturnValue({
+        data: { pages: [] },
+        isLoading: false,
+        isError: false,
+        refetch: jest.fn(),
+        isRefetching: false,
+        fetchNextPage: jest.fn(),
+        hasNextPage: false,
+        isFetchingNextPage: false,
+      });
+      const { result } = renderHook(() => useConsumerHomeScreen());
+      expect(result.current.totalCount).toBe(0);
+    });
+  });
+
   describe("default export", () => {
     it("returns null — Expo Router required dummy export", () => {
       expect(useConsumerHomeDefaultExport()).toBeNull();
