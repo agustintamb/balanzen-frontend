@@ -116,9 +116,11 @@ const ConsumerPublicationCard = ({
                   <Text className="font-sans-bold text-base text-primary">
                     Gratis
                   </Text>
-                  <Text className="font-sans text-xs text-gray-400 line-through">
-                    {formatPrice(original_price)}
-                  </Text>
+                  {original_price > 0 && (
+                    <Text className="font-sans text-xs text-gray-400 line-through">
+                      {formatPrice(original_price)}
+                    </Text>
+                  )}
                 </>
               ) : (
                 <>
