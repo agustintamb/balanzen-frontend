@@ -15,7 +15,6 @@ import {
 } from "@expo-google-fonts/inter";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { colorScheme } from "nativewind";
-import SplashOverlay from "@/components/SplashOverlay";
 import Toast from "@/components/ui/Toast";
 import AuthProvider from "@/providers/AuthProvider";
 import QueryProvider from "@/providers/QueryProvider";
@@ -67,7 +66,6 @@ export default function RootLayout() {
                     contentStyle: { backgroundColor: "#F1EFE8" },
                   }}
                 />
-                <SplashOverlay />
                 <Toast />
               </RealtimeProvider>
             </SocketProvider>
