@@ -53,12 +53,10 @@ export const useLocationRequest = (): UseLocationRequestResult => {
         requiredAccuracy: 1000,
       });
 
-      if (!location) {
-        location = await withTimeout(
-          Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
-          LOCATION_TIMEOUT_MS,
-        );
-      }
+      location ??= await withTimeout(
+        Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Low }),
+        LOCATION_TIMEOUT_MS,
+      );
 
       const { latitude, longitude } = location.coords;
       const address = await buildAddressFromCoords(latitude, longitude);

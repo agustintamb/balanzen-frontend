@@ -3,14 +3,10 @@ import type {
   Publication,
   PublicationCommerce,
 } from "@/api/publications/publications.types";
-import {
-  formatPrice,
-  getExpiryWarning,
-  STATUS_CHIP_VARIANT,
-  STATUS_LABEL,
-} from "@/components/ProductCard/utils";
+import { formatPrice } from "@/components/ProductCard/utils";
 
-export { formatPrice, getExpiryWarning, STATUS_CHIP_VARIANT, STATUS_LABEL };
+export { getExpiryWarning, STATUS_CHIP_VARIANT, STATUS_LABEL } from "@/components/ProductCard/utils";
+export { formatPrice };
 
 export interface InfoItem {
   label: string;

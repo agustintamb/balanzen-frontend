@@ -52,6 +52,9 @@ docs/
 # test coverage reports (generated output — regenerate with npm run test:coverage)
 coverage/
 
+# SonarQube scanner working directory (generated output)
+.scannerwork/
+
 
 .idea
 

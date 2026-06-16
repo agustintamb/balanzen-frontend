@@ -29,6 +29,8 @@ const renderItem = ({ item }: ListRenderItemInfo<ChatBubble>) => (
   <MessageBubble message={item} />
 );
 
+const ItemSeparator = () => <View className="h-2" />;
+
 const ChatScreen = () => {
   const {
     isLoading,
@@ -96,7 +98,7 @@ const ChatScreen = () => {
             data={messages}
             keyExtractor={(item) => item.id}
             renderItem={renderItem}
-            ItemSeparatorComponent={() => <View className="h-2" />}
+            ItemSeparatorComponent={ItemSeparator}
             contentContainerStyle={{ padding: 16, flexGrow: 1 }}
             showsVerticalScrollIndicator={false}
             ListFooterComponent={isOtherTyping ? <TypingBubble /> : null}

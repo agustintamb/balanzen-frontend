@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -69,6 +70,41 @@ const OrderDetailScreen = () => {
     );
   }
 
+  let footer: ReactNode;
+  if (footerKind === "none") {
+    footer = statusNotice ? <StatusNoticeBanner {...statusNotice} /> : null;
+  } else {
+    footer = (
+      <SafeAreaView edges={["bottom", "left", "right"]} className="bg-white">
+        <View className="flex-row items-center gap-3 border-t border-surface-dark px-5 pb-2 pt-3">
+          {footerKind === "consumer-cancel" && (
+            <CancelButton
+              label="Cancelar mi reserva"
+              onPress={handleCancelPress}
+            />
+          )}
+          {footerKind === "commerce-actions" && (
+            <>
+              <CancelButton
+                label="Cancelar reserva"
+                onPress={handleCancelPress}
+              />
+              <View className="flex-1">
+                <Button
+                  onPress={handleDeliverPress}
+                  leftIconName="package"
+                  testID="btn-deliver"
+                >
+                  Entregar pedido
+                </Button>
+              </View>
+            </>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <ProductDetailLayout
       publication={publication}
@@ -96,42 +132,7 @@ const OrderDetailScreen = () => {
           onChatPress={handleChat}
         />
       }
-      footer={
-        footerKind !== "none" ? (
-          <SafeAreaView
-            edges={["bottom", "left", "right"]}
-            className="bg-white"
-          >
-            <View className="flex-row items-center gap-3 border-t border-surface-dark px-5 pb-2 pt-3">
-              {footerKind === "consumer-cancel" && (
-                <CancelButton
-                  label="Cancelar mi reserva"
-                  onPress={handleCancelPress}
-                />
-              )}
-              {footerKind === "commerce-actions" && (
-                <>
-                  <CancelButton
-                    label="Cancelar reserva"
-                    onPress={handleCancelPress}
-                  />
-                  <View className="flex-1">
-                    <Button
-                      onPress={handleDeliverPress}
-                      leftIconName="package"
-                      testID="btn-deliver"
-                    >
-                      Entregar pedido
-                    </Button>
-                  </View>
-                </>
-              )}
-            </View>
-          </SafeAreaView>
-        ) : statusNotice ? (
-          <StatusNoticeBanner {...statusNotice} />
-        ) : null
-      }
+      footer={footer}
     >
       <ActionSheet
         visible={cancelVisible}

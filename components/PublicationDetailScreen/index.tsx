@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -47,6 +48,51 @@ const PublicationDetailScreen = () => {
     );
   }
 
+  let footer: ReactNode;
+  if (footerKind === "none") {
+    footer = statusNotice ? <StatusNoticeBanner {...statusNotice} /> : null;
+  } else {
+    footer = (
+      <SafeAreaView edges={["bottom", "left", "right"]} className="bg-white">
+        <View className="border-t border-surface-dark px-5 pb-2 pt-3">
+          {footerKind === "reserve" && (
+            <Button
+              onPress={handleReservePress}
+              leftIconName="shopping-bag"
+              testID="btn-reserve"
+            >
+              Reservar ahora
+            </Button>
+          )}
+          {footerKind === "commerce" && (
+            <View className="flex-row items-center gap-3">
+              <TouchableOpacity
+                onPress={handleDeletePress}
+                activeOpacity={0.8}
+                className="flex-row items-center justify-center gap-2 rounded-2xl border border-error px-5 py-4"
+                testID="btn-delete"
+              >
+                <Icon name="trash-2" size={18} color="error" />
+                <Text className="font-sans-semibold text-base text-error">
+                  Eliminar
+                </Text>
+              </TouchableOpacity>
+              <View className="flex-1">
+                <Button
+                  onPress={handleEdit}
+                  leftIconName="edit-2"
+                  testID="btn-edit"
+                >
+                  Editar publicación
+                </Button>
+              </View>
+            </View>
+          )}
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <ProductDetailLayout
       publication={publication}
@@ -74,52 +120,7 @@ const PublicationDetailScreen = () => {
           />
         ) : null
       }
-      footer={
-        footerKind !== "none" ? (
-          <SafeAreaView
-            edges={["bottom", "left", "right"]}
-            className="bg-white"
-          >
-            <View className="border-t border-surface-dark px-5 pb-2 pt-3">
-              {footerKind === "reserve" && (
-                <Button
-                  onPress={handleReservePress}
-                  leftIconName="shopping-bag"
-                  testID="btn-reserve"
-                >
-                  Reservar ahora
-                </Button>
-              )}
-              {footerKind === "commerce" && (
-                <View className="flex-row items-center gap-3">
-                  <TouchableOpacity
-                    onPress={handleDeletePress}
-                    activeOpacity={0.8}
-                    className="flex-row items-center justify-center gap-2 rounded-2xl border border-error px-5 py-4"
-                    testID="btn-delete"
-                  >
-                    <Icon name="trash-2" size={18} color="error" />
-                    <Text className="font-sans-semibold text-base text-error">
-                      Eliminar
-                    </Text>
-                  </TouchableOpacity>
-                  <View className="flex-1">
-                    <Button
-                      onPress={handleEdit}
-                      leftIconName="edit-2"
-                      testID="btn-edit"
-                    >
-                      Editar publicación
-                    </Button>
-                  </View>
-                </View>
-              )}
-            </View>
-          </SafeAreaView>
-        ) : statusNotice ? (
-          <StatusNoticeBanner {...statusNotice} />
-        ) : null
-      }
+      footer={footer}
     >
       <ActionSheet
         visible={reserveVisible}
