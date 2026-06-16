@@ -4,23 +4,15 @@ import UserAvatar from "@/components/UserAvatar";
 import { cn } from "@/utils/cn";
 
 interface DetailCounterpartRowProps {
-  /** Texto principal: nombre del consumidor o del comercio. */
   title: string;
-  /** Texto secundario opcional (ej. "Esta publicación está disponible"). */
   subtitle?: string;
-  /** Avatar: foto del usuario (o placeholder con iniciales). */
   avatarUrl?: string | null;
   initials?: string;
-  /** Ícono a la izquierda cuando no hay avatar (ej. bolsa "sin reserva aún"). */
   leftIcon?: React.ComponentProps<typeof Icon>["name"];
   chatEnabled: boolean;
   onChatPress?: () => void;
 }
 
-/**
- * Fila entre la imagen y el título: muestra la contraparte (avatar + nombre) o
- * el estado de la reserva, y el botón de Chat (habilitado solo con order RESERVED).
- */
 const DetailCounterpartRow = ({
   title,
   subtitle,

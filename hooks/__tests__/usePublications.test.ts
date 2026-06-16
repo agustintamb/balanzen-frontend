@@ -14,6 +14,7 @@ import {
   useMyPublications,
   usePublication,
   usePublications,
+  usePublicationsInfinite,
   useUpdatePublication,
 } from "@/hooks/usePublications";
 
@@ -171,6 +172,76 @@ describe("usePublications", () => {
 
       expect(result.current.isLoading).toBe(true);
     });
+  });
+});
+
+describe("usePublicationsInfinite", () => {
+  it("should fetch the first page with initialPageParam 1", async () => {
+    mockList.mockResolvedValueOnce(buildPublicationListResponse());
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => usePublicationsInfinite(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(mockList).toHaveBeenCalledWith({ page: 1 });
+  });
+
+  it("should merge provided filters with the page param", async () => {
+    const filters: PublicationFilters = { category_id: "cat-1", search: "pan" };
+    mockList.mockResolvedValueOnce(buildPublicationListResponse());
+    const { wrapper } = createWrapper();
+
+    renderHook(() => usePublicationsInfinite(filters), { wrapper });
+
+    await waitFor(() => expect(mockList).toHaveBeenCalledTimes(1));
+    expect(mockList).toHaveBeenCalledWith({
+      category_id: "cat-1",
+      search: "pan",
+      page: 1,
+    });
+  });
+
+  it("should expose hasNextPage true when more pages remain", async () => {
+    mockList.mockResolvedValueOnce(
+      buildPublicationListResponse({
+        pagination: { page: 1, limit: 10, total: 20, total_pages: 2 },
+      }),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => usePublicationsInfinite(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
+  });
+
+  it("should expose hasNextPage false when on the last page", async () => {
+    mockList.mockResolvedValueOnce(
+      buildPublicationListResponse({
+        pagination: { page: 1, limit: 10, total: 1, total_pages: 1 },
+      }),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => usePublicationsInfinite(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(false);
+  });
+
+  it("should compute the next page param as page + 1 when more pages remain", async () => {
+    mockList.mockResolvedValueOnce(
+      buildPublicationListResponse({
+        pagination: { page: 1, limit: 10, total: 30, total_pages: 3 },
+      }),
+    );
+    const { wrapper } = createWrapper();
+
+    const { result } = renderHook(() => usePublicationsInfinite(), { wrapper });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.hasNextPage).toBe(true);
+    expect(result.current.data?.pageParams).toEqual([1]);
   });
 });
 

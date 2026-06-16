@@ -1,20 +1,11 @@
-import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import DeliverySuccess from "@/components/ProductDetail/DeliverySuccess";
-import DetailBody from "@/components/ProductDetail/DetailBody";
 import DetailCounterpartRow from "@/components/ProductDetail/DetailCounterpartRow";
 import DetailHeaderActions from "@/components/ProductDetail/DetailHeaderActions";
-import DetailImageCarousel from "@/components/ProductDetail/DetailImageCarousel";
-import DetailInfoCard from "@/components/ProductDetail/DetailInfoCard";
+import ProductDetailLayout from "@/components/ProductDetail/ProductDetailLayout";
 import ActionSheet from "@/components/ui/ActionSheet";
-import AppRefreshControl from "@/components/ui/AppRefreshControl";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
 import { useOrderDetailScreen } from "./useOrderDetailScreen";
@@ -76,77 +67,66 @@ const OrderDetailScreen = () => {
   }
 
   return (
-    <View className="flex-1 bg-white">
-      <StatusBar style="light" />
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 24 }}
-        refreshControl={
-          <AppRefreshControl
-            refreshing={isRefetching}
-            onRefresh={handleRefresh}
+    <ProductDetailLayout
+      publication={publication}
+      onBack={handleBack}
+      isRefreshing={isRefetching}
+      onRefresh={handleRefresh}
+      infoItems={infoItems}
+      headerActions={
+        showFavoriteShare ? (
+          <DetailHeaderActions
+            isFavorite={isFavorite}
+            onToggleFavorite={handleToggleFavorite}
+            onShare={handleShare}
           />
-        }
-      >
-        <DetailImageCarousel
-          photos={publication.photos}
-          onBack={handleBack}
-          rightActions={
-            showFavoriteShare ? (
-              <DetailHeaderActions
-                isFavorite={isFavorite}
-                onToggleFavorite={handleToggleFavorite}
-                onShare={handleShare}
-              />
-            ) : undefined
-          }
+        ) : undefined
+      }
+      counterpart={
+        <DetailCounterpartRow
+          title={counterpart.title}
+          subtitle={counterpart.subtitle}
+          initials={counterpart.initials}
+          avatarUrl={counterpart.avatarUrl}
+          chatEnabled={counterpart.chatEnabled}
+          onChatPress={handleChat}
         />
-
-        <View className="gap-5 px-5 pt-5">
-          <DetailCounterpartRow
-            title={counterpart.title}
-            subtitle={counterpart.subtitle}
-            initials={counterpart.initials}
-            avatarUrl={counterpart.avatarUrl}
-            chatEnabled={counterpart.chatEnabled}
-            onChatPress={handleChat}
-          />
-          <DetailBody publication={publication} />
-          <DetailInfoCard items={infoItems} />
-        </View>
-      </ScrollView>
-
-      {footerKind !== "none" && (
-        <SafeAreaView edges={["bottom", "left", "right"]} className="bg-white">
-          <View className="flex-row items-center gap-3 border-t border-surface-dark px-5 pb-2 pt-3">
-            {footerKind === "consumer-cancel" && (
-              <CancelButton
-                label="Cancelar mi reserva"
-                onPress={handleCancelPress}
-              />
-            )}
-            {footerKind === "commerce-actions" && (
-              <>
+      }
+      footer={
+        footerKind !== "none" ? (
+          <SafeAreaView
+            edges={["bottom", "left", "right"]}
+            className="bg-white"
+          >
+            <View className="flex-row items-center gap-3 border-t border-surface-dark px-5 pb-2 pt-3">
+              {footerKind === "consumer-cancel" && (
                 <CancelButton
-                  label="Cancelar reserva"
+                  label="Cancelar mi reserva"
                   onPress={handleCancelPress}
                 />
-                <View className="flex-1">
-                  <Button
-                    onPress={handleDeliverPress}
-                    leftIconName="package"
-                    testID="btn-deliver"
-                  >
-                    Entregar pedido
-                  </Button>
-                </View>
-              </>
-            )}
-          </View>
-        </SafeAreaView>
-      )}
-
+              )}
+              {footerKind === "commerce-actions" && (
+                <>
+                  <CancelButton
+                    label="Cancelar reserva"
+                    onPress={handleCancelPress}
+                  />
+                  <View className="flex-1">
+                    <Button
+                      onPress={handleDeliverPress}
+                      leftIconName="package"
+                      testID="btn-deliver"
+                    >
+                      Entregar pedido
+                    </Button>
+                  </View>
+                </>
+              )}
+            </View>
+          </SafeAreaView>
+        ) : null
+      }
+    >
       <ActionSheet
         visible={cancelVisible}
         iconName="x-circle"
@@ -174,7 +154,7 @@ const OrderDetailScreen = () => {
       />
 
       <DeliverySuccess visible={successVisible} onDone={handleSuccessDone} />
-    </View>
+    </ProductDetailLayout>
   );
 };
 

@@ -52,8 +52,6 @@ const ChatScreen = () => {
   const { progress } = useReanimatedKeyboardAnimation();
   const canSend = draft.trim().length > 0 && !isSending;
 
-  // Inset inferior animado junto al teclado: respeta los controles del
-  // dispositivo cuando está cerrado y queda flush con el teclado al abrir.
   const inputBarStyle = useAnimatedStyle(() => ({
     paddingBottom: 8 + insets.bottom * (1 - progress.value),
   }));

@@ -10,10 +10,6 @@ interface DeliverySuccessProps {
 
 const SUCCESS_DURATION_MS = 2000;
 
-/**
- * Overlay de éxito animado (~2s) tras marcar un pedido como entregado.
- * Mismo patrón que PublishSuccess: spring sobre el ícono + auto-dismiss.
- */
 const DeliverySuccess = ({ visible, onDone }: DeliverySuccessProps) => {
   const scale = useRef(new Animated.Value(0)).current;
 

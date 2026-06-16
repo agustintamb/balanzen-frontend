@@ -53,7 +53,6 @@ const Dot = ({ delay }: { delay: number }) => {
   );
 };
 
-/** Burbuja estilo WhatsApp con 3 puntitos animados ("escribiendo…"). */
 const TypingBubble = () => (
   <View
     className="mt-2 flex-row items-center gap-1.5 self-start rounded-2xl rounded-bl-md bg-white px-4 py-3.5"

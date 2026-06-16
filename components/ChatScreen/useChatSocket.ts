@@ -16,11 +16,6 @@ interface UserTypingPayload {
   is_typing: boolean;
 }
 
-/**
- * Capa de tiempo real del chat sobre el socket compartido: entra/sale del room
- * de la orden, refresca los mensajes al recibir `new_message`, y maneja el
- * indicador de "escribiendo…" (`typing` / `user_typing`).
- */
 export const useChatSocket = (orderId: string) => {
   const queryClient = useQueryClient();
   const { socket, isConnected } = useSocket();
@@ -29,7 +24,6 @@ export const useChatSocket = (orderId: string) => {
 
   const ready = isConnected && !!orderId;
 
-  // Entrar/salir del room de la orden.
   useEffect(() => {
     if (!socket || !ready) return;
     socket.emit("join_chat", { order_id: orderId });
@@ -39,7 +33,6 @@ export const useChatSocket = (orderId: string) => {
     };
   }, [socket, ready, orderId]);
 
-  // Mensaje nuevo de la contraparte → refrescar mensajes y listado de chats.
   useSocketEvent(
     "new_message",
     (payload: NewMessagePayload) => {
@@ -52,7 +45,6 @@ export const useChatSocket = (orderId: string) => {
     ready,
   );
 
-  // Indicador de "escribiendo…" de la contraparte.
   useSocketEvent(
     "user_typing",
     (payload: UserTypingPayload) => {

@@ -1,14 +1,8 @@
 import { useEffect, useRef } from "react";
 import { useSocketContext } from "@/providers/SocketProvider";
 
-/** Acceso al socket singleton y su estado de conexión. */
 export const useSocket = () => useSocketContext();
 
-/**
- * Suscribe un handler al payload de un evento del socket, con limpieza
- * automática. El handler puede cambiar entre renders sin re-suscribir (se lee
- * por ref). `enabled` condiciona la suscripción (ej. esperar a estar conectado).
- */
 export const useSocketEvent = <T = unknown>(
   event: string,
   handler: (payload: T) => void,

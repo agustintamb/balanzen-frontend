@@ -92,12 +92,15 @@ jest.mock("@/components/FilterSheet", () => {
 jest.mock(
   "@/components/ConsumerPublicationCard/ConsumerPublicationCard",
   () => {
-    const { View, Text } = require("react-native");
-    function MockConsumerPublicationCard({ publication }: any) {
+    const { Text, TouchableOpacity } = require("react-native");
+    function MockConsumerPublicationCard({ publication, onPress }: any) {
       return (
-        <View>
-          <Text testID={`pub-${publication.id}`}>{publication.title}</Text>
-        </View>
+        <TouchableOpacity
+          testID={`pub-${publication.id}`}
+          onPress={() => onPress?.(publication.id)}
+        >
+          <Text>{publication.title}</Text>
+        </TouchableOpacity>
       );
     }
     return MockConsumerPublicationCard;
@@ -329,5 +332,35 @@ describe("ConsumerHome", () => {
     const { getByTestId } = render(<ConsumerHome />);
     expect(getByTestId("pub-pub-1")).toBeTruthy();
     expect(getByTestId("pub-pub-2")).toBeTruthy();
+  });
+
+  it("navigates to the publication detail when a card is pressed", () => {
+    const basePub = {
+      id: "pub-1",
+      title: "Mix de Verduras",
+      final_price: 1500,
+      original_price: 3000,
+      is_donation: false,
+      photos: [],
+      status: "ACTIVE" as const,
+      discount_pct: 50,
+      description: "",
+      expiry_date: "2026-12-31",
+      category: { id: "cat-1", name: "Verduras" },
+      commerce: {
+        id: "c-1",
+        business_name: "Don Mario",
+        selected_address: {
+          formatted_address: "Corrientes 1234",
+          lat: -34.6,
+          lng: -58.4,
+        },
+      },
+      created_at: "2026-01-01",
+    };
+    mockHooks({ publications: [basePub] });
+    const { getByTestId } = render(<ConsumerHome />);
+    fireEvent.press(getByTestId("pub-pub-1"));
+    expect(safePush).toHaveBeenCalledWith("/publication/pub-1");
   });
 });

@@ -1,41 +1,32 @@
-import { useState } from "react";
-import {
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { Image, ScrollView, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "@/components/ui/Icon";
 import { buildDetailImageUrl } from "@/utils/cloudinary";
 import { cn } from "@/utils/cn";
 import FullscreenGallery from "./FullscreenGallery";
+import { useDetailImageCarousel } from "./useDetailImageCarousel";
 
 const CAROUSEL_HEIGHT = 300;
 
 interface DetailImageCarouselProps {
   photos: string[];
   onBack: () => void;
-  /** Acciones a la derecha del header (favorito, compartir). */
   rightActions?: React.ReactNode;
-  /** Pills de estado/descuento/vencimiento superpuestas al pie de la imagen. */
-  badges?: React.ReactNode;
 }
 
-/**
- * Carrusel horizontal de imágenes con header superpuesto (back + acciones) y
- * badges al pie. Tocar una imagen abre el visor a pantalla completa.
- */
 const DetailImageCarousel = ({
   photos,
   onBack,
   rightActions,
-  badges,
 }: DetailImageCarouselProps) => {
-  const { width } = useWindowDimensions();
-  const [index, setIndex] = useState(0);
-  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  const {
+    width,
+    activeIndex,
+    viewerIndex,
+    handleScrollEnd,
+    openViewer,
+    closeViewer,
+  } = useDetailImageCarousel();
   const hasPhotos = photos.length > 0;
 
   return (
@@ -45,15 +36,13 @@ const DetailImageCarousel = ({
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onMomentumScrollEnd={(e) =>
-            setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
-          }
+          onMomentumScrollEnd={handleScrollEnd}
         >
           {photos.map((photo, i) => (
             <TouchableOpacity
               key={`${photo}-${i}`}
               activeOpacity={0.95}
-              onPress={() => setViewerIndex(i)}
+              onPress={() => openViewer(i)}
               testID={`carousel-image-${i}`}
             >
               <Image
@@ -70,7 +59,6 @@ const DetailImageCarousel = ({
         </View>
       )}
 
-      {/* Dots */}
       {photos.length > 1 && (
         <View className="absolute bottom-14 w-full flex-row items-center justify-center gap-1.5">
           {photos.map((photo, i) => (
@@ -78,14 +66,13 @@ const DetailImageCarousel = ({
               key={`dot-${photo}-${i}`}
               className={cn(
                 "h-1.5 rounded-full",
-                i === index ? "w-4 bg-white" : "w-1.5 bg-white/60",
+                i === activeIndex ? "w-4 bg-white" : "w-1.5 bg-white/60",
               )}
             />
           ))}
         </View>
       )}
 
-      {/* Header superpuesto */}
       <SafeAreaView
         edges={["top"]}
         className="absolute left-0 right-0 top-0 flex-row items-center justify-between px-4 pt-2"
@@ -103,15 +90,12 @@ const DetailImageCarousel = ({
         )}
       </SafeAreaView>
 
-      {/* Badges al pie */}
-      {badges && <View className="absolute bottom-3 left-4">{badges}</View>}
-
       {viewerIndex !== null && (
         <FullscreenGallery
           photos={photos}
           initialIndex={viewerIndex}
           visible={viewerIndex !== null}
-          onClose={() => setViewerIndex(null)}
+          onClose={closeViewer}
         />
       )}
     </View>

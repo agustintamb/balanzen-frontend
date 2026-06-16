@@ -25,7 +25,6 @@ const InfoRow = ({ item, last }: { item: InfoItem; last: boolean }) => (
   </View>
 );
 
-/** Card de datos (comercio o consumidor según el contexto del detalle). */
 const DetailInfoCard = ({ items }: DetailInfoCardProps) => {
   if (items.length === 0) return null;
 

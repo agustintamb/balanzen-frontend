@@ -104,12 +104,15 @@ jest.mock("@/components/FilterSheet", () => {
 });
 
 jest.mock("@/components/ProductCard/ProductCard", () => {
-  const { View, Text } = require("react-native");
-  function MockProductCard({ publication }: any) {
+  const { Text, TouchableOpacity } = require("react-native");
+  function MockProductCard({ publication, onPress }: any) {
     return (
-      <View>
-        <Text testID={`pub-${publication.id}`}>{publication.title}</Text>
-      </View>
+      <TouchableOpacity
+        testID={`pub-${publication.id}`}
+        onPress={() => onPress?.(publication.id)}
+      >
+        <Text>{publication.title}</Text>
+      </TouchableOpacity>
     );
   }
   return MockProductCard;
@@ -374,5 +377,59 @@ describe("CommerceHome", () => {
     const { getByTestId } = render(<CommerceHome />);
     expect(getByTestId("pub-pub-1")).toBeTruthy();
     expect(getByTestId("pub-pub-2")).toBeTruthy();
+  });
+
+  it("opens the publication detail for an active publication", () => {
+    const basePub = {
+      id: "pub-1",
+      title: "Mix de Verduras",
+      final_price: 1500,
+      original_price: 3000,
+      is_donation: false,
+      photos: [],
+      status: "ACTIVE" as const,
+      discount_pct: 50,
+      description: "",
+      expiry_date: "2026-12-31",
+      category: { id: "cat-1", name: "Verduras" },
+      commerce: {
+        id: "c-1",
+        business_name: "Don Mario",
+        selected_address: { formatted_address: "x", lat: 0, lng: 0 },
+      },
+      created_at: "2026-01-01",
+      order_id: null,
+    };
+    mockHooks({ publications: [basePub] });
+    const { getByTestId } = render(<CommerceHome />);
+    fireEvent.press(getByTestId("pub-pub-1"));
+    expect(safePush).toHaveBeenCalledWith("/publication/pub-1");
+  });
+
+  it("opens the order detail for a reserved publication", () => {
+    const reservedPub = {
+      id: "pub-9",
+      title: "Reservada",
+      final_price: 1500,
+      original_price: 3000,
+      is_donation: false,
+      photos: [],
+      status: "RESERVED" as const,
+      discount_pct: 50,
+      description: "",
+      expiry_date: "2026-12-31",
+      category: { id: "cat-1", name: "Verduras" },
+      commerce: {
+        id: "c-1",
+        business_name: "Don Mario",
+        selected_address: { formatted_address: "x", lat: 0, lng: 0 },
+      },
+      created_at: "2026-01-01",
+      order_id: "order-9",
+    };
+    mockHooks({ publications: [reservedPub] });
+    const { getByTestId } = render(<CommerceHome />);
+    fireEvent.press(getByTestId("pub-pub-9"));
+    expect(safePush).toHaveBeenCalledWith("/order/order-9");
   });
 });

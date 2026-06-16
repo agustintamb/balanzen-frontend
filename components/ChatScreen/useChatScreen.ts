@@ -11,7 +11,6 @@ import { useChatSocket } from "./useChatSocket";
 
 type ImageSource = "camera" | "library";
 
-// Cuánto esperar sin tipear antes de avisar que dejé de escribir.
 const TYPING_IDLE_MS = 2500;
 
 export interface ChatBubble {
@@ -19,7 +18,6 @@ export interface ChatBubble {
   content: string;
   isMine: boolean;
   time: string;
-  /** Si el mensaje es una imagen, su URL; si no, undefined. */
   imageUrl?: string;
 }
 
@@ -49,8 +47,6 @@ export const useChatScreen = () => {
 
   const [draft, setDraft] = useState("");
   const [isAttaching, setIsAttaching] = useState(false);
-  // Solo para el pull-to-refresh manual: un mensaje entrante refetchea en
-  // background sin mostrar el spinner.
   const [isRefreshing, setIsRefreshing] = useState(false);
   const typingIdleTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
@@ -61,7 +57,6 @@ export const useChatScreen = () => {
     notifyTyping(false);
   };
 
-  // Avisar "dejó de escribir" si se desmonta el chat con un timer pendiente.
   useEffect(() => () => clearTimeout(typingIdleTimer.current), []);
 
   const handleChangeDraft = (text: string) => {

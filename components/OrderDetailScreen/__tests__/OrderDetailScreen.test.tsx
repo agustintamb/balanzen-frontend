@@ -127,4 +127,11 @@ describe("OrderDetailScreen", () => {
     expect(queryByTestId("btn-deliver")).toBeNull();
     expect(getByTestId("btn-favorite")).toBeTruthy();
   });
+
+  it("renders no footer for a terminal order", () => {
+    mockHook({ footerKind: "none" });
+    const { queryByTestId } = render(<OrderDetailScreen />);
+    expect(queryByTestId("btn-cancel")).toBeNull();
+    expect(queryByTestId("btn-deliver")).toBeNull();
+  });
 });

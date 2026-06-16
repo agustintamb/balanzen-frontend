@@ -14,7 +14,6 @@ const EXPIRY_COLOR = {
   info: { text: "text-gray-500", icon: "muted" },
 } as const;
 
-/** Cuerpo del detalle: título + categoría, descripción, precio y vencimiento. */
 const DetailBody = ({ publication }: DetailBodyProps) => {
   const {
     title,

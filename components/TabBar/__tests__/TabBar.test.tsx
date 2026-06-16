@@ -215,6 +215,28 @@ describe("TabBar", () => {
     });
   });
 
+  describe("hidden tab bar routes", () => {
+    it("should render nothing when the focused route is in HIDDEN_TAB_BAR_ROUTES", () => {
+      // Arrange — publish is active and is a hidden route
+      const { queryByTestId } = render(
+        <TabBar {...buildTabBarProps(COMMERCE_ROUTES, 1)} />,
+      );
+      // Assert — the whole tab bar is hidden
+      expect(queryByTestId("tab-home")).toBeNull();
+      expect(queryByTestId("tab-publish")).toBeNull();
+      expect(queryByTestId("tab-profile")).toBeNull();
+    });
+
+    it("should render the tab bar when the focused route is not hidden", () => {
+      // Arrange — home is active (not hidden)
+      const { getByTestId } = render(
+        <TabBar {...buildTabBarProps(COMMERCE_ROUTES, 0)} />,
+      );
+      // Assert
+      expect(getByTestId("tab-home")).toBeTruthy();
+    });
+  });
+
   describe("navigation on press", () => {
     it("should emit a tabPress event when an inactive tab is pressed", () => {
       // Arrange — home is active, pressing orders

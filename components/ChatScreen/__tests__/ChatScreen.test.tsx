@@ -10,8 +10,16 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 jest.mock("react-native-keyboard-controller", () => ({
   KeyboardAvoidingView: ({ children }: any) => children,
-  useKeyboardState: () => false,
+  useReanimatedKeyboardAnimation: () => ({ progress: { value: 0 } }),
 }));
+jest.mock("react-native-reanimated", () => {
+  const { View } = require("react-native");
+  return {
+    __esModule: true,
+    default: { View },
+    useAnimatedStyle: (fn: () => unknown) => fn(),
+  };
+});
 
 const baseVM = {
   isLoading: false,
@@ -55,6 +63,13 @@ describe("ChatScreen", () => {
     expect(queryByTestId("chat-input")).toBeTruthy();
   });
 
+  it("goes back when the back button is pressed", () => {
+    mockHook();
+    const { getByTestId } = render(<ChatScreen />);
+    fireEvent.press(getByTestId("btn-back"));
+    expect(baseVM.handleBack).toHaveBeenCalled();
+  });
+
   it("forwards typing to onChangeDraft", () => {
     mockHook();
     const { getByTestId } = render(<ChatScreen />);
@@ -69,6 +84,20 @@ describe("ChatScreen", () => {
     expect(baseVM.handleSend).toHaveBeenCalled();
   });
 
+  it("does not send with an empty draft (disabled button)", () => {
+    mockHook({ draft: "   " });
+    const { getByTestId } = render(<ChatScreen />);
+    fireEvent.press(getByTestId("btn-send"));
+    expect(baseVM.handleSend).not.toHaveBeenCalled();
+  });
+
+  it("disables the attach button while attaching", () => {
+    mockHook({ isAttaching: true });
+    const { getByTestId } = render(<ChatScreen />);
+    fireEvent.press(getByTestId("btn-attach"));
+    expect(baseVM.handleAttach).not.toHaveBeenCalled();
+  });
+
   it("wires the attach button", () => {
     mockHook();
     const { getByTestId } = render(<ChatScreen />);
@@ -76,7 +105,13 @@ describe("ChatScreen", () => {
     expect(baseVM.handleAttach).toHaveBeenCalled();
   });
 
-  it("renders an image message as an image", () => {
+  it("renders the typing bubble when the counterpart is typing", () => {
+    mockHook({ isOtherTyping: true });
+    const { getByTestId } = render(<ChatScreen />);
+    expect(getByTestId("typing-bubble")).toBeTruthy();
+  });
+
+  it("renders an image message as an image, not text", () => {
     mockHook({
       messages: [
         {
@@ -89,7 +124,6 @@ describe("ChatScreen", () => {
       ],
     });
     const { queryByText } = render(<ChatScreen />);
-    // El contenido no se muestra como texto cuando es imagen.
     expect(queryByText("https://res.cloudinary.com/x/p.jpg")).toBeNull();
   });
 });

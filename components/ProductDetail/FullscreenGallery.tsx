@@ -20,7 +20,6 @@ interface FullscreenGalleryProps {
   onClose: () => void;
 }
 
-/** Visor de imágenes a pantalla completa con paginado horizontal y contador. */
 const FullscreenGallery = ({
   photos,
   initialIndex,
@@ -47,6 +46,7 @@ const FullscreenGallery = ({
           onMomentumScrollEnd={(e) =>
             setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
           }
+          testID="gallery-scroll"
         >
           {photos.map((photo, i) => (
             <View

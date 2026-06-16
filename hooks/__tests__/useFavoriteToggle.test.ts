@@ -59,4 +59,12 @@ describe("useFavoriteToggle", () => {
     expect(mockAdd).not.toHaveBeenCalled();
     expect(mockRemove).not.toHaveBeenCalled();
   });
+
+  it("is not favorite when the favorites list has not loaded", () => {
+    (useFavorites as jest.Mock).mockReturnValue({ data: undefined });
+    (useAddFavorite as jest.Mock).mockReturnValue({ mutate: mockAdd });
+    (useRemoveFavorite as jest.Mock).mockReturnValue({ mutate: mockRemove });
+    const { result } = renderHook(() => useFavoriteToggle("pub-1"));
+    expect(result.current.isFavorite).toBe(false);
+  });
 });

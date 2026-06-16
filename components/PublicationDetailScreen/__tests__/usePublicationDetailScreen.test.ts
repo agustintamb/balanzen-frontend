@@ -67,6 +67,7 @@ const mockDelete = jest.fn();
 const mockAddFavorite = jest.fn();
 const mockRemoveFavorite = jest.fn();
 const mockShowSuccess = jest.fn();
+const mockRefetch = jest.fn().mockResolvedValue(undefined);
 
 interface SetupOptions {
   user?: typeof CONSUMER | typeof COMMERCE;
@@ -89,6 +90,8 @@ const setup = ({
     data: publication,
     isLoading: false,
     isError: false,
+    refetch: mockRefetch,
+    isRefetching: false,
   });
   (useFavorites as jest.Mock).mockReturnValue({ data: { favorites } });
   (useAddFavorite as jest.Mock).mockReturnValue({ mutate: mockAddFavorite });
@@ -173,6 +176,26 @@ describe("usePublicationDetailScreen", () => {
     });
   });
 
+  describe("ui handlers", () => {
+    it("toggles the action sheets, goes back and refreshes", () => {
+      setup({ user: COMMERCE });
+      const { result } = renderHook(() => usePublicationDetailScreen());
+
+      act(() => result.current.handleReservePress());
+      expect(result.current.reserveVisible).toBe(true);
+      act(() => result.current.handleCloseReserve());
+      expect(result.current.reserveVisible).toBe(false);
+
+      act(() => result.current.handleDeletePress());
+      expect(result.current.deleteVisible).toBe(true);
+      act(() => result.current.handleCloseDelete());
+      expect(result.current.deleteVisible).toBe(false);
+
+      act(() => result.current.handleBack());
+      expect(mockBack).toHaveBeenCalled();
+    });
+  });
+
   describe("favorites", () => {
     it("adds a favorite when not favorited", () => {
       setup();
@@ -201,6 +224,62 @@ describe("usePublicationDetailScreen", () => {
         await result.current.handleShare();
       });
       expect(shareSpy).toHaveBeenCalled();
+      shareSpy.mockRestore();
+    });
+  });
+
+  describe("error branches", () => {
+    it("closes the reserve sheet without navigating when reserve fails", async () => {
+      setup();
+      mockCreateOrder.mockRejectedValueOnce(new Error("conflict"));
+      const { result } = renderHook(() => usePublicationDetailScreen());
+      await act(async () => {
+        await result.current.confirmReserve();
+      });
+      expect(mockReplace).not.toHaveBeenCalled();
+      expect(result.current.reserveVisible).toBe(false);
+    });
+
+    it("closes the delete sheet without navigating when delete fails", async () => {
+      setup({ user: COMMERCE });
+      mockDelete.mockRejectedValueOnce(new Error("fail"));
+      const { result } = renderHook(() => usePublicationDetailScreen());
+      await act(async () => {
+        await result.current.confirmDelete();
+      });
+      expect(mockBack).not.toHaveBeenCalled();
+      expect(result.current.deleteVisible).toBe(false);
+    });
+  });
+
+  describe("route param", () => {
+    it("falls back to an empty id when the param is missing", () => {
+      setup();
+      (useLocalSearchParams as jest.Mock).mockReturnValue({});
+      const { result } = renderHook(() => usePublicationDetailScreen());
+      expect(result.current.publication).toBeDefined();
+    });
+  });
+
+  describe("without a loaded publication", () => {
+    it("has no counterpart/footer and share is a no-op", async () => {
+      setup();
+      (usePublication as jest.Mock).mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+        refetch: jest.fn(),
+        isRefetching: false,
+      });
+      const shareSpy = jest.spyOn(Share, "share");
+      const { result } = renderHook(() => usePublicationDetailScreen());
+      expect(result.current.counterpart).toBeNull();
+      expect(result.current.footerKind).toBe("none");
+      expect(result.current.infoItems).toEqual([]);
+      await act(async () => {
+        await result.current.handleShare();
+      });
+      expect(shareSpy).not.toHaveBeenCalled();
       shareSpy.mockRestore();
     });
   });

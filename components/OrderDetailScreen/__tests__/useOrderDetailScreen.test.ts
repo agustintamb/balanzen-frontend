@@ -82,6 +82,7 @@ const mockDeliver = jest.fn();
 const mockShowSuccess = jest.fn();
 const mockAddFavorite = jest.fn();
 const mockRemoveFavorite = jest.fn();
+const mockRefetch = jest.fn().mockResolvedValue(undefined);
 
 const setup = (
   user: typeof CONSUMER | typeof COMMERCE = COMMERCE,
@@ -98,6 +99,8 @@ const setup = (
     data: order,
     isLoading: false,
     isError: false,
+    refetch: mockRefetch,
+    isRefetching: false,
   });
   (useFavorites as jest.Mock).mockReturnValue({ data: { favorites } });
   (useAddFavorite as jest.Mock).mockReturnValue({ mutate: mockAddFavorite });
@@ -134,6 +137,26 @@ describe("useOrderDetailScreen", () => {
       expect(result.current.counterpart?.initials).toBe("MA");
       expect(result.current.counterpart?.chatEnabled).toBe(true);
       expect(result.current.showFavoriteShare).toBe(false);
+    });
+
+    it("includes the consumer phone in the info card when present", () => {
+      setup(
+        COMMERCE,
+        buildOrder({
+          consumer: {
+            id: "c1",
+            first_name: "María",
+            last_name: "Alejandra",
+            photo_url: null,
+            phone: "1155667788",
+          },
+        }),
+      );
+      const { result } = renderHook(() => useOrderDetailScreen());
+      expect(result.current.infoItems).toContainEqual({
+        label: "Teléfono",
+        value: "1155667788",
+      });
     });
 
     it("delivers and shows the success overlay, then navigates home", async () => {
@@ -188,6 +211,26 @@ describe("useOrderDetailScreen", () => {
     });
   });
 
+  describe("ui handlers", () => {
+    it("toggles the action sheets, goes back and refreshes", () => {
+      setup(COMMERCE);
+      const { result } = renderHook(() => useOrderDetailScreen());
+
+      act(() => result.current.handleCancelPress());
+      expect(result.current.cancelVisible).toBe(true);
+      act(() => result.current.handleCloseCancel());
+      expect(result.current.cancelVisible).toBe(false);
+
+      act(() => result.current.handleDeliverPress());
+      expect(result.current.deliverVisible).toBe(true);
+      act(() => result.current.handleCloseDeliver());
+      expect(result.current.deliverVisible).toBe(false);
+
+      act(() => result.current.handleBack());
+      expect(mockBack).toHaveBeenCalled();
+    });
+  });
+
   describe("favorites and share (consumer)", () => {
     it("adds a favorite when not favorited", () => {
       setup(CONSUMER);
@@ -214,6 +257,60 @@ describe("useOrderDetailScreen", () => {
         await result.current.handleShare();
       });
       expect(shareSpy).toHaveBeenCalled();
+      shareSpy.mockRestore();
+    });
+  });
+
+  describe("error branches", () => {
+    it("keeps the screen usable when cancel fails", async () => {
+      setup(CONSUMER);
+      mockCancel.mockRejectedValueOnce(new Error("fail"));
+      const { result } = renderHook(() => useOrderDetailScreen());
+      await act(async () => {
+        await result.current.confirmCancel();
+      });
+      expect(mockBack).not.toHaveBeenCalled();
+      expect(result.current.cancelVisible).toBe(false);
+    });
+
+    it("does not show the success overlay when deliver fails", async () => {
+      setup(COMMERCE);
+      mockDeliver.mockRejectedValueOnce(new Error("fail"));
+      const { result } = renderHook(() => useOrderDetailScreen());
+      await act(async () => {
+        await result.current.confirmDeliver();
+      });
+      expect(result.current.successVisible).toBe(false);
+    });
+  });
+
+  describe("route param", () => {
+    it("falls back to an empty id when the param is missing", () => {
+      setup(COMMERCE);
+      (useLocalSearchParams as jest.Mock).mockReturnValue({});
+      const { result } = renderHook(() => useOrderDetailScreen());
+      expect(result.current.order).toBeDefined();
+    });
+  });
+
+  describe("without a loaded order", () => {
+    it("has no counterpart and share is a no-op", async () => {
+      setup(CONSUMER);
+      (useOrder as jest.Mock).mockReturnValue({
+        data: undefined,
+        isLoading: false,
+        isError: false,
+        refetch: jest.fn(),
+        isRefetching: false,
+      });
+      const shareSpy = jest.spyOn(Share, "share");
+      const { result } = renderHook(() => useOrderDetailScreen());
+      expect(result.current.counterpart).toBeNull();
+      expect(result.current.infoItems).toEqual([]);
+      await act(async () => {
+        await result.current.handleShare();
+      });
+      expect(shareSpy).not.toHaveBeenCalled();
       shareSpy.mockRestore();
     });
   });

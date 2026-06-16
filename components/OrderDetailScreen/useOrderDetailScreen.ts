@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { Share } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   buildCommerceInfoItems,
   buildFullName,
-  formatPrice,
   getInitials,
+  sharePublication,
   type InfoItem,
 } from "@/components/ProductDetail/utils";
 import { useFavoriteToggle } from "@/hooks/useFavoriteToggle";
@@ -76,8 +75,6 @@ export const useOrderDetailScreen = () => {
     };
   })();
 
-  // Card de datos: el comercio ve datos del cliente que reservó; el consumidor,
-  // datos del comercio.
   const infoItems: InfoItem[] = (() => {
     if (!order) return [];
     if (isCommerce) {
@@ -97,20 +94,6 @@ export const useOrderDetailScreen = () => {
     }
     return buildCommerceInfoItems(order.publication.commerce);
   })();
-
-  const handleBack = () => router.back();
-  const handleChat = () => router.push(`/chat/${id}`);
-
-  const handleShare = async () => {
-    if (!publication) return;
-    try {
-      await Share.share({
-        message: `${publication.title} — ${formatPrice(publication.final_price)} en ${publication.commerce.business_name}`,
-      });
-    } catch {
-      // El usuario canceló o el share falló.
-    }
-  };
 
   const confirmCancel = async () => {
     try {
@@ -133,11 +116,6 @@ export const useOrderDetailScreen = () => {
     }
   };
 
-  const handleSuccessDone = () => {
-    setSuccessVisible(false);
-    router.replace("/(commerce)/home");
-  };
-
   return {
     isLoading,
     isError,
@@ -154,17 +132,22 @@ export const useOrderDetailScreen = () => {
     cancelVisible,
     deliverVisible,
     successVisible,
-    handleBack,
+    handleBack: () => router.back(),
     handleRefresh: refetch,
-    handleChat,
+    handleChat: () => router.push(`/chat/${id}`),
     handleToggleFavorite: toggleFavorite,
-    handleShare,
+    handleShare: () => {
+      if (publication) void sharePublication(publication);
+    },
     handleCancelPress: () => setCancelVisible(true),
     handleCloseCancel: () => setCancelVisible(false),
     confirmCancel,
     handleDeliverPress: () => setDeliverVisible(true),
     handleCloseDeliver: () => setDeliverVisible(false),
     confirmDeliver,
-    handleSuccessDone,
+    handleSuccessDone: () => {
+      setSuccessVisible(false);
+      router.replace("/(commerce)/home");
+    },
   };
 };

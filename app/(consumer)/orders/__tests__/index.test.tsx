@@ -1,6 +1,7 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react-native";
 import { useOrders } from "@/hooks/useOrders";
+import { safePush } from "@/utils/navigation";
 import ConsumerOrders from "../index";
 
 jest.mock("expo-status-bar", () => ({ StatusBar: () => null }));
@@ -77,12 +78,15 @@ jest.mock("@/components/FilterSheet", () => {
 });
 
 jest.mock("@/components/OrderCard/OrderCard", () => {
-  const { View, Text } = require("react-native");
-  function MockOrderCard({ order }: any) {
+  const { Text, TouchableOpacity } = require("react-native");
+  function MockOrderCard({ order, onPress }: any) {
     return (
-      <View>
-        <Text testID={`order-${order.id}`}>{order.publication.title}</Text>
-      </View>
+      <TouchableOpacity
+        testID={`order-${order.id}`}
+        onPress={() => onPress?.(order.id)}
+      >
+        <Text>{order.publication.title}</Text>
+      </TouchableOpacity>
     );
   }
   return MockOrderCard;
@@ -251,6 +255,31 @@ describe("ConsumerOrders", () => {
     const { getByTestId } = render(<ConsumerOrders />);
     expect(getByTestId("order-order-1")).toBeTruthy();
     expect(getByTestId("order-order-2")).toBeTruthy();
+  });
+
+  it("navigates to the order detail when a card is pressed", () => {
+    const order1 = {
+      id: "order-1",
+      status: "RESERVED",
+      created_at: "2026-01-01",
+      unread_count: 0,
+      publication: {
+        id: "pub-1",
+        title: "Pizza",
+        final_price: 1000,
+        photos: [],
+      },
+      commerce: {
+        id: "c-1",
+        business_name: "Pizzería",
+        selected_address: { formatted_address: "Corrientes 1234" },
+      },
+      consumer: { id: "u-1", first_name: "Ana", last_name: "Pérez" },
+    };
+    mockUseOrders({ orders: [order1] });
+    const { getByTestId } = render(<ConsumerOrders />);
+    fireEvent.press(getByTestId("order-order-1"));
+    expect(safePush).toHaveBeenCalledWith("/order/order-1");
   });
 
   it("shows 'no delivered orders' text when filter is DELIVERED and no results", () => {
