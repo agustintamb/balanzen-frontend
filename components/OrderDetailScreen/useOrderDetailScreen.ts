@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import type { OrderStatus } from "@/api/orders/orders.types";
+import type { StatusNotice } from "@/components/ProductDetail/StatusNoticeBanner";
 import {
   buildCommerceInfoItems,
   buildFullName,
@@ -7,8 +9,10 @@ import {
   sharePublication,
   type InfoItem,
 } from "@/components/ProductDetail/utils";
+import { useChats } from "@/hooks/useChats";
 import { useFavoriteToggle } from "@/hooks/useFavoriteToggle";
 import { useCancelOrder, useDeliverOrder, useOrder } from "@/hooks/useOrders";
+import { useSocketEvent } from "@/hooks/useSocket";
 import { useAuthStore } from "@/stores/auth.store";
 import { useToast } from "@/stores/ui.store";
 
@@ -21,6 +25,29 @@ export interface OrderCounterpart {
 }
 
 export type OrderFooterKind = "consumer-cancel" | "commerce-actions" | "none";
+
+const buildStatusNotice = (
+  status: OrderStatus | undefined,
+  isCommerce: boolean,
+): StatusNotice | null => {
+  if (status === "DELIVERED") {
+    return {
+      icon: "check-circle",
+      tone: "success",
+      text: isCommerce
+        ? "Pedido entregado."
+        : "Tu pedido fue entregado. ¡Gracias por usar BalanZen!",
+    };
+  }
+  if (status === "CANCELLED" && !isCommerce) {
+    return {
+      icon: "x-circle",
+      tone: "error",
+      text: "Esta reserva fue cancelada.",
+    };
+  }
+  return null;
+};
 
 export const useOrderDetailScreen = () => {
   const router = useRouter();
@@ -36,6 +63,7 @@ export const useOrderDetailScreen = () => {
     isRefetching,
   } = useOrder(id);
   const publication = order?.publication;
+  const { data: chats } = useChats();
   const { isFavorite, toggleFavorite } = useFavoriteToggle(publication?.id);
   const { mutateAsync: cancelOrder, isPending: isCancelling } =
     useCancelOrder();
@@ -45,9 +73,34 @@ export const useOrderDetailScreen = () => {
   const [cancelVisible, setCancelVisible] = useState(false);
   const [deliverVisible, setDeliverVisible] = useState(false);
   const [successVisible, setSuccessVisible] = useState(false);
+  const [liveUnread, setLiveUnread] = useState(false);
+  const [chatVisited, setChatVisited] = useState(false);
 
   const isCommerce = user?.role === "COMERCIO";
   const isReserved = order?.status === "RESERVED";
+
+  const orderUnreadCount =
+    chats?.find((c) => c.order_id === id)?.unread_count ?? 0;
+  const hasUnreadChat = !chatVisited && (liveUnread || orderUnreadCount > 0);
+
+  useSocketEvent<{ type?: string; reference_id?: string }>(
+    "new_notification",
+    (payload) => {
+      if (payload?.type === "NEW_MESSAGE" && payload.reference_id === id) {
+        setLiveUnread(true);
+        setChatVisited(false);
+      }
+    },
+  );
+
+  useEffect(() => {
+    if (isCommerce && order?.status === "CANCELLED" && publication?.id) {
+      showSuccess("La reserva fue cancelada por el cliente");
+      router.replace(`/publication/${publication.id}`);
+    }
+  }, [isCommerce, order?.status, publication?.id, router, showSuccess]);
+
+  const statusNotice = buildStatusNotice(order?.status, isCommerce);
 
   let footerKind: OrderFooterKind = "none";
   if (isReserved && isCommerce) footerKind = "commerce-actions";
@@ -126,6 +179,8 @@ export const useOrderDetailScreen = () => {
     counterpart,
     infoItems,
     footerKind,
+    statusNotice,
+    hasUnreadChat,
     isCancelling,
     isDelivering,
     isRefetching,
@@ -134,7 +189,11 @@ export const useOrderDetailScreen = () => {
     successVisible,
     handleBack: () => router.back(),
     handleRefresh: refetch,
-    handleChat: () => router.push(`/chat/${id}`),
+    handleChat: () => {
+      setLiveUnread(false);
+      setChatVisited(true);
+      router.push(`/chat/${id}`);
+    },
     handleToggleFavorite: toggleFavorite,
     handleShare: () => {
       if (publication) void sharePublication(publication);

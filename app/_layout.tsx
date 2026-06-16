@@ -19,6 +19,7 @@ import SplashOverlay from "@/components/SplashOverlay";
 import Toast from "@/components/ui/Toast";
 import AuthProvider from "@/providers/AuthProvider";
 import QueryProvider from "@/providers/QueryProvider";
+import RealtimeProvider from "@/providers/RealtimeProvider";
 import SocketProvider from "@/providers/SocketProvider";
 
 colorScheme.set("light");
@@ -58,15 +59,17 @@ export default function RootLayout() {
         <QueryProvider>
           <AuthProvider>
             <SocketProvider>
-              <StatusBar style="dark" backgroundColor="transparent" />
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  contentStyle: { backgroundColor: "#F1EFE8" },
-                }}
-              />
-              <SplashOverlay />
-              <Toast />
+              <RealtimeProvider>
+                <StatusBar style="dark" backgroundColor="transparent" />
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                    contentStyle: { backgroundColor: "#F1EFE8" },
+                  }}
+                />
+                <SplashOverlay />
+                <Toast />
+              </RealtimeProvider>
             </SocketProvider>
           </AuthProvider>
         </QueryProvider>

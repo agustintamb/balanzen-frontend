@@ -27,7 +27,8 @@ const DetailBody = ({ publication }: DetailBodyProps) => {
   } = publication;
   const hasDiscount = !is_donation && discount_pct > 0;
   const savings = getSavings(publication);
-  const expiry = getExpiryWarning(expiry_date);
+  const expiry =
+    publication.status === "ACTIVE" ? getExpiryWarning(expiry_date) : null;
 
   return (
     <View className="gap-4">
@@ -54,7 +55,7 @@ const DetailBody = ({ publication }: DetailBodyProps) => {
           <Text className="font-sans-bold text-3xl text-primary">
             {is_donation ? "Gratis" : formatPrice(final_price)}
           </Text>
-          {(hasDiscount || is_donation) && (
+          {original_price > 0 && (hasDiscount || is_donation) && (
             <Text className="font-sans text-lg text-gray-400 line-through">
               {formatPrice(original_price)}
             </Text>

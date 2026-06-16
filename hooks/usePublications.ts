@@ -43,7 +43,8 @@ export const usePublication = (id: string) =>
     queryKey: ["publications", id],
     queryFn: () => publicationsService.getById(id),
     enabled: !!id,
-    staleTime: 1000 * 60 * 2,
+    staleTime: 0,
+    refetchOnMount: "always",
   });
 
 export const useMyPublications = (params?: MyPublicationsFilters) =>

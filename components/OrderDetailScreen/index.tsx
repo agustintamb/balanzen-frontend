@@ -5,6 +5,7 @@ import DeliverySuccess from "@/components/ProductDetail/DeliverySuccess";
 import DetailCounterpartRow from "@/components/ProductDetail/DetailCounterpartRow";
 import DetailHeaderActions from "@/components/ProductDetail/DetailHeaderActions";
 import ProductDetailLayout from "@/components/ProductDetail/ProductDetailLayout";
+import StatusNoticeBanner from "@/components/ProductDetail/StatusNoticeBanner";
 import ActionSheet from "@/components/ui/ActionSheet";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
@@ -37,6 +38,8 @@ const OrderDetailScreen = () => {
     counterpart,
     infoItems,
     footerKind,
+    statusNotice,
+    hasUnreadChat,
     isCancelling,
     isDelivering,
     isRefetching,
@@ -89,6 +92,7 @@ const OrderDetailScreen = () => {
           initials={counterpart.initials}
           avatarUrl={counterpart.avatarUrl}
           chatEnabled={counterpart.chatEnabled}
+          hasUnread={hasUnreadChat}
           onChatPress={handleChat}
         />
       }
@@ -124,6 +128,8 @@ const OrderDetailScreen = () => {
               )}
             </View>
           </SafeAreaView>
+        ) : statusNotice ? (
+          <StatusNoticeBanner {...statusNotice} />
         ) : null
       }
     >

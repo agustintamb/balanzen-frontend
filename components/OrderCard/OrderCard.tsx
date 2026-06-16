@@ -78,7 +78,7 @@ const OrderCard = ({
             </View>
           )}
           {hasUnreadMessages && (
-            <View className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary border-2 border-white" />
+            <View className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-error border-2 border-white" />
           )}
         </View>
 

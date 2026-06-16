@@ -10,6 +10,7 @@ interface DetailCounterpartRowProps {
   initials?: string;
   leftIcon?: React.ComponentProps<typeof Icon>["name"];
   chatEnabled: boolean;
+  hasUnread?: boolean;
   onChatPress?: () => void;
 }
 
@@ -20,6 +21,7 @@ const DetailCounterpartRow = ({
   initials,
   leftIcon,
   chatEnabled,
+  hasUnread = false,
   onChatPress,
 }: DetailCounterpartRowProps) => (
   <View className="flex-row items-center gap-3 border-b border-surface-dark pb-4">
@@ -55,6 +57,9 @@ const DetailCounterpartRow = ({
       )}
       testID="btn-chat"
     >
+      {hasUnread && chatEnabled && (
+        <View className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border border-white bg-error" />
+      )}
       <Icon
         name="message-circle"
         size={15}

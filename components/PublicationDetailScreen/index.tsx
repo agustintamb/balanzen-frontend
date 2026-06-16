@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import DetailCounterpartRow from "@/components/ProductDetail/DetailCounterpartRow";
 import DetailHeaderActions from "@/components/ProductDetail/DetailHeaderActions";
 import ProductDetailLayout from "@/components/ProductDetail/ProductDetailLayout";
+import StatusNoticeBanner from "@/components/ProductDetail/StatusNoticeBanner";
 import ActionSheet from "@/components/ui/ActionSheet";
 import Button from "@/components/ui/Button";
 import Icon from "@/components/ui/Icon";
@@ -18,6 +19,7 @@ const PublicationDetailScreen = () => {
     counterpart,
     infoItems,
     footerKind,
+    statusNotice,
     isReserving,
     isDeleting,
     isRefetching,
@@ -36,7 +38,7 @@ const PublicationDetailScreen = () => {
     handleEdit,
   } = usePublicationDetailScreen();
 
-  if (isLoading || !publication || !counterpart) {
+  if (isLoading || !publication) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
         <StatusBar style="dark" />
@@ -62,13 +64,15 @@ const PublicationDetailScreen = () => {
         ) : undefined
       }
       counterpart={
-        <DetailCounterpartRow
-          title={counterpart.title}
-          subtitle={counterpart.subtitle}
-          initials={counterpart.initials}
-          leftIcon={counterpart.leftIcon}
-          chatEnabled={counterpart.chatEnabled}
-        />
+        counterpart ? (
+          <DetailCounterpartRow
+            title={counterpart.title}
+            subtitle={counterpart.subtitle}
+            initials={counterpart.initials}
+            leftIcon={counterpart.leftIcon}
+            chatEnabled={counterpart.chatEnabled}
+          />
+        ) : null
       }
       footer={
         footerKind !== "none" ? (
@@ -112,6 +116,8 @@ const PublicationDetailScreen = () => {
               )}
             </View>
           </SafeAreaView>
+        ) : statusNotice ? (
+          <StatusNoticeBanner {...statusNotice} />
         ) : null
       }
     >

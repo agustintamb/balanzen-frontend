@@ -66,9 +66,10 @@ const ProductCard = ({
 
   const imageUrl = photos[0] ? buildCardImageUrl(photos[0]) : null;
   const hasDiscount = !is_donation && discount_pct > 0;
-  const expiryWarning = showExpiryWarning
-    ? getExpiryWarning(expiry_date)
-    : null;
+  const expiryWarning =
+    showExpiryWarning && status === "ACTIVE"
+      ? getExpiryWarning(expiry_date)
+      : null;
 
   let footerNode: ReactNode = null;
   if (showDate) {
@@ -112,7 +113,7 @@ const ProductCard = ({
             </View>
           )}
           {hasUnreadMessages && (
-            <View className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary border-2 border-white" />
+            <View className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-error border-2 border-white" />
           )}
         </View>
 

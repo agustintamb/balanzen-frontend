@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import type { PublicationStatus } from "@/api/publications/publications.types";
+import type { StatusNotice } from "@/components/ProductDetail/StatusNoticeBanner";
 import {
   buildCommerceInfoItems,
   getInitials,
@@ -22,6 +24,25 @@ export interface CounterpartConfig {
 }
 
 export type DetailFooterKind = "reserve" | "commerce" | "none";
+
+const OWNER_TERMINAL_NOTICES: Partial<Record<PublicationStatus, StatusNotice>> =
+  {
+    DELIVERED: {
+      icon: "check-circle",
+      tone: "success",
+      text: "Esta publicación fue entregada.",
+    },
+    CANCELLED: {
+      icon: "x-circle",
+      tone: "muted",
+      text: "Esta publicación fue cancelada.",
+    },
+    EXPIRED: {
+      icon: "clock",
+      tone: "muted",
+      text: "Esta publicación venció.",
+    },
+  };
 
 export const usePublicationDetailScreen = () => {
   const router = useRouter();
@@ -46,7 +67,30 @@ export const usePublicationDetailScreen = () => {
 
   const isCommerce = user?.role === "COMERCIO";
   const isOwner = isCommerce && publication?.commerce.id === user?.id;
-  const isActive = publication?.status === "ACTIVE";
+  const isActive = !isError && publication?.status === "ACTIVE";
+
+  useEffect(() => {
+    if (isOwner && publication?.status === "RESERVED" && publication.order_id) {
+      router.replace(`/order/${publication.order_id}`);
+    }
+  }, [isOwner, publication?.status, publication?.order_id, router]);
+
+  const statusNotice: StatusNotice | null = (() => {
+    if (!publication || isActive) return null;
+    if (isError) {
+      return {
+        icon: "info",
+        tone: "muted",
+        text: "Esta publicación ya no está disponible.",
+      };
+    }
+    if (isOwner) return OWNER_TERMINAL_NOTICES[publication.status] ?? null;
+    return {
+      icon: "info",
+      tone: "muted",
+      text: "Esta publicación ya no está disponible.",
+    };
+  })();
 
   let footerKind: DetailFooterKind = "none";
   if (isActive && isOwner) footerKind = "commerce";
@@ -55,6 +99,7 @@ export const usePublicationDetailScreen = () => {
   const counterpart: CounterpartConfig | null = (() => {
     if (!publication) return null;
     if (isOwner) {
+      if (!isActive) return null;
       return {
         title: "Sin reserva aún",
         subtitle: "Esta publicación está disponible",
@@ -102,6 +147,7 @@ export const usePublicationDetailScreen = () => {
     counterpart,
     infoItems,
     footerKind,
+    statusNotice,
     isReserving,
     isDeleting,
     isRefetching,
