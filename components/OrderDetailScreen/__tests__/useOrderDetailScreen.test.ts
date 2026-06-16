@@ -7,6 +7,8 @@ import {
   useFavorites,
   useRemoveFavorite,
 } from "@/hooks/useFavorites";
+import { useChats } from "@/hooks/useChats";
+import { useSocketEvent } from "@/hooks/useSocket";
 import { useCancelOrder, useDeliverOrder, useOrder } from "@/hooks/useOrders";
 import { useAuthStore } from "@/stores/auth.store";
 import { useToast } from "@/stores/ui.store";
@@ -28,6 +30,8 @@ jest.mock("@/hooks/useFavorites", () => ({
 }));
 jest.mock("@/stores/auth.store", () => ({ useAuthStore: jest.fn() }));
 jest.mock("@/stores/ui.store", () => ({ useToast: jest.fn() }));
+jest.mock("@/hooks/useChats", () => ({ useChats: jest.fn() }));
+jest.mock("@/hooks/useSocket", () => ({ useSocketEvent: jest.fn() }));
 
 const CONSUMER = { id: "c1", role: "CONSUMIDOR" };
 const COMMERCE = { id: "comm1", role: "COMERCIO" };
@@ -115,6 +119,7 @@ const setup = (
     mutateAsync: mockDeliver,
     isPending: false,
   });
+  (useChats as jest.Mock).mockReturnValue({ data: [] });
   (useAuthStore as unknown as jest.Mock).mockImplementation((selector: any) =>
     selector({ user }),
   );
@@ -200,6 +205,35 @@ describe("useOrderDetailScreen", () => {
       expect(result.current.footerKind).toBe("none");
       expect(result.current.counterpart?.chatEnabled).toBe(false);
     });
+
+    it("shows a delivered status notice for the consumer", () => {
+      setup(CONSUMER, buildOrder({ status: "DELIVERED" }));
+      const { result } = renderHook(() => useOrderDetailScreen());
+      expect(result.current.statusNotice).toEqual({
+        icon: "check-circle",
+        tone: "success",
+        text: "Tu pedido fue entregado. ¡Gracias por usar BalanZen!",
+      });
+    });
+
+    it("shows a cancelled status notice for the consumer", () => {
+      setup(CONSUMER, buildOrder({ status: "CANCELLED" }));
+      const { result } = renderHook(() => useOrderDetailScreen());
+      expect(result.current.statusNotice).toEqual({
+        icon: "x-circle",
+        tone: "error",
+        text: "Esta reserva fue cancelada.",
+      });
+    });
+
+    it("redirects commerce to the publication when the order is cancelled", () => {
+      setup(COMMERCE, buildOrder({ status: "CANCELLED" }));
+      renderHook(() => useOrderDetailScreen());
+      expect(mockShowSuccess).toHaveBeenCalledWith(
+        "La reserva fue cancelada por el cliente",
+      );
+      expect(mockReplace).toHaveBeenCalledWith("/publication/pub-1");
+    });
   });
 
   describe("chat", () => {
@@ -208,6 +242,26 @@ describe("useOrderDetailScreen", () => {
       const { result } = renderHook(() => useOrderDetailScreen());
       act(() => result.current.handleChat());
       expect(mockPush).toHaveBeenCalledWith("/chat/order-1");
+    });
+
+    it("sets hasUnreadChat when a NEW_MESSAGE notification arrives for this order", () => {
+      setup(COMMERCE);
+      const { result } = renderHook(() => useOrderDetailScreen());
+      const handler = (useSocketEvent as jest.Mock).mock.calls.find(
+        (c) => c[0] === "new_notification",
+      )?.[1];
+      act(() => handler?.({ type: "NEW_MESSAGE", reference_id: "order-1" }));
+      expect(result.current.hasUnreadChat).toBe(true);
+    });
+
+    it("ignores NEW_MESSAGE notifications for a different order", () => {
+      setup(COMMERCE);
+      const { result } = renderHook(() => useOrderDetailScreen());
+      const handler = (useSocketEvent as jest.Mock).mock.calls.find(
+        (c) => c[0] === "new_notification",
+      )?.[1];
+      act(() => handler?.({ type: "NEW_MESSAGE", reference_id: "other-order" }));
+      expect(result.current.hasUnreadChat).toBe(false);
     });
   });
 

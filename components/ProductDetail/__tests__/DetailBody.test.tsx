@@ -13,6 +13,7 @@ const buildPublication = (overrides: Partial<Publication> = {}): Publication =>
     final_price: 1200,
     discount_pct: 50,
     is_donation: false,
+    status: "ACTIVE",
     category: { id: "c", name: "Verduras" },
     expiry_date: inHours(5),
     ...overrides,

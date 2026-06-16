@@ -174,6 +174,32 @@ describe("usePublicationDetailScreen", () => {
       const { result } = renderHook(() => usePublicationDetailScreen());
       expect(result.current.footerKind).toBe("none");
     });
+
+    it("redirects the owner to the order detail when the publication is RESERVED", () => {
+      setup({
+        user: COMMERCE,
+        publication: buildPublication({ status: "RESERVED", order_id: "order-42" }),
+      });
+      renderHook(() => usePublicationDetailScreen());
+      expect(mockReplace).toHaveBeenCalledWith("/order/order-42");
+    });
+
+    it("shows a muted notice when isError is true", () => {
+      setup();
+      (usePublication as jest.Mock).mockReturnValue({
+        data: buildPublication(),
+        isLoading: false,
+        isError: true,
+        refetch: jest.fn(),
+        isRefetching: false,
+      });
+      const { result } = renderHook(() => usePublicationDetailScreen());
+      expect(result.current.statusNotice).toEqual({
+        icon: "info",
+        tone: "muted",
+        text: "Esta publicación ya no está disponible.",
+      });
+    });
   });
 
   describe("ui handlers", () => {
