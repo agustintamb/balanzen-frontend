@@ -47,7 +47,6 @@ app-example
 # claude files
 CLAUDE.md
 .claude/
-docs/
 
 # test coverage reports (generated output — regenerate with npm run test:coverage)
 coverage/
