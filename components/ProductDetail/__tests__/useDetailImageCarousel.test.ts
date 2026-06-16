@@ -18,7 +18,7 @@ describe("useDetailImageCarousel", () => {
     act(() =>
       result.current.handleScrollEnd({
         nativeEvent: { contentOffset: { x: 600 } },
-      } as never),
+      } as Parameters<typeof result.current.handleScrollEnd>[0]),
     );
     expect(result.current.activeIndex).toBe(2);
   });

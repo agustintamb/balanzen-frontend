@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react-native";
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import ProductDetailLayout from "../ProductDetailLayout";
 import type { Publication } from "@/api/publications/publications.types";
 

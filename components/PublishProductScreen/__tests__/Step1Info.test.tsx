@@ -46,8 +46,8 @@ jest.mock("../CategorySelector", () => {
 });
 
 const categories: Category[] = [
-  { id: "cat-1", name: "Verduras" } as Category,
-  { id: "cat-2", name: "Frutas" } as Category,
+  { id: "cat-1", name: "Verduras" },
+  { id: "cat-2", name: "Frutas" },
 ];
 
 const defaultPhotos: PhotoItem[] = [];

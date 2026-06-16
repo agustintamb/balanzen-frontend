@@ -101,7 +101,7 @@ describe("ProductDetail utils", () => {
     it("invokes the native share sheet with title and price", async () => {
       const spy = jest
         .spyOn(Share, "share")
-        .mockResolvedValue({ action: "sharedAction" } as never);
+        .mockResolvedValue({ action: "sharedAction" });
       await sharePublication(buildPublication());
       expect(spy).toHaveBeenCalledWith({
         message: expect.stringContaining("Pan"),

@@ -54,7 +54,7 @@ describe("useFavoriteToggle", () => {
 
   it("does nothing without a publication id", () => {
     setup();
-    const { result } = renderHook(() => useFavoriteToggle(undefined));
+    const { result } = renderHook(() => useFavoriteToggle());
     act(() => result.current.toggleFavorite());
     expect(mockAdd).not.toHaveBeenCalled();
     expect(mockRemove).not.toHaveBeenCalled();

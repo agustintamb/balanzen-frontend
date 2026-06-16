@@ -209,7 +209,7 @@ describe("useChatScreen", () => {
 
   it("clears the typing timer on unmount", () => {
     jest.useFakeTimers();
-    const clearSpy = jest.spyOn(global, "clearTimeout");
+    const clearSpy = jest.spyOn(globalThis, "clearTimeout");
     setup();
     const { result, unmount } = renderHook(() => useChatScreen());
     act(() => result.current.onChangeDraft("ho"));
